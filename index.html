@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MECHE MECHE - Jogo de Pontuação</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>MECHE MECHE</h1>
+      <p class="subtitle">Gerencie partidas e pontuações do seu jogo de família!</p>
+    </header>
+
+    <!-- Cadastro de Jogadores -->
+    <section id="player-setup" class="card">
+      <h2>Cadastro de Jogadores</h2>
+      <form id="player-form">
+        <input type="text" id="player-name" placeholder="Nome do jogador" maxlength="20" autocomplete="off">
+        <button type="submit">Adicionar</button>
+      </form>
+      <ul id="player-list"></ul>
+      <button id="start-game" disabled>Iniciar Partida</button>
+    </section>
+
+    <!-- Gerenciamento de Partida e Rodadas -->
+    <section id="game-section" class="card hidden"  >
+      <div class="game-actions">
+        <button id="finish-game">Finalizar Partida</button>
+        <button id="reset-all">Redefinir Tudo</button>
+        <button id="show-ranking">Ver Ranking Final</button>
+      </div>
+
+      <div id="round-info">
+        <h2>Rodada <span id="current-round">1</span></h2>
+        <div id="points-available">
+          <h3>Pontuações Disponíveis</h3>
+          <ul id="points-list"></ul>
+        </div>
+        <form id="score-form">
+          <h3>Registrar Pontuação</h3>
+          <div id="players-score-inputs"></div>
+          <button type="submit">Finalizar Rodada</button>
+        </form>
+      </div>
+
+      <div id="score-table-section">
+        <h3>Tabela de Pontuação</h3>
+        <div class="table-controls">
+          <!-- Removido: <button id="prev-round">&lt; Anterior</button> -->
+          <!-- Removido: <span id="round-label">Rodada 1</span> -->
+          <!-- Removido: <button id="next-round">Próxima &gt;</button> -->
+        </div>
+        <table id="score-table">
+          <!-- Tabela gerada dinamicamente -->
+        </table>
+      </div>
+    </section>
+
+    <!-- Modal de Ranking Final -->
+    <div id="ranking-modal" class="modal hidden">
+      <div class="modal-content">
+        <span id="close-ranking" class="close">&times;</span>
+        <h2>Ranking Final</h2>
+        <ol id="ranking-list"></ol>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmação de Finalização de Partida -->
+    <div id="finish-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Tabela de Pontuação</h2>
+        <div id="finish-score-table-section">
+          <table id="finish-score-table"></table>
+        </div>
+        <p>Deseja realmente finalizar a partida ou continuar?</p>
+        <button id="continue-game">Continuar</button>
+        <button id="confirm-finish">Finalizar</button>
+      </div>
+    </div>
+
+    <!-- Modal de Vencedor -->
+    <div id="winner-modal" class="modal hidden">
+      <div class="modal-content" style="position:relative;overflow:hidden;">
+        <div id="confetti-canvas-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></div>
+        <div style="position:relative;z-index:2;">
+          <h2>🏆 Vencedor!</h2>
+          <p id="winner-name" style="font-size:1.5em;font-weight:bold;"></p>
+          <button id="new-game-btn">Novo jogo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html> 
