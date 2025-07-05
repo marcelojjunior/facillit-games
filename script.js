@@ -284,8 +284,8 @@ scoreForm.onsubmit = function(e) {
       if (r && r.scores[idx].bonus) p.total += r.scores[idx].bonus;
     }
   });
-  saveToStorage();
   currentRound++; // Avança para a próxima rodada
+  saveToStorage(); // Salva imediatamente após atualizar currentRound
   bonusPoints = Array(players.length).fill(false); // Reseta bônus para próxima rodada
   renderGame();
 };
@@ -470,7 +470,7 @@ resetAllBtn.onclick = function() {
 // --- Inicialização ---
 function init() {
   loadFromStorage();
-  if (players.length >= 2 && rounds.length > 0) {
+  if (players.length >= 2 && (rounds.length > 0 || currentRound > 1)) {
     showGameSection();
     renderGame();
   } else {
