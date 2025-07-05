@@ -3,23 +3,19 @@
 
 // --- Seletores de elementos ---
 const playerForm = document.getElementById('player-form');
-const playerNameInput = document.getElementById('player-name');
-const playerList = document.getElementById('player-list');
+const playerInput = document.getElementById('player-name');
+const playersList = document.getElementById('player-list');
 const startGameBtn = document.getElementById('start-game');
 const playerSetupSection = document.getElementById('player-setup');
 const gameSection = document.getElementById('game-section');
 const finishGameBtn = document.getElementById('finish-game');
 const resetAllBtn = document.getElementById('reset-all');
-const showRankingBtn = document.getElementById('show-ranking');
 const roundInfo = document.getElementById('round-info');
 const currentRoundSpan = document.getElementById('current-round');
 const pointsList = document.getElementById('points-list');
 const scoreForm = document.getElementById('score-form');
 const playersScoreInputs = document.getElementById('players-score-inputs');
 const scoreTable = document.getElementById('score-table');
-const rankingModal = document.getElementById('ranking-modal');
-const closeRankingBtn = document.getElementById('close-ranking');
-const rankingList = document.getElementById('ranking-list');
 const finishModal = document.getElementById('finish-modal');
 const finishScoreTable = document.getElementById('finish-score-table');
 const continueGameBtn = document.getElementById('continue-game');
@@ -33,7 +29,7 @@ const confettiContainer = document.getElementById('confetti-canvas-container');
 let players = [];
 let rounds = [];
 let currentRound = 1;
-let editingPlayerIndex = null;
+let editingIndex = null;
 let selectedPoints = null;
 
 // --- Local Storage Helpers ---
@@ -54,57 +50,96 @@ function clearStorage() {
 }
 
 // --- Cadastro de Jogadores ---
-function renderPlayerList() {
-  playerList.innerHTML = '';
-  players.forEach((player, idx) => {
+function renderPlayers() {
+  playersList.innerHTML = '';
+  players.forEach((playerObj, idx) => {
+    const player = typeof playerObj === 'string' ? { nome: playerObj, total: 0 } : playerObj;
+    players[idx] = player; // Garante que todos são objetos
     const li = document.createElement('li');
-    li.textContent = player.name;
-    const actions = document.createElement('span');
-    actions.className = 'player-actions';
+    li.className = 'player-card';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'player-name';
+    nameSpan.textContent = player.nome;
+    nameSpan.style.marginRight = '18px';
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'player-actions';
+
+    // Edit button
     const editBtn = document.createElement('button');
-    editBtn.textContent = 'Editar';
-    editBtn.className = 'edit';
-    editBtn.onclick = () => editPlayer(idx);
+    editBtn.className = 'action-btn edit';
+    editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+    editBtn.title = 'Editar';
+    editBtn.onclick = () => startEditPlayer(idx);
+
+    // Remove button
     const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remover';
+    removeBtn.className = 'action-btn remove';
+    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    removeBtn.title = 'Remover';
     removeBtn.onclick = () => removePlayer(idx);
-    actions.appendChild(editBtn);
-    actions.appendChild(removeBtn);
-    li.appendChild(actions);
-    playerList.appendChild(li);
+
+    actionsDiv.appendChild(editBtn);
+    actionsDiv.appendChild(removeBtn);
+
+    li.appendChild(nameSpan);
+    li.appendChild(actionsDiv);
+    playersList.appendChild(li);
   });
   startGameBtn.disabled = players.length < 2;
-  playerNameInput.disabled = players.length >= 5;
-  playerForm.querySelector('button[type="submit"]').disabled = players.length >= 5;
+  playerInput.disabled = players.length >= 5;
+  document.getElementById('add-player-btn').disabled = players.length >= 5;
 }
 
-playerForm.onsubmit = function(e) {
-  e.preventDefault();
-  const name = playerNameInput.value.trim();
-  if (!name) return;
-  if (players.length >= 5) return;
-  if (editingPlayerIndex !== null) {
-    players[editingPlayerIndex].name = name;
-    editingPlayerIndex = null;
-    startGameBtn.textContent = 'Iniciar Partida';
-  } else {
-    players.push({ name, total: 0 });
-  }
-  playerNameInput.value = '';
-  renderPlayerList();
-  saveToStorage();
-};
-
-function editPlayer(idx) {
-  playerNameInput.value = players[idx].name;
-  editingPlayerIndex = idx;
-  startGameBtn.textContent = 'Salvar Alteração';
+function addPlayer(name) {
+  if (!name.trim() || players.length >= 5) return;
+  players.push({ nome: name.trim(), total: 0 });
+  renderPlayers();
+  playerInput.value = '';
+  playerInput.focus();
 }
+
+function startEditPlayer(idx) {
+  editingIndex = idx;
+  playerInput.value = players[idx].nome;
+  playerInput.focus();
+  playerInput.select();
+  document.getElementById('add-player-btn').innerHTML = '<i class="fas fa-check"></i>';
+}
+
+function finishEditPlayer(newName) {
+  if (editingIndex === null || !newName.trim()) return;
+  players[editingIndex].nome = newName.trim();
+  editingIndex = null;
+  renderPlayers();
+  playerInput.value = '';
+  document.getElementById('add-player-btn').innerHTML = '<i class="fas fa-plus"></i>';
+}
+
 function removePlayer(idx) {
   players.splice(idx, 1);
-  renderPlayerList();
-  saveToStorage();
+  renderPlayers();
 }
+
+playerForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (editingIndex !== null) {
+    finishEditPlayer(playerInput.value);
+  } else {
+    addPlayer(playerInput.value);
+  }
+});
+
+playerInput.addEventListener('input', function() {
+  if (editingIndex !== null && playerInput.value.trim() === players[editingIndex].nome) {
+    document.getElementById('add-player-btn').innerHTML = '<i class="fas fa-check"></i>';
+  } else if (editingIndex !== null) {
+    document.getElementById('add-player-btn').innerHTML = '<i class="fas fa-check"></i>';
+  } else {
+    document.getElementById('add-player-btn').innerHTML = '<i class="fas fa-plus"></i>';
+  }
+});
 
 startGameBtn.onclick = function() {
   if (players.length < 2) return;
@@ -164,7 +199,7 @@ function renderScoreInputs() {
   // Cria selects e listeners
   players.forEach((player, idx) => {
     const label = document.createElement('label');
-    label.textContent = player.name + ': ';
+    label.textContent = player.nome + ': ';
     const select = document.createElement('select');
     select.name = 'score-' + idx;
     select.dataset.playerIdx = idx;
@@ -246,7 +281,7 @@ function renderScoreTable() {
   const thead = document.createElement('thead');
   const trh = document.createElement('tr');
   trh.innerHTML = '<th>Jogador</th>';
-  for (let i = 1; i <= Math.max(rounds.length, currentRound); i++) {
+  for (let i = 1; i <= rounds.length; i++) {
     trh.innerHTML += `<th>R${i}</th>`;
   }
   trh.innerHTML += '<th>Total</th>';
@@ -256,14 +291,12 @@ function renderScoreTable() {
   const tbody = document.createElement('tbody');
   players.forEach((player, idx) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${player.name}</td>`;
+    tr.innerHTML = `<td>${player.nome}</td>`;
     let total = 0;
-    for (let i = 0; i < Math.max(rounds.length, currentRound); i++) {
+    for (let i = 0; i < rounds.length; i++) {
       let pts = null;
       if (i < rounds.length && rounds[i]?.scores[idx]) {
         pts = rounds[i].scores[idx].points;
-      } else if (i === currentRound - 1 && Array.isArray(selectedPoints)) {
-        pts = selectedPoints[idx];
       }
       tr.innerHTML += `<td>${pts ? pts : '-'}</td>`;
       if (pts) total += pts;
@@ -282,33 +315,31 @@ finishGameBtn.onclick = function() {
 
 function renderFinishScoreTable() {
   finishScoreTable.innerHTML = '';
+  // Atualiza totais antes de exibir
+  players.forEach((p, idx) => {
+    if (typeof p === 'object') {
+      p.total = 0;
+      for (let r of rounds) {
+        if (r && r.scores[idx].points) p.total += r.scores[idx].points;
+      }
+    }
+  });
   // Cabeçalho
   const thead = document.createElement('thead');
   const trh = document.createElement('tr');
-  trh.innerHTML = '<th>Jogador</th>';
-  for (let i = 1; i <= Math.max(rounds.length, currentRound); i++) {
-    trh.innerHTML += `<th>R${i}</th>`;
-  }
-  trh.innerHTML += '<th>Total</th>';
+  trh.innerHTML = '<th>Posição</th><th>Jogador</th><th>Pontuação</th>';
   thead.appendChild(trh);
   finishScoreTable.appendChild(thead);
   // Corpo
   const tbody = document.createElement('tbody');
-  players.forEach((player, idx) => {
+  // Ordena jogadores por pontuação decrescente
+  const ranking = players
+    .map((p, idx) => ({ nome: typeof p === 'string' ? p : p.nome || p, total: typeof p === 'object' ? p.total : 0 }))
+    .sort((a, b) => b.total - a.total);
+  ranking.forEach((p, pos) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${player.name}</td>`;
-    let total = 0;
-    for (let i = 0; i < Math.max(rounds.length, currentRound); i++) {
-      let pts = null;
-      if (i < rounds.length && rounds[i]?.scores[idx]) {
-        pts = rounds[i].scores[idx].points;
-      } else if (i === currentRound - 1 && Array.isArray(selectedPoints)) {
-        pts = selectedPoints[idx];
-      }
-      tr.innerHTML += `<td>${pts ? pts : '-'}</td>`;
-      if (pts) total += pts;
-    }
-    tr.innerHTML += `<td class="total">${total}</td>`;
+    const nomeCapitalizado = p.nome.charAt(0).toUpperCase() + p.nome.slice(1).toLowerCase();
+    tr.innerHTML = `<td style='font-weight:700;'>${pos + 1}º</td><td style='padding: 10px 18px;'>${nomeCapitalizado}</td><td class="total" style='padding: 10px 18px;'>${p.total}</td>`;
     tbody.appendChild(tr);
   });
   finishScoreTable.appendChild(tbody);
@@ -322,7 +353,7 @@ confirmFinishBtn.onclick = function() {
   // Descobre o vencedor (maior pontuação) ANTES de zerar
   let max = Math.max(...players.map(p => p.total));
   let winners = players.filter(p => p.total === max);
-  let winnerNames = winners.length === 1 ? winners[0].name : winners.map(p => p.name).join(', ');
+  let winnerNames = winners.length === 1 ? winners[0] : winners.join(', ');
 
   // Limpa apenas rounds e pontuação, mantém jogadores
   rounds = [];
@@ -336,7 +367,16 @@ confirmFinishBtn.onclick = function() {
 };
 
 function showWinnerModal(winnerNames) {
-  winnerName.textContent = winnerNames;
+  // Se winnerNames for array ou objeto, extrai os nomes corretamente
+  let nomes = '';
+  if (Array.isArray(winnerNames)) {
+    nomes = winnerNames.map(w => typeof w === 'object' ? (w.nome.charAt(0).toUpperCase() + w.nome.slice(1).toLowerCase()) : w).join(', ');
+  } else if (typeof winnerNames === 'object' && winnerNames.nome) {
+    nomes = winnerNames.nome.charAt(0).toUpperCase() + winnerNames.nome.slice(1).toLowerCase();
+  } else {
+    nomes = winnerNames;
+  }
+  winnerName.textContent = nomes;
   winnerModal.classList.remove('hidden');
   startConfetti();
 }
@@ -345,7 +385,7 @@ newGameBtn.onclick = function() {
   winnerModal.classList.add('hidden');
   stopConfetti();
   showPlayerSetup();
-  renderPlayerList();
+  renderPlayers();
 };
 
 // Confete simples
@@ -385,32 +425,17 @@ function stopConfetti() {
 
 // --- Redefinir Tudo ---
 resetAllBtn.onclick = function() {
-  if (confirm('Tem certeza que deseja limpar todos os dados?')) {
-    players = [];
+  if (confirm('Tem certeza que deseja reiniciar a partida? Isso irá zerar as rodadas e pontuações, mas manterá os jogadores.')) {
     rounds = [];
     currentRound = 1;
-    editingPlayerIndex = null;
-    clearStorage();
+    editingIndex = null;
+    players.forEach(p => p.total = 0);
+    selectedPoints = null;
+    saveToStorage();
     showPlayerSetup();
-    renderPlayerList();
+    renderPlayers();
   }
 };
-
-// --- Ranking Final ---
-showRankingBtn.onclick = showRanking;
-closeRankingBtn.onclick = function() {
-  rankingModal.classList.add('hidden');
-};
-function showRanking() {
-  rankingList.innerHTML = '';
-  const ranking = [...players].sort((a,b)=>b.total-a.total);
-  ranking.forEach((p) => {
-    const li = document.createElement('li');
-    li.textContent = `${p.name}: ${p.total} pts`;
-    rankingList.appendChild(li);
-  });
-  rankingModal.classList.remove('hidden');
-}
 
 // --- Inicialização ---
 function init() {
@@ -420,7 +445,7 @@ function init() {
     renderGame();
   } else {
     showPlayerSetup();
-    renderPlayerList();
+    renderPlayers();
   }
 }
 

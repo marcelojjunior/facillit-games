@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MECHE MECHE - Jogo de Pontuação</title>
+  <title>Facillit Games - Jogo de Pontuação</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-  <div class="container">
+  <div class="app-container">
     <header>
-      <h1>MECHE MECHE</h1>
-      <p class="subtitle">Gerencie partidas e pontuações do seu jogo de família!</p>
+      <h1 class="app-title"><i class="fa-solid fa-diamond"></i> Meche Meche</h1>
     </header>
 
     <!-- Cadastro de Jogadores -->
     <section id="player-setup" class="card">
-      <h2>Cadastro de Jogadores</h2>
-      <form id="player-form">
-        <input type="text" id="player-name" placeholder="Nome do jogador" maxlength="20" autocomplete="off">
-        <button type="submit">Adicionar</button>
+      <h2><i class="fas fa-users"></i> Cadastro de Jogadores</h2>
+      <form id="player-form" autocomplete="off">
+        <div class="input-group">
+          <input type="text" id="player-name" placeholder="Nome do jogador" maxlength="20" required />
+          <button type="submit" id="add-player-btn"><i class="fas fa-plus"></i></button>
+        </div>
       </form>
-      <ul id="player-list"></ul>
+      <ul id="player-list" class="players-list"></ul>
       <button id="start-game" disabled>Iniciar Partida</button>
     </section>
 
     <!-- Gerenciamento de Partida e Rodadas -->
-    <section id="game-section" class="card hidden"  >
+    <section id="game-section" class="card hidden">
       <div class="game-actions">
-        <button id="finish-game">Finalizar Partida</button>
-        <button id="reset-all">Redefinir Tudo</button>
-        <button id="show-ranking">Ver Ranking Final</button>
+        <button id="finish-game"><i class="fas fa-flag-checkered"></i> Finalizar</button>
+        <button id="reset-all"><i class="fas fa-redo"></i> Reiniciar</button>
       </div>
 
       <div id="round-info">
@@ -47,25 +49,10 @@
 
       <div id="score-table-section">
         <h3>Tabela de Pontuação</h3>
-        <div class="table-controls">
-          <!-- Removido: <button id="prev-round">&lt; Anterior</button> -->
-          <!-- Removido: <span id="round-label">Rodada 1</span> -->
-          <!-- Removido: <button id="next-round">Próxima &gt;</button> -->
-        </div>
-        <table id="score-table">
-          <!-- Tabela gerada dinamicamente -->
-        </table>
+        <div class="table-controls"></div>
+        <table id="score-table"></table>
       </div>
     </section>
-
-    <!-- Modal de Ranking Final -->
-    <div id="ranking-modal" class="modal hidden">
-      <div class="modal-content">
-        <span id="close-ranking" class="close">&times;</span>
-        <h2>Ranking Final</h2>
-        <ol id="ranking-list"></ol>
-      </div>
-    </div>
 
     <!-- Modal de Confirmação de Finalização de Partida -->
     <div id="finish-modal" class="modal hidden">
@@ -75,8 +62,10 @@
           <table id="finish-score-table"></table>
         </div>
         <p>Deseja realmente finalizar a partida ou continuar?</p>
-        <button id="continue-game">Continuar</button>
-        <button id="confirm-finish">Finalizar</button>
+        <div class="modal-content-buttons">
+          <button id="continue-game">Continuar</button>
+          <button id="confirm-finish">Finalizar</button>
+        </div>
       </div>
     </div>
 
