@@ -336,11 +336,19 @@ function renderFinishScoreTable() {
   const ranking = players
     .map((p, idx) => ({ nome: typeof p === 'string' ? p : p.nome || p, total: typeof p === 'object' ? p.total : 0 }))
     .sort((a, b) => b.total - a.total);
-  ranking.forEach((p, pos) => {
+  let pos = 1;
+  let lastScore = null;
+  let realPos = 1;
+  ranking.forEach((p, idx) => {
+    if (lastScore !== null && p.total < lastScore) {
+      realPos = pos;
+    }
     const tr = document.createElement('tr');
     const nomeCapitalizado = p.nome.charAt(0).toUpperCase() + p.nome.slice(1).toLowerCase();
-    tr.innerHTML = `<td style='font-weight:700;'>${pos + 1}º</td><td style='padding: 10px 18px;'>${nomeCapitalizado}</td><td class="total" style='padding: 10px 18px;'>${p.total}</td>`;
+    tr.innerHTML = `<td style='font-weight:700;'>${realPos}º</td><td style='padding: 10px 18px;'>${nomeCapitalizado}</td><td class="total" style='padding: 10px 18px;'>${p.total}</td>`;
     tbody.appendChild(tr);
+    lastScore = p.total;
+    pos++;
   });
   finishScoreTable.appendChild(tbody);
 }
@@ -353,7 +361,7 @@ confirmFinishBtn.onclick = function() {
   // Descobre o vencedor (maior pontuação) ANTES de zerar
   let max = Math.max(...players.map(p => p.total));
   let winners = players.filter(p => p.total === max);
-  let winnerNames = winners.length === 1 ? winners[0] : winners.join(', ');
+  let winnerNames = winners.map(w => w.nome.charAt(0).toUpperCase() + w.nome.slice(1).toLowerCase());
 
   // Limpa apenas rounds e pontuação, mantém jogadores
   rounds = [];
@@ -367,15 +375,8 @@ confirmFinishBtn.onclick = function() {
 };
 
 function showWinnerModal(winnerNames) {
-  // Se winnerNames for array ou objeto, extrai os nomes corretamente
-  let nomes = '';
-  if (Array.isArray(winnerNames)) {
-    nomes = winnerNames.map(w => typeof w === 'object' ? (w.nome.charAt(0).toUpperCase() + w.nome.slice(1).toLowerCase()) : w).join(', ');
-  } else if (typeof winnerNames === 'object' && winnerNames.nome) {
-    nomes = winnerNames.nome.charAt(0).toUpperCase() + winnerNames.nome.slice(1).toLowerCase();
-  } else {
-    nomes = winnerNames;
-  }
+  // winnerNames agora é sempre array de string
+  let nomes = Array.isArray(winnerNames) ? winnerNames.join(', ') : winnerNames;
   winnerName.textContent = nomes;
   winnerModal.classList.remove('hidden');
   startConfetti();
