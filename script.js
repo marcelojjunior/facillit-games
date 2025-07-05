@@ -31,6 +31,7 @@ let rounds = [];
 let currentRound = 1;
 let editingIndex = null;
 let selectedPoints = null;
+let bonusPoints = [];
 
 // --- Local Storage Helpers ---
 const STORAGE_KEY = 'mechemeche_data';
@@ -196,6 +197,9 @@ function renderScoreInputs() {
   if (!Array.isArray(selectedPoints) || selectedPoints.length !== players.length) {
     selectedPoints = Array(players.length).fill(null);
   }
+  if (!Array.isArray(bonusPoints) || bonusPoints.length !== players.length) {
+    bonusPoints = Array(players.length).fill(false);
+  }
   // Cria selects e listeners
   players.forEach((player, idx) => {
     const label = document.createElement('label');
@@ -204,6 +208,20 @@ function renderScoreInputs() {
     select.name = 'score-' + idx;
     select.dataset.playerIdx = idx;
     label.appendChild(select);
+
+    // Botão de bônus
+    const bonusBtn = document.createElement('button');
+    bonusBtn.type = 'button';
+    bonusBtn.className = 'bonus-btn';
+    bonusBtn.innerHTML = bonusPoints[idx] ? '★ +10' : '☆ +10';
+    bonusBtn.title = 'Marcar ponto adicional';
+    bonusBtn.style.marginLeft = '8px';
+    bonusBtn.onclick = () => {
+      bonusPoints[idx] = !bonusPoints[idx];
+      renderScoreInputs();
+    };
+    label.appendChild(bonusBtn);
+
     playersScoreInputs.appendChild(label);
   });
 
@@ -248,16 +266,12 @@ scoreForm.onsubmit = function(e) {
     // Regras de exclusividade: só pode pegar o próximo ponto disponível
     if (val && !available.includes(val)) val = null;
     if (val) {
-      scores.push({ playerIdx: i, points: val });
+      scores.push({ playerIdx: i, points: val, bonus: bonusPoints[i] ? 10 : 0 });
       usedPoints.push(val);
       // Remove pontos já pegos
       available = available.filter(p => p !== val);
-    }
-  }
-  // Preenche com null para quem não pegou ponto
-  for (let i = 0; i < players.length; i++) {
-    if (!scores.find(s => s.playerIdx === i)) {
-      scores.push({ playerIdx: i, points: null });
+    } else {
+      scores.push({ playerIdx: i, points: null, bonus: bonusPoints[i] ? 10 : 0 });
     }
   }
   // Salva rodada
@@ -267,10 +281,12 @@ scoreForm.onsubmit = function(e) {
     p.total = 0;
     for (let r of rounds) {
       if (r && r.scores[idx].points) p.total += r.scores[idx].points;
+      if (r && r.scores[idx].bonus) p.total += r.scores[idx].bonus;
     }
   });
   saveToStorage();
   currentRound++; // Avança para a próxima rodada
+  bonusPoints = Array(players.length).fill(false); // Reseta bônus para próxima rodada
   renderGame();
 };
 
@@ -295,11 +311,23 @@ function renderScoreTable() {
     let total = 0;
     for (let i = 0; i < rounds.length; i++) {
       let pts = null;
+      let bonus = null;
       if (i < rounds.length && rounds[i]?.scores[idx]) {
         pts = rounds[i].scores[idx].points;
+        bonus = rounds[i].scores[idx].bonus;
       }
-      tr.innerHTML += `<td>${pts ? pts : '-'}</td>`;
-      if (pts) total += pts;
+      let cell = '-';
+      if (pts !== null && pts !== undefined) {
+        cell = pts;
+        if (bonus && bonus > 0) {
+          cell += ` (+${bonus})`;
+        }
+        total += pts + (bonus || 0);
+      } else if (bonus && bonus > 0) {
+        cell = `(+${bonus})`;
+        total += bonus;
+      }
+      tr.innerHTML += `<td>${cell}</td>`;
     }
     tr.innerHTML += `<td class="total">${total}</td>`;
     tbody.appendChild(tr);
@@ -321,6 +349,7 @@ function renderFinishScoreTable() {
       p.total = 0;
       for (let r of rounds) {
         if (r && r.scores[idx].points) p.total += r.scores[idx].points;
+        if (r && r.scores[idx].bonus) p.total += r.scores[idx].bonus;
       }
     }
   });
