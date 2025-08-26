@@ -89,12 +89,12 @@ function renderPlayers() {
     playersList.appendChild(li);
   });
   startGameBtn.disabled = players.length < 2;
-  playerInput.disabled = players.length >= 5;
-  document.getElementById('add-player-btn').disabled = players.length >= 5;
+  playerInput.disabled = players.length >= 7;
+  document.getElementById('add-player-btn').disabled = players.length >= 7;
 }
 
 function addPlayer(name) {
-  if (!name.trim() || players.length >= 5) return;
+  if (!name.trim() || players.length >= 7) return;
   players.push({ nome: name.trim(), total: 0 });
   renderPlayers();
   playerInput.value = '';
