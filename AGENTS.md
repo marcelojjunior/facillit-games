@@ -158,6 +158,39 @@ Trocar qualquer camada exige emenda da constituição.
    minor). Nenhuma versão satisfaz as duas: declarar é a única forma de criar um
    aviso de peer insolúvel. O estado correto é `pnpm peers check` respondendo
    "No peer dependency issues found".
+10. **`gh auth status` mente em sessão de agente: ele diz "token is invalid"
+    quando o problema é `HOME`.** A sessão roda com `HOME` apontando para um
+    diretório temporário, e no macOS o keychain padrão é resolvido via
+    `$HOME/Library/Keychains/login.keychain-db`. Com `HOME` trocado,
+    `security list-keychains` devolve só `System.keychain`, o `login.keychain-db`
+    do usuário fica fora da lista, e **qualquer** consumidor de credencial falha:
+    o `gh` guarda o token no keyring (o `hosts.yml` não tem `oauth_token`, só o
+    nome do usuário) e, sem conseguir ler, reporta token inválido; o
+    `credential.helper = osxkeychain` do git não tem o que devolver e o `push`
+    morre em `could not read Username`. Isso **não** é o sandbox — falha igual
+    com e sem ele. O diagnóstico decisivo é `security default-keychain`: se
+    responder "A default keychain could not be found", é esta armadilha e o token
+    está bom. Prefixe o comando com o `HOME` do host, que o runtime já expõe:
+
+    ```sh
+    HOME="$PAPERCLIP_GITHUB_HOST_HOME" gh auth status
+    HOME="$PAPERCLIP_GITHUB_HOST_HOME" \
+      git -c credential.helper='!gh auth git-credential' push origin <branch>
+    ```
+
+    Use o helper por comando (`git -c`) em vez de `gh auth setup-git`, que
+    escreveria no `~/.gitconfig` global do usuário. Não conclua "não há
+    credencial nesta máquina" sem rodar `security default-keychain` primeiro.
+
+## Fluxo de branches
+
+- **`main` está congelada** com a POC publicada e só recebe algo no cutover da
+  Fase 6, quando a POC sai do ar no mesmo movimento. Não mergeie nem empurre
+  nada para ela antes disso.
+- **`develop` é a branch de integração** e existe no remoto em
+  `origin/develop`. As Fases 3 a 6 ramificam dela e voltam para ela.
+- `main` é ancestral direto de `develop`, então o merge do cutover é
+  fast-forward. Preserve essa propriedade: nada de commit direto na `main`.
 
 ## Versionado ou não
 
