@@ -1,0 +1,38 @@
+# === Node / pnpm ===
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+
+# === Astro ===
+.astro/
+dist/
+
+# === Vercel ===
+.vercel/
+
+# === Ambiente ===
+.env
+.env.*
+!.env.example
+
+# === Logs / SO ===
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+
+# === Coverage ===
+coverage/
+
+# === Agentes ===
+# Permissoes e configuracao locais de maquina. Pode conter caminhos absolutos
+# e credenciais. O restante de .claude/ (as skills do Spec Kit) É versionado
+# de proposito: e o que faz o processo existir em todo clone sem reinstalar.
+.claude/settings.local.json
+
+# === Spec Kit ===
+# .specify/ tem seu proprio .gitignore (mantido pelo CLI) cobrindo
+# feature.json, overrides locais e pacotes de integracao. Nao duplicar aqui.
+# O que falta e o cache do catalogo de extensoes, que e download, nao estado:
+.specify/extensions/.cache/
