@@ -159,33 +159,64 @@ configuração adicional por teste") pela construção, não por tentativa.
 
 ---
 
-## Decisão 5 — React 19 com `@astrojs/react@7.1.2`, e um peer que não é óbvio
+## Decisão 5 — React 19 com `@astrojs/react@7.1.2`, e um peer que NÃO deve ser declarado
+
+> **Corrigida durante a implementação.** A primeira versão desta decisão
+> mandava declarar `oxc-transform-react@^0.156.0` explicitamente, por dois
+> erros de leitura — ambos pegos pelo `pnpm install`. A correção está abaixo,
+> com o erro preservado, porque o erro é a parte instrutiva. O Princípio VIII
+> exige atualizar a spec no mesmo PR quando a realidade a contraria.
 
 **Decisão**: `@astrojs/react@7.1.2` + `react@19.3.1` + `react-dom@19.3.1` +
-`@types/react@19.3.0` + `@types/react-dom@19.3.0`, e `oxc-transform-react`
-declarado explicitamente.
+`@types/react@19.3.0` + `@types/react-dom@19.3.0`. **`oxc-transform-react`
+não é declarado.**
 
 **Rationale**: os peers de `@astrojs/react@7.1.2` são:
 
 ```
-react, react-dom:              ^17.0.2 || ^18.0.0 || ^19.0.0
+react, react-dom:               ^17.0.2 || ^18.0.0 || ^19.0.0
 @types/react, @types/react-dom: ^17.0.50 || ^18.0.21 || ^19.0.0
-oxc-transform-react:            ^0.145.0
+oxc-transform-react:            ^0.145.0   (optional: true)
 ```
 
-React 19 está dentro da faixa. O item que surpreende é
-`oxc-transform-react` — um peer de transformação JSX que não vem embutido.
-Latest é `0.156.0`, que satisfaz `^0.145.0`. Vou declará-lo como
-`devDependency` explícita em vez de confiar em resolução automática de peer:
-`auto-install-peers` é comportamento de gerenciador, e depender dele faz o
-`install` de um clone novo passar a depender de configuração de máquina — o que
-contraria FR-001 ("a partir de um clone limpo").
+React 19 está dentro da faixa. O item que chamou atenção foi
+`oxc-transform-react`, e os dois erros foram estes:
+
+**Erro 1 — `^` em versão `0.x` não faz o que parece.** A anotação original
+dizia que `0.156.0` satisfaz `^0.145.0`. Não satisfaz: para versões `0.x`, o
+caret trava a **minor**, então `^0.145.0` significa `>=0.145.0 <0.146.0` — uma
+única versão. Declarar `0.156.0` criou aviso de peer imediatamente.
+
+**Erro 2 — e não há versão que resolva.** Ao investigar o aviso, apareceu um
+conflito mais fundo: `@astrojs/react@7.1.2` depende de
+`@vitejs/plugin-react@^6.1.2`, cujo peer é `oxc-transform-react: ^0.152.0`
+(`>=0.152.0 <0.153.0`). As duas faixas são **disjuntas** — `^0.145.0` e
+`^0.152.0` não têm interseção. Nenhuma versão única satisfaz as duas. É
+inconsistência do upstream: `@astrojs/react` declara um peer uma minor atrás do
+que sua própria dependência exige.
+
+**A saída é não declarar.** Os dois declarantes marcam
+`peerDependenciesMeta: { 'oxc-transform-react': { optional: true } }`. O peer é
+opcional em ambos: nada o exige, o build funciona sem ele, e declará-lo era a
+única forma de *criar* um aviso insolúvel. Depois de remover,
+`pnpm peers check` responde "No peer dependency issues found", e `pnpm build`,
+`pnpm test` e `pnpm typecheck` passam.
+
+**A lição que vale para as fases seguintes**: a tentação aqui foi ser
+caprichoso — "declarar o peer explicitamente é mais rigoroso que confiar em
+`auto-install-peers`". O raciocínio soava bem e estava errado em duas camadas.
+Ler `peerDependenciesMeta` antes de declarar qualquer peer custa uma consulta e
+evita as duas.
 
 **Alternatives considered**:
 
-- **Deixar o peer para o `auto-install-peers` do pnpm** — rejeitado pelo motivo
-  acima. Se o comportamento default mudar, ou se alguém tiver um `.npmrc`
-  diferente, o build quebra num lugar que não parece ter mudado.
+- **Declarar `oxc-transform-react@0.145.0`** (satisfazendo `@astrojs/react`) —
+  rejeitado. Deixa `@vitejs/plugin-react`, que é quem de fato usa a transformação
+  de JSX, com peer insatisfeito. Resolveria a declaração e não a realidade.
+- **Declarar `oxc-transform-react@0.152.0`** (satisfazendo
+  `@vitejs/plugin-react`) — rejeitado pelo espelho do anterior: apaga o aviso
+  que importa e mantém o outro. Qualquer escolha aqui deixa um aviso permanente
+  no `install` de um peer que ninguém precisa.
 - **Preact em vez de React** — rejeitado. Seria mais leve e tentador para um
   app mobile-first, mas a constituição fixa React em `Additional Constraints`.
   Trocar exige emenda, e não há motivo técnico nesta fase para propor uma.
@@ -270,7 +301,8 @@ Esse teste também é o que faz `pnpm test` ser mais que trivial, atendendo FR-0
 | `@astrojs/check` | 0.9.12 | 0.9.12 | — |
 | `react` / `react-dom` | 19.3.1 | 19.3.1 | — |
 | `@types/react` / `-dom` | 19.3.0 | 19.3.0 | — |
-| `oxc-transform-react` | 0.156.0 | 0.156.0 | peer explícito de `@astrojs/react` |
+| `oxc-transform-react` | 0.156.0 | **não instalado** | peer `optional` com faixas disjuntas no upstream (Decisão 5) |
+| `@types/node` | 26.6.6 | 24.19.2 | achado na implementação; ver abaixo |
 | `tailwindcss` | 4.3.3 | 4.3.3 | — |
 | `@tailwindcss/vite` | 4.3.3 | 4.3.3 | substitui `@astrojs/tailwind` (Decisão 2) |
 | `typescript` | **7.0.2** | **6.0.3** | teto de `@astrojs/check` e `typescript-eslint` (Decisão 1) |
@@ -287,20 +319,73 @@ incompatíveis em duas dimensões (Decisão 2).
 
 ---
 
-## Unknowns remanescentes
+## Unknowns — resolvidos na implementação
 
 Nenhum `NEEDS CLARIFICATION` da Technical Context ficou aberto.
 
-Duas incertezas de execução ficam registradas como risco, não como bloqueio.
-Ambas são verificadas pelo próprio `pnpm install` e `pnpm build` da fase — ou
-seja, a fase falha ruidosamente se eu errei, em vez de passar escondendo:
+As duas incertezas de execução registradas na Fase 0 foram resolvidas. Ficam
+aqui com o resultado real, não com a pergunta — deixá-las "em aberto" depois de
+respondidas faria a próxima pessoa repetir a investigação.
 
-1. **`eslint-plugin-astro@3.2.1` pede dois plugins de a11y** como peer
-   (`eslint-plugin-jsx-a11y` **e** `eslint-plugin-jsx-a11y-x`). Declarar os dois
-   parece redundante. Vou declarar o que o `install` exigir e registrar o
-   resultado no plano, em vez de adivinhar agora.
-2. **`astro check` com TS 6.0.3** é a combinação declarada como suportada pelo
-   peer, mas peer satisfeito não é o mesmo que testado. Se `astro check` falhar
-   por motivo de versão, a resposta registrada é descer para `typescript@5.9.x`
-   (ainda dentro de ambos os peers) — e **não** relaxar `strict`, que seria
-   violação do Princípio V.
+1. **Peers de a11y de `eslint-plugin-astro@3.2.1`** — ✅ **nada a declarar.**
+   O `pnpm install` não exigiu `eslint-plugin-jsx-a11y` nem
+   `eslint-plugin-jsx-a11y-x`, e `pnpm peers check` responde "No peer dependency
+   issues found". A redundância aparente nos peers declarados não se traduz em
+   exigência de instalação. O palpite de declarar os dois teria adicionado duas
+   dependências desnecessárias.
+
+2. **`astro check` com `typescript@6.0.3`** — ✅ **funciona.** `pnpm typecheck`
+   roda e reporta `Result (8 files): 0 errors, 0 warnings, 0 hints`. O plano de
+   contingência (descer para `typescript@5.9.x`) **não** foi necessário e fica
+   registrado apenas como resposta pré-aprovada caso uma atualização futura
+   quebre a combinação. Em nenhuma hipótese relaxar `strict` — seria violação do
+   Princípio V.
+
+---
+
+## Achados da implementação (não previstos na Fase 0)
+
+Cinco coisas que só apareceram ao rodar os comandos. Registradas porque todas
+custariam tempo a quem repetisse o caminho.
+
+1. **`@types/node` é necessário e não vem por transitividade.** Os testes usam
+   `node:fs` e `node:url`; sem `@types/node`, `astro check` reprova com
+   `ts(2591)`. Adotado `24.19.2` (linha `^24`) em vez do `latest` `26.6.6`, para
+   casar com o Node 24 do ambiente — tipos de uma major à frente do runtime
+   descrevem APIs que não existem na execução.
+
+2. **`getViteConfig` não tipa a chave `test`.** Ele devolve `UserConfig` do
+   Vite, que não conhece `test`, e o typecheck reprova com `ts(2353)`. A correção
+   é `/// <reference types="vitest/config" />` no topo de `vitest.config.ts`.
+   Isso não enfraquece a Decisão 4 — o helper continua sendo o jeito certo de
+   herdar a resolução de módulos; só precisa da referência de tipos.
+
+3. **`tseslint.config()` está deprecated em `typescript-eslint@8.72.1`.** Usá-la
+   faz `astro check` reportar um hint `ts(6387)` em todo typecheck. A substituta
+   é `defineConfig` de `eslint/config`, que o ESLint 10 já fornece. Com ela o
+   typecheck fica em `0 hints`.
+
+4. **Regras de lint com tipos vazam para os `.astro` e derrubam o `pnpm lint`.**
+   Espalhar `...tseslint.configs.recommendedTypeChecked` na raiz da flat config
+   faz as regras tipadas alcançarem arquivos `.astro`, que usam
+   `astro-eslint-parser`. Esse parser não repassa `parserOptions.project` ao
+   `@typescript-eslint/parser`, e o ESLint morre com erro de infraestrutura
+   (`exit 2`, "you have used a rule which requires type information") em vez de
+   apontar defeito de código. A correção é escopar o preset tipado dentro de um
+   bloco `files: ['**/*.{ts,tsx}']` com `extends`, e deixar
+   `astro.configs.recommended` cuidar dos `.astro` sem tipos.
+
+5. **`pnpm format` alcança bem mais do que código, e isso é nocivo aqui.** Na
+   primeira execução, o Prettier reescreveu 15 arquivos de documentação —
+   incluindo `.claude/skills/speckit-*/SKILL.md` com o *quoting* do frontmatter
+   YAML, e as tabelas de `AGENTS.md` esticadas para mais de 100 colunas. Os
+   arquivos do Spec Kit são mantidos pelo CLI fixado em 1.2.5, e a constituição
+   exige poder revisar o diff do `init`; reformatá-los torna esse diff ilegível.
+   Decisão: `.prettierignore` passa a excluir `*.md`, `.specify/` e `.claude/`
+   — **o Prettier formata código neste repositório, não prosa.** Quebra de linha
+   em documentação é decisão de quem escreve.
+
+   Vale notar o que *não* aconteceu: a POC (`index.html`, `script.js`,
+   `style.css`) saiu intacta da primeira execução, com hash idêntico. As três
+   linhas de exclusão previstas em FR-016 funcionaram. O vazamento foi em
+   arquivos que a Fase 0 não tinha pensado em proteger.

@@ -227,7 +227,8 @@ TypeScript depende de uma condição externa que alguém precisa poder reencontr
 |---|---|---|
 | `typescript@6.0.3` em vez de `7.0.2` (`latest`) | `@astrojs/check` aceita `^5 \|\| ^6`; `typescript-eslint@8.72.1` aceita `>=4.8.4 <6.1.0`. A interseção é `6.0.x`. | Pegar `7.0.2` entregaria uma fundação em que `pnpm typecheck` e o lint com tipos não rodam — o oposto do objetivo da fase. Desbloqueio: `@astrojs/check` e `typescript-eslint` liberarem o peer de TS 7. |
 | `@tailwindcss/vite` em vez de `@astrojs/tailwind` | `@astrojs/tailwind@6.0.2` declara `astro: ^3\|\|^4\|\|^5` e `tailwindcss: ^3.0.24` — incompatível em duas dimensões com Astro 7 + Tailwind 4. | Segurar Tailwind em v3 para usar a integração "oficial" ainda não fecharia o peer de `astro`, e nasceria uma major atrasado no arquivo que a Fase 4 mais vai editar. |
-| `oxc-transform-react` declarado explicitamente | É peer de `@astrojs/react@7.1.2` e não vem embutido. | Confiar no `auto-install-peers` do pnpm faz o `install` de um clone limpo depender de configuração de máquina, contrariando FR-001. |
+| `oxc-transform-react` **não** declarado (correção do plano original) | É peer `optional: true` em `@astrojs/react` e em `@vitejs/plugin-react`, com faixas **disjuntas** (`^0.145.0` vs `^0.152.0`). Nenhuma versão satisfaz as duas. | Declará-lo — que era o plano original, por parecer mais rigoroso — cria um aviso de peer insolúvel no `install` de um pacote que ninguém exige. Corrigido na implementação; ver [research.md, Decisão 5](./research.md). |
+| `@types/node@^24` em vez do `latest` `^26` | Os testes usam `node:fs`/`node:url`; sem os tipos, `astro check` reprova com `ts(2591)`. | A linha `^26` descreveria APIs de um runtime à frente do Node 24 do ambiente. |
 
 ### Trabalho além do mínimo pedido
 

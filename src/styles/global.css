@@ -1,0 +1,8 @@
+/*
+ * Tailwind 4 nao usa tailwind.config.js. A configuracao mora aqui, em CSS.
+ *
+ * Fase 4 (design system) e quem define os tokens, via @theme. Esta fase nao
+ * declara nenhum token de produto de proposito: seria palpite sobre uma spec
+ * que ainda nao existe.
+ */
+@import 'tailwindcss';

@@ -120,12 +120,44 @@ Trocar qualquer camada exige emenda da constituição.
    Toda tela com estado de partida tem que ser ilha `client:only`. Com
    `client:load` dá hydration mismatch e flash de tela vazia a cada abertura —
    que é o uso normal (celular na mesa, aba descartada pelo navegador).
+   `tests/static-build.test.ts` guarda isso: roda contra o HTML construído e
+   falha se a ilha renderizar no build. Quando a primeira tela real de partida
+   existir, **reaponte** esse teste para ela em vez de removê-lo.
 2. **Empate é caso normal.** `resolveWinners` retorna lista, não um jogador.
 3. **Grave a cada mutação.** Partida em andamento se identifica por campo
    `status` explícito, nunca inferida da quantidade de rodadas.
 4. **A POC está congelada.** `index.html`, `script.js` e `style.css` são a POC
    original, publicada e no ar até o cutover. Não corrija bug novo nela; os
    bugs conhecidos são critério de aceite da reescrita.
+5. **O `tsconfig` do Astro arrastaria a POC para o typecheck.** O preset
+   `astro/tsconfigs/base` traz `allowJs: true` com
+   `include: ["${configDir}/**/*"]`. Sem o `exclude` explícito de `script.js`,
+   `index.html` e `style.css`, o `script.js` entra no programa do TypeScript e
+   `pnpm typecheck` passa a reprovar por erros num arquivo que a armadilha 4
+   proíbe corrigir — o comando só passaria violando o congelamento. As mesmas
+   três exclusões existem em `eslint.config.js` e `.prettierignore`; a do
+   Prettier é a mais crítica, porque `pnpm format` **escreve**. Não remova
+   nenhuma das três sem ler
+   [`specs/001-astro-foundation/research.md`](specs/001-astro-foundation/research.md).
+6. **Prettier formata código, não prosa.** `*.md`, `.specify/` e `.claude/`
+   estão em `.prettierignore`. Sem isso, `pnpm format` reescreve o frontmatter
+   YAML das skills do Spec Kit e estica as tabelas deste arquivo para além de
+   100 colunas — e o diff do `init` do CLI, que a constituição exige poder
+   revisar, fica ilegível.
+7. **Não suba o TypeScript para a linha 7.** `latest` é `7.0.2`, mas
+   `@astrojs/check` aceita `^5 || ^6` e `typescript-eslint` aceita `<6.1.0`. A
+   interseção é `6.0.x`. Um `pnpm update` descuidado quebra `pnpm typecheck` e o
+   lint com tipos. Condição para subir: as duas ferramentas liberarem o peer.
+8. **Não existe `tailwind.config.js`, e `@astrojs/tailwind` não serve.**
+   Tailwind 4 configura por CSS (`@theme`, em `src/styles/global.css`). A
+   integração `@astrojs/tailwind` declara `astro: ^3||^4||^5` e
+   `tailwindcss: ^3.0.24` — incompatível em duas dimensões com a stack atual.
+9. **Não declare `oxc-transform-react`.** Parece ser um peer faltante de
+   `@astrojs/react`, mas é `optional: true` nele e em `@vitejs/plugin-react`,
+   com faixas **disjuntas** (`^0.145.0` vs `^0.152.0` — em `0.x` o caret trava a
+   minor). Nenhuma versão satisfaz as duas: declarar é a única forma de criar um
+   aviso de peer insolúvel. O estado correto é `pnpm peers check` respondendo
+   "No peer dependency issues found".
 
 ## Versionado ou não
 

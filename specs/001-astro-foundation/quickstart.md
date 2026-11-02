@@ -29,9 +29,14 @@ pnpm install
 **Esperado**: termina com sucesso, usando `pnpm-lock.yaml`. Não pede
 configuração nem variável de ambiente.
 
-> Se aparecer aviso de peer não satisfeito, não ignore: `@astrojs/react` tem um
-> peer não óbvio (`oxc-transform-react`) que deve estar declarado
-> explicitamente. Ver [research.md, Decisão 5](./research.md).
+Confirme também com `pnpm peers check`: a resposta esperada é **"No peer
+dependency issues found"**.
+
+> Se aparecer aviso sobre `oxc-transform-react`, alguém o declarou como
+> dependência. Remova. É peer `optional` em `@astrojs/react` e em
+> `@vitejs/plugin-react`, com faixas **disjuntas** — nenhuma versão satisfaz as
+> duas, e declará-lo é a única forma de criar o aviso. Ver
+> [research.md, Decisão 5](./research.md).
 
 ### 2. Gerar o artefato estático → SC-001, FR-002
 
@@ -109,11 +114,17 @@ pnpm format && git status --porcelain -- index.html script.js style.css
 ### 7. Confirmar o escopo negativo → SC-008, FR-018
 
 ```sh
-grep -rniE 'localStorage|schemaVersion|GameDefinition|meche' src/ tests/ dist/
+grep -rniE 'localStorage|schemaVersion|GameDefinition|meche' dist/
 ```
 
 **Esperado**: saída vazia. Esta fase não antecipa o contrato de jogo, o schema
 persistido nem nenhum jogo por nome.
+
+> A busca é no **artefato** (`dist/`), não em `src/` e `tests/`. Estes dois
+> mencionam os termos em comentários e na própria asserção que exige a ausência
+> deles (`tests/static-build.test.ts`) — grep ali retorna falso positivo. O que
+> SC-008 quer dizer é que nada disso chega ao navegador, e é isso que `dist/`
+> responde. O mesmo teste faz essa verificação automaticamente.
 
 ## Parte 2 — os comandos reprovam
 

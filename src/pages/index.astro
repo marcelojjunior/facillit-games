@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ClientOnlyProbe from '../components/ClientOnlyProbe';
+---
+
+<BaseLayout title="Facillit Games — fundacao">
+  <main class="mx-auto max-w-prose px-4 py-10">
+    <h1 class="text-2xl font-semibold">Facillit Games</h1>
+
+    <p class="mt-4 text-sm leading-relaxed">
+      Fundacao tecnica da plataforma. Esta pagina existe para provar que o pipeline de build
+      estatico funciona e e descartada na Fase 4, junto com o design system e as telas reais.
+    </p>
+
+    <p class="mt-4 text-sm leading-relaxed">
+      Nao ha jogo, cadastro de jogadores nem marcador de pontuacao aqui — por escopo, nao por falta.
+    </p>
+
+    <!--
+      client:only, NAO client:load.
+
+      Com client:load o componente renderiza no build, onde a API de navegador
+      que ele le nao existe: da hydration mismatch e flash de tela vazia a cada
+      abertura -- que e o uso normal do app (celular na mesa, aba descartada
+      pelo navegador). Principio IV da constituicao.
+
+      tests/static-build.test.ts afirma que a marcacao desta ilha NAO aparece em
+      dist/index.html. Trocar a diretiva aqui faz esse teste falhar, o que e o
+      ponto: sem ele, a troca passaria silenciosa.
+    -->
+    <ClientOnlyProbe client:only="react" />
+  </main>
+</BaseLayout>
