@@ -1,4 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -76,6 +77,26 @@ describe('static artifact', () => {
     const html = readFileSync(indexHtmlPath, 'utf8');
 
     expect(html).not.toMatch(/localStorage|schemaVersion|GameDefinition/i);
+  });
+});
+
+describe('no test game in the artifact (SC-006, FR-025)', () => {
+  // The fixture games of spec 002 live in tests/ and must never be bundled.
+  // Checks every emitted file, not just index.html.
+  const fixtureMarkers = ['highest-wins', 'lowest-wins', 'Maior Vence', 'Menor Vence'];
+
+  it('no file under dist/ mentions a fixture game', () => {
+    const distDir = `${repoRoot}dist`;
+    const files = readdirSync(distDir, { recursive: true, encoding: 'utf8' })
+      .map((entry) => join(distDir, entry))
+      .filter((path) => /\.(html|js|mjs|css|json|txt)$/.test(path));
+
+    expect(files.length).toBeGreaterThan(0);
+    const leaks = files.filter((path) => {
+      const content = readFileSync(path, 'utf8');
+      return fixtureMarkers.some((marker) => content.includes(marker));
+    });
+    expect(leaks).toEqual([]);
   });
 });
 

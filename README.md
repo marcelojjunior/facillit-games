@@ -17,10 +17,13 @@ The rewrite is in progress. Two sets of files coexist at the root:
 | | What it is |
 |---|---|
 | `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
-| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation delivered; no game screens yet. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, registry, and persisted match store delivered; no game screens yet. |
 
 The foundation is specified in
-[`specs/001-astro-foundation/`](specs/001-astro-foundation/).
+[`specs/001-astro-foundation/`](specs/001-astro-foundation/), and the game
+contract and match store in
+[`specs/002-game-contract/`](specs/002-game-contract/). To add a game, read
+[`contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
 
 ## Requirements
 

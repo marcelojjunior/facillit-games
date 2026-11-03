@@ -238,6 +238,22 @@ Changing any layer requires a constitution amendment.
     credential on this machine" without running `security default-keychain`
     first.
 
+11. **Adding a game touches only its folder and the registry.** Create
+    `src/games/<id>/` with `index.ts` (calling `defineGame`), `rules.ts`, and
+    `rules.test.ts` (normal, edge, and tie case for each of the four rule
+    functions), then add one import and one array entry in
+    `src/games/registry.ts`. Nothing else. `tests/shell-boundary.test.ts` fails
+    if any file under `src/` outside `src/games/` imports a game folder or
+    compares or switches on a game id, and checks that each game's `id` equals
+    its folder name. Contract:
+    [`specs/002-game-contract/contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
+12. **Create the match store only inside a `client:only` island.**
+    `createMatchStore` reads storage once, at creation, and listens to the
+    browser's `storage` event to follow other tabs. Call `dispose()` when the
+    island unmounts. It never throws on bad stored data: it starts empty and
+    exposes `getDiscardNotice()` for the screen to show once. Contract:
+    [`specs/002-game-contract/contracts/match-store.md`](specs/002-game-contract/contracts/match-store.md).
+
 ## Versioned or not
 
 - **In git:** `.specify/` (constitution, templates, scripts, extension

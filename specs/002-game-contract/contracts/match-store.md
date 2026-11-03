@@ -9,13 +9,18 @@ Entities and transitions: [data-model.md](../data-model.md).
 // src/shell/match/store.ts
 createMatchStore(options: {
   registry: Registry;
-  storage?: StorageLike;        // default: browser localStorage, safely accessed
+  storage?: StorageLike | null; // default: browser localStorage, safely accessed; null = none
   createId?: () => string;      // default: crypto.randomUUID
-  events?: Pick<Window, 'addEventListener' | 'removeEventListener'>;
-                                // default: window, if present (tab sync)
+  events?: StorageEventSource;  // default: window, if present (tab sync)
 }): MatchStore
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
+// The part of `window` the store uses; `window` satisfies it.
+interface StorageEventSource {
+  addEventListener(type: 'storage', listener: (event: StorageEvent) => void): void;
+  removeEventListener(type: 'storage', listener: (event: StorageEvent) => void): void;
+}
 ```
 
 Creating the store reads storage once and applies the load validation of
