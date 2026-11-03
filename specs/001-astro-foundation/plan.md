@@ -1,140 +1,140 @@
-# Implementation Plan: Fundação técnica e pipeline estático
+# Implementation Plan: Technical foundation and static pipeline
 
 **Branch**: `astro` | **Date**: 2026-11-02 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `/specs/001-astro-foundation/spec.md`
 
-**Issue**: MJR-9 (Fase 2 do plano de reestruturação, MJR-8 rev. 2)
+**Issue**: MJR-9 (Phase 2 of the restructuring plan, MJR-8 rev. 2)
 
 ## Summary
 
-Entregar a casca vazia da aplicação e o pipeline de build estático, sem nenhuma
-tela de jogo: Astro 7 com `output: 'static'`, TypeScript em modo estrito,
-Tailwind 4 via plugin de Vite, React 19 habilitado para ilhas, Vitest rodando, e
-lint/format/typecheck configurados — tudo convivendo na mesma árvore que a POC
-congelada, sem tocá-la.
+Deliver the application's empty shell and the static build pipeline, with no
+game screen at all: Astro 7 with `output: 'static'`, TypeScript in strict mode,
+Tailwind 4 via the Vite plugin, React 19 enabled for islands, Vitest running, and
+lint/format/typecheck configured — all coexisting in the same tree as the frozen
+POC, without touching it.
 
-A abordagem técnica saiu da [pesquisa de Fase 0](./research.md), que mudou três
-escolhas em relação ao caminho "instalar o latest de tudo":
+The technical approach came out of the [Phase 0 research](./research.md), which changed three
+choices relative to the "install the latest of everything" path:
 
-1. **TypeScript fica em `6.0.3`, não `7.0.2`.** `@astrojs/check` aceita
-   `^5 || ^6` e `typescript-eslint` aceita `<6.1.0`; a interseção é `6.0.x`.
-   Pegar o `latest` entregaria uma fundação cujo comando de typecheck não roda.
-2. **`@astrojs/tailwind` está fora.** Sua última versão tem peers incompatíveis
-   em duas dimensões ao mesmo tempo (`astro: ^3||^4||^5` e `tailwindcss: ^3`).
-   Tailwind entra por `@tailwindcss/vite`, e **não existe `tailwind.config.js`**
-   neste projeto.
-3. **O `tsconfig` precisa excluir a POC explicitamente.** O preset
-   `astro/tsconfigs/base` traz `allowJs: true` com `include: ["**/*"]`, o que
-   arrasta `script.js` (16 KB de JS sem tipagem) para dentro do programa do
-   TypeScript. Sem `exclude`, `astro check` só passaria corrigindo a POC — que a
-   constituição proíbe.
+1. **TypeScript stays at `6.0.3`, not `7.0.2`.** `@astrojs/check` accepts
+   `^5 || ^6` and `typescript-eslint` accepts `<6.1.0`; the intersection is `6.0.x`.
+   Taking `latest` would deliver a foundation whose typecheck command does not run.
+2. **`@astrojs/tailwind` is out.** Its latest version has peers incompatible
+   in two dimensions at once (`astro: ^3||^4||^5` and `tailwindcss: ^3`).
+   Tailwind comes in through `@tailwindcss/vite`, and **there is no `tailwind.config.js`**
+   in this project.
+3. **The `tsconfig` must explicitly exclude the POC.** The
+   `astro/tsconfigs/base` preset brings `allowJs: true` with `include: ["**/*"]`, which
+   drags `script.js` (16 KB of untyped JS) into the TypeScript
+   program. Without `exclude`, `astro check` would only pass by fixing the POC — which the
+   constitution forbids.
 
-A entrega vai além do mínimo em um ponto deliberado: a prova de ilha
-`client:only` é **um teste automatizado** que roda o build e afirma que a
-marcação da ilha não está no HTML gerado, não apenas um componente de exemplo.
-Isso transforma o Princípio IV de princípio escrito em princípio que falha no
-CI, e é a única defesa real contra alguém trocar `client:only` por `client:load`
-na Fase 5 — que é o erro mais provável, porque `client:load` é o default de todo
+The delivery goes beyond the minimum on one deliberate point: the `client:only`
+island proof is **an automated test** that runs the build and asserts that the
+island's markup is not in the generated HTML, not just a sample component.
+This turns Principle IV from a written principle into a principle that fails in
+CI, and it is the only real defense against someone swapping `client:only` for `client:load`
+in Phase 5 — which is the most likely mistake, because `client:load` is the default in every
 tutorial.
 
 ## Technical Context
 
-**Language/Version**: TypeScript `6.0.3` (teto compatível — ver
-[research.md, Decisão 1](./research.md)), em modo `astro/tsconfigs/strictest`
+**Language/Version**: TypeScript `6.0.3` (compatible ceiling — see
+[research.md, Decision 1](./research.md)), in `astro/tsconfigs/strictest` mode
 
 **Primary Dependencies**: Astro `7.4.4` (`output: 'static'`),
 `@astrojs/react@7.1.2` + React `19.3.1`, `tailwindcss@4.3.3` via
 `@tailwindcss/vite@4.3.3`, `@astrojs/check@0.9.12`
 
-**Storage**: nenhum nesta fase. A aplicação não lê nem escreve `localStorage`
-(FR-018). O schema persistido é escopo da Fase 3.
+**Storage**: none in this phase. The application neither reads nor writes `localStorage`
+(FR-018). The persisted schema is Phase 3 scope.
 
-**Testing**: Vitest `5.0.5`, configurado por `getViteConfig` de `astro/config`;
-ambiente padrão `node` (não `jsdom` — ver [research.md, Decisão 4](./research.md))
+**Testing**: Vitest `5.0.5`, configured via `getViteConfig` from `astro/config`;
+default environment `node` (not `jsdom` — see [research.md, Decision 4](./research.md))
 
-**Target Platform**: navegadores modernos, mobile-first; artefato estático
-servido por CDN. Sem runtime de servidor.
+**Target Platform**: modern browsers, mobile-first; static artifact
+served by a CDN. No server runtime.
 
-**Project Type**: aplicação web estática (single project)
+**Project Type**: static web application (single project)
 
-**Performance Goals**: não há meta numérica nesta fase — não existe tela de
-produto para medir. A meta estrutural é que o artefato não exija nenhuma
-execução no servidor, o que mantém o custo de resposta no CDN.
+**Performance Goals**: there is no numeric goal in this phase — there is no product
+screen to measure. The structural goal is that the artifact require no
+server-side execution, which keeps the response cost on the CDN.
 
-**Constraints**: zero backend, zero variável de ambiente, zero credencial
-(Princípio I). Piso de Node `>=22.23.4` (exigência real de `astro@7.4.4`); pnpm
-fixado via `packageManager`.
+**Constraints**: zero backend, zero environment variables, zero credentials
+(Principle I). Node floor `>=22.23.4` (a real requirement of `astro@7.4.4`); pnpm
+pinned via `packageManager`.
 
-**Scale/Scope**: uma página inicial descartável, uma ilha de prova, um conjunto
-de scripts de pipeline. Zero telas de produto, zero jogos.
+**Scale/Scope**: one disposable home page, one proof island, one set
+of pipeline scripts. Zero product screens, zero games.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Constituição avaliada: `.specify/memory/constitution.md` v1.0.0 (ratificada
+Constitution evaluated: `.specify/memory/constitution.md` v1.0.0 (ratified
 2026-11-02).
 
-### Avaliação pré-Fase 0
+### Pre-Phase 0 evaluation
 
-| Princípio | Aplica-se? | Veredito | Como esta fase atende |
+| Principle | Applies? | Verdict | How this phase complies |
 |---|---|---|---|
-| **I — Client-Side Puro** *(NON-NEGOTIABLE)* | sim | **PASS** | `output: 'static'`, sem adapter, sem função de servidor. FR-002/FR-003 proíbem variável de ambiente e serviço externo. Verificação do princípio (`grep` por `fetch(`) é trivialmente satisfeita: não há nenhuma chamada de rede. |
-| **II — Jogo é Plugin** *(NON-NEGOTIABLE)* | **não ainda** | **N/A — e protegido** | Não há jogo, registry nem `src/games/` nesta fase; o contrato é Fase 3. O risco real é a casca nascer com um gancho a um jogo específico. FR-005 e FR-018 o proíbem como requisito verificável, e SC-008 manda buscar por nome de jogo no artefato. |
-| **III — Regra de Pontuação Pura e Testada** *(NON-NEGOTIABLE)* | **não ainda** | **N/A — e habilitado** | Nenhuma regra existe. A obrigação desta fase é não deixar a Fase 3 começar sem corredor de testes: FR-008/FR-009/FR-010. A escolha de ambiente `node` (não `jsdom`) é deliberada para que uma regra que toque DOM **falhe** no teste em vez de passar. |
-| **IV — Estado de Partida é Ilha `client:only`** | sim | **PASS — com reforço** | Não há estado nesta fase, então o princípio não poderia ser violado. Mas a configuração poderia inviabilizá-lo. FR-011/FR-012 exigem a prova, e a Decisão 7 da pesquisa a eleva a teste automatizado contra o HTML construído. |
-| **V — TypeScript `strict`** | sim | **PASS — acima do mínimo** | `astro/tsconfigs/strictest`, que é superset de `strict: true`, adicionando `noUncheckedIndexedAccess` e `exactOptionalPropertyTypes`. FR-007 proíbe relaxar por arquivo ou por diretiva. Zero `any` e zero `@ts-ignore` na entrega. |
-| **VI — Mobile-First** | **parcialmente** | **PASS por não comprometer** | Não há tela de produto, logo não há layout a projetar nem alvo de toque a medir. O que esta fase deve é não impedir: a página inicial declara `viewport` correto e o CSS global não fixa largura mínima. Dark mode e tokens são Fase 4. **Esta fase não reivindica atendimento ao princípio** — só não cria obstáculo. |
-| **VII — Schema Persistido é Versionado** | **não ainda** | **N/A** | Nada é persistido (FR-018). O princípio passa a valer na Fase 3. Esta fase não escreve nenhuma chave em `localStorage`, nem de teste. |
-| **VIII — Spec Antes de Código** *(NON-NEGOTIABLE)* | sim | **PASS** | `specs/001-astro-foundation/spec.md` foi commitado em `61cc74a`, **antes** de qualquer linha de implementação. O ciclo foi rodado de verdade: `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`. |
+| **I — Pure Client-Side** *(NON-NEGOTIABLE)* | yes | **PASS** | `output: 'static'`, no adapter, no server function. FR-002/FR-003 forbid environment variables and external services. The principle's verification (`grep` for `fetch(`) is trivially satisfied: there is no network call at all. |
+| **II — A Game Is a Plugin** *(NON-NEGOTIABLE)* | **not yet** | **N/A — and protected** | There is no game, registry or `src/games/` in this phase; the contract is Phase 3. The real risk is the shell being born with a hook to a specific game. FR-005 and FR-018 forbid it as a verifiable requirement, and SC-008 mandates searching the artifact for game names. |
+| **III — A Scoring Rule Is a Pure, Tested Function** *(NON-NEGOTIABLE)* | **not yet** | **N/A — and enabled** | No rule exists. This phase's obligation is to not let Phase 3 start without a test runner: FR-008/FR-009/FR-010. The choice of the `node` environment (not `jsdom`) is deliberate so that a rule that touches the DOM **fails** the test instead of passing. |
+| **IV — Match State Is a `client:only` Island** | yes | **PASS — with reinforcement** | There is no state in this phase, so the principle could not be violated. But the configuration could make it unworkable. FR-011/FR-012 require the proof, and Decision 7 of the research elevates it to an automated test against the built HTML. |
+| **V — TypeScript `strict`** | yes | **PASS — above the minimum** | `astro/tsconfigs/strictest`, which is a superset of `strict: true`, adding `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`. FR-007 forbids relaxing per file or per directive. Zero `any` and zero `@ts-ignore` in the delivery. |
+| **VI — Mobile-First** | **partially** | **PASS by not compromising** | There is no product screen, so there is no layout to design nor touch target to measure. What this phase owes is not to get in the way: the home page declares a correct `viewport` and the global CSS does not fix a minimum width. Dark mode and tokens are Phase 4. **This phase does not claim compliance with the principle** — it only creates no obstacle. |
+| **VII — The Persisted Schema Is Versioned** | **not yet** | **N/A** | Nothing is persisted (FR-018). The principle starts to apply in Phase 3. This phase writes no key to `localStorage`, not even a test one. |
+| **VIII — Spec Before Code** *(NON-NEGOTIABLE)* | yes | **PASS** | `specs/001-astro-foundation/spec.md` was committed in `61cc74a`, **before** any line of implementation. The cycle was actually run: `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`. |
 
-### Gates de Development Workflow
+### Development Workflow Gates
 
-| Gate | Veredito | Observação |
+| Gate | Verdict | Note |
 |---|---|---|
-| **Gate de spec** | **PASS** | `spec.md` commitado em `61cc74a` antes da implementação. A issue MJR-9 cita o caminho da spec no relato. |
-| **Gate de teste** | **N/A** | Nenhuma regra de pontuação criada ou alterada. O gate passa a morder na Fase 3. |
-| **Gate de constituição** | **PASS** | Esta seção está preenchida. Ver Complexity Tracking abaixo. |
-| **Branches** | **PASS** | Trabalho em branch `astro`, derivada de `chore/spec-kit` (ver nota abaixo). POC intocada — FR-016 e SC-006. |
+| **Spec gate** | **PASS** | `spec.md` committed in `61cc74a` before implementation. Issue MJR-9 cites the spec path in the report. |
+| **Test gate** | **N/A** | No scoring rule created or changed. The gate starts to bite in Phase 3. |
+| **Constitution gate** | **PASS** | This section is filled in. See Complexity Tracking below. |
+| **Git conventions** | **PASS** | Work on the `astro` branch, derived from `chore/spec-kit` (see note below). POC untouched — FR-016 and SC-006. |
 
-**Nota sobre a base da branch**: `astro` saiu de `chore/spec-kit` (`7009b10`),
-que carrega a Fase 1 e está 1 commit à frente de `origin/main`. Ramificar de
-`main` deixaria a branch sem a constituição e sem as skills do Spec Kit,
-inviabilizando o Gate de spec. A confirmação foi pedida ao CEO na issue MJR-9 e
-a base é rebaseável se ele preferir outra.
+**Note on the branch base**: `astro` came off `chore/spec-kit` (`7009b10`),
+which carries Phase 1 and is 1 commit ahead of `origin/main`. Branching from
+`main` would leave the branch without the constitution and without the Spec Kit skills,
+making the Spec gate unworkable. Confirmation was requested from the CEO in issue MJR-9 and
+the base can be rebased if he prefers another.
 
-### Restrições adicionais
+### Additional constraints
 
-| Restrição | Veredito | Observação |
+| Constraint | Verdict | Note |
 |---|---|---|
-| **Stack fixa** | **PASS** | Todas as camadas são as fixadas: Astro estático, TS estrito, Tailwind, React em ilhas, Vitest, pnpm, estático na Vercel. **Nenhuma emenda é necessária.** A troca de `@astrojs/tailwind` por `@tailwindcss/vite` **não** é troca de camada — a camada é "Tailwind", e continua sendo Tailwind; mudou o mecanismo de integração, que a constituição não fixa. |
-| **Fronteira Paperclip ↔ Spec Kit** | **PASS** | `tasks.md` é checklist interno; nenhum card foi criado no Paperclip pelo Spec Kit. `/speckit-taskstoissues` não foi usado. |
-| **CLI fixado** | **PASS** | Spec Kit permanece em `1.2.5`; esta fase não toca `.specify/` além de criar `specs/001-*`. |
+| **Fixed stack** | **PASS** | All layers are the pinned ones: static Astro, strict TS, Tailwind, React in islands, Vitest, pnpm, static on Vercel. **No amendment is needed.** Replacing `@astrojs/tailwind` with `@tailwindcss/vite` is **not** a layer change — the layer is "Tailwind", and it is still Tailwind; what changed is the integration mechanism, which the constitution does not pin. |
+| **Paperclip ↔ Spec Kit boundary** | **PASS** | `tasks.md` is an internal checklist; no card was created in Paperclip by Spec Kit. `/speckit-taskstoissues` was not used. |
+| **Pinned CLI** | **PASS** | Spec Kit stays at `1.2.5`; this phase does not touch `.specify/` beyond creating `specs/001-*`. |
 
-### Re-avaliação pós-Fase 1 (design)
+### Post-Phase 1 re-evaluation (design)
 
-Reexecutada após `research.md`, `data-model.md`, `contracts/` e `quickstart.md`.
+Re-run after `research.md`, `data-model.md`, `contracts/` and `quickstart.md`.
 
-**Veredito: PASS, sem violação a justificar.** O design não introduziu nenhuma
-violação nova. Duas mudanças que o design trouxe e que *melhoram* a aderência:
+**Verdict: PASS, with no violation to justify.** The design introduced no
+new violation. Two changes the design brought that *improve* adherence:
 
-- **Princípio V ficou mais forte, não mais fraco.** A pesquisa levou de
-  `strict` para `strictest`. A constituição pede o piso; o design entrega acima
-  dele.
-- **Princípio IV ganhou execução.** Era um princípio sem verificação automática
-  (a *Verificação* escrita na constituição é um `grep` manual por diretivas). O
-  design adiciona um teste que roda o build e checa o HTML — o princípio agora
-  falha no CI.
+- **Principle V got stronger, not weaker.** The research moved from
+  `strict` to `strictest`. The constitution asks for the floor; the design delivers above
+  it.
+- **Principle IV gained enforcement.** It was a principle without automatic verification
+  (the *Verification* written in the constitution is a manual `grep` for directives). The
+  design adds a test that runs the build and checks the HTML — the principle now
+  fails in CI.
 
-Um ponto que o design **expôs** e vale registrar como achado, não como violação:
-o `tsconfig` do Astro, por default, teria arrastado a POC para o typecheck,
-criando um conflito direto entre o Gate de tipos e a regra de congelamento da
-POC. A constituição não previa essa interação. Não é emenda — é uma armadilha de
-runtime, e o lugar dela é `AGENTS.md § Armadilhas conhecidas`, onde esta fase a
-registra.
+One point the design **exposed** and that is worth recording as a finding, not as a violation:
+Astro's `tsconfig`, by default, would have dragged the POC into the typecheck,
+creating a direct conflict between the Type gate and the POC freeze
+rule. The constitution did not foresee this interaction. It is not an amendment — it is a
+runtime pitfall, and its place is `AGENTS.md § Known pitfalls`, where this phase
+records it.
 
-**Nenhuma emenda da constituição é proposta por esta fase.**
+**No constitution amendment is proposed by this phase.**
 
 ## Project Structure
 
@@ -142,108 +142,108 @@ registra.
 
 ```text
 specs/001-astro-foundation/
-├── spec.md              # Fase de especificação (commitado em 61cc74a)
-├── plan.md              # Este arquivo
-├── research.md          # Phase 0 — 7 decisões com alternativas rejeitadas
-├── data-model.md        # Phase 1 — declara ausência de entidades, com motivo
-├── quickstart.md        # Phase 1 — roteiro de validação dos 8 SC
+├── spec.md              # Specification phase (committed in 61cc74a)
+├── plan.md              # This file
+├── research.md          # Phase 0 — 7 decisions with rejected alternatives
+├── data-model.md        # Phase 1 — declares the absence of entities, with the reason
+├── quickstart.md        # Phase 1 — validation script for the 8 SC
 ├── contracts/
-│   └── commands.md      # Contrato dos scripts de pipeline (consumido pelas Fases 3-6)
+│   └── commands.md      # Contract of the pipeline scripts (consumed by Phases 3-6)
 ├── checklists/
-│   └── requirements.md  # Checklist de qualidade da spec, com 2 ressalvas registradas
+│   └── requirements.md  # Spec quality checklist, with 2 recorded caveats
 └── tasks.md             # Phase 2 output (/speckit-tasks)
 ```
 
 ### Source Code (repository root)
 
-A POC e a nova aplicação coexistem na raiz até o cutover da Fase 6. Arquivos
-marcados **CONGELADO** não são tocados por esta fase nem por nenhuma ferramenta
-que ela configure.
+The POC and the new application coexist at the root until the Phase 6 cutover. Files
+marked **FROZEN** are not touched by this phase nor by any tool
+it configures.
 
 ```text
 .
-├── index.html                      # CONGELADO — POC publicada
-├── script.js                       # CONGELADO — POC publicada
-├── style.css                       # CONGELADO — POC publicada
+├── index.html                      # FROZEN — published POC
+├── script.js                       # FROZEN — published POC
+├── style.css                       # FROZEN — published POC
 │
 ├── package.json                    # scripts, engines, packageManager
-├── pnpm-lock.yaml                  # versionado (FR-004)
-├── pnpm-workspace.yaml             # exigido pelo pnpm para onlyBuiltDependencies
+├── pnpm-lock.yaml                  # versioned (FR-004)
+├── pnpm-workspace.yaml             # required by pnpm for onlyBuiltDependencies
 ├── astro.config.mjs                # output: 'static' + @tailwindcss/vite + react
-├── tsconfig.json                   # strictest + exclude da POC
-├── vitest.config.ts                # getViteConfig de astro/config
+├── tsconfig.json                   # strictest + POC exclude
+├── vitest.config.ts                # getViteConfig from astro/config
 ├── eslint.config.js                # flat config: ts + astro + jsx
 ├── .prettierrc.json / .prettierignore
 ├── .gitignore                      # + dist/, node_modules/, .astro/
 │
 ├── src/
 │   ├── pages/
-│   │   └── index.astro             # página mínima, descartável (Fase 4 substitui)
+│   │   └── index.astro             # minimal, disposable page (Phase 4 replaces it)
 │   ├── layouts/
-│   │   └── BaseLayout.astro        # viewport + import do CSS global
+│   │   └── BaseLayout.astro        # viewport + global CSS import
 │   ├── components/
-│   │   └── ClientOnlyProbe.tsx     # ilha de prova (FR-012), descartável
+│   │   └── ClientOnlyProbe.tsx     # proof island (FR-012), disposable
 │   └── styles/
-│       └── global.css              # @import "tailwindcss" — sem tailwind.config.js
+│       └── global.css              # @import "tailwindcss" — no tailwind.config.js
 │
 ├── tests/
-│   ├── smoke.test.ts               # prova que o corredor executa (FR-009)
-│   └── static-build.test.ts        # roda o build, afirma ausência da ilha no HTML
+│   ├── smoke.test.ts               # proves the runner executes (FR-009)
+│   └── static-build.test.ts        # runs the build, asserts the island is absent from the HTML
 │
-└── dist/                           # artefato estático — ignorado pelo git
+└── dist/                           # static artifact — ignored by git
 ```
 
-**Structure Decision**: single project com a aplicação em `src/` e os testes de
-fundação em `tests/`, convivendo na raiz com os três arquivos congelados da POC.
+**Structure Decision**: single project with the application in `src/` and the foundation
+tests in `tests/`, coexisting at the root with the POC's three frozen files.
 
-Duas escolhas de layout que não são arbitrárias:
+Two layout choices that are not arbitrary:
 
-- **Testes de fundação em `tests/`, não ao lado do código.** O Princípio III
-  manda que teste de regra de jogo viva **ao lado** do código
-  (`src/games/<id>/rules.test.ts`). Os testes desta fase não são regra de jogo —
-  são testes do pipeline. Separá-los agora evita que a Fase 3 encontre um
-  precedente contraditório em `src/` e conclua que teste de regra também vai em
+- **Foundation tests in `tests/`, not next to the code.** Principle III
+  mandates that game rule tests live **next to** the code
+  (`src/games/<id>/rules.test.ts`). This phase's tests are not game rules —
+  they are pipeline tests. Separating them now prevents Phase 3 from finding a
+  contradictory precedent in `src/` and concluding that rule tests also go in
   `tests/`.
-- **`src/components/` existe, mas `src/games/` não.** Criar `src/games/` vazio
-  agora pareceria prestativo e seria um palpite sobre a Fase 3, que ainda não
-  definiu o contrato. A pasta nasce com a primeira spec que a justifique.
+- **`src/components/` exists, but `src/games/` does not.** Creating an empty `src/games/`
+  now would seem helpful and would be a guess about Phase 3, which has not yet
+  defined the contract. The folder is born with the first spec that justifies it.
 
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-**Nenhuma violação da constituição a justificar.** O Constitution Check passou
-em todos os princípios aplicáveis, pré e pós-design, e esta fase fica acima do
-piso em dois deles (V e IV).
+**No constitution violation to justify.** The Constitution Check passed
+on all applicable principles, pre- and post-design, and this phase sits above the
+floor on two of them (V and IV).
 
-As duas tabelas abaixo não são violações — são, respectivamente, desvios do
-`latest` e desvios do caminho mais curto. Ficam registradas porque um revisor
-que não leu a pesquisa vai estranhar as duas, e porque a decisão de subir
-TypeScript depende de uma condição externa que alguém precisa poder reencontrar.
+The two tables below are not violations — they are, respectively, deviations from
+`latest` and deviations from the shortest path. They are recorded because a reviewer
+who has not read the research will find both odd, and because the decision to upgrade
+TypeScript depends on an external condition that someone needs to be able to find again.
 
-### Desvios do `latest` do registry
+### Deviations from the registry's `latest`
 
-| Desvio | Por que é necessário | Alternativa mais simples rejeitada porque |
+| Deviation | Why it is necessary | Simpler alternative rejected because |
 |---|---|---|
-| `typescript@6.0.3` em vez de `7.0.2` (`latest`) | `@astrojs/check` aceita `^5 \|\| ^6`; `typescript-eslint@8.72.1` aceita `>=4.8.4 <6.1.0`. A interseção é `6.0.x`. | Pegar `7.0.2` entregaria uma fundação em que `pnpm typecheck` e o lint com tipos não rodam — o oposto do objetivo da fase. Desbloqueio: `@astrojs/check` e `typescript-eslint` liberarem o peer de TS 7. |
-| `@tailwindcss/vite` em vez de `@astrojs/tailwind` | `@astrojs/tailwind@6.0.2` declara `astro: ^3\|\|^4\|\|^5` e `tailwindcss: ^3.0.24` — incompatível em duas dimensões com Astro 7 + Tailwind 4. | Segurar Tailwind em v3 para usar a integração "oficial" ainda não fecharia o peer de `astro`, e nasceria uma major atrasado no arquivo que a Fase 4 mais vai editar. |
-| `oxc-transform-react` **não** declarado (correção do plano original) | É peer `optional: true` em `@astrojs/react` e em `@vitejs/plugin-react`, com faixas **disjuntas** (`^0.145.0` vs `^0.152.0`). Nenhuma versão satisfaz as duas. | Declará-lo — que era o plano original, por parecer mais rigoroso — cria um aviso de peer insolúvel no `install` de um pacote que ninguém exige. Corrigido na implementação; ver [research.md, Decisão 5](./research.md). |
-| `@types/node@^24` em vez do `latest` `^26` | Os testes usam `node:fs`/`node:url`; sem os tipos, `astro check` reprova com `ts(2591)`. | A linha `^26` descreveria APIs de um runtime à frente do Node 24 do ambiente. |
+| `typescript@6.0.3` instead of `7.0.2` (`latest`) | `@astrojs/check` accepts `^5 \|\| ^6`; `typescript-eslint@8.72.1` accepts `>=4.8.4 <6.1.0`. The intersection is `6.0.x`. | Taking `7.0.2` would deliver a foundation in which `pnpm typecheck` and type-aware lint do not run — the opposite of the phase's goal. Unblocker: `@astrojs/check` and `typescript-eslint` releasing the TS 7 peer. |
+| `@tailwindcss/vite` instead of `@astrojs/tailwind` | `@astrojs/tailwind@6.0.2` declares `astro: ^3\|\|^4\|\|^5` and `tailwindcss: ^3.0.24` — incompatible in two dimensions with Astro 7 + Tailwind 4. | Holding Tailwind at v3 to use the "official" integration still would not close the `astro` peer, and it would be born one major behind in the file Phase 4 will edit the most. |
+| `oxc-transform-react` **not** declared (correction to the original plan) | It is an `optional: true` peer in `@astrojs/react` and in `@vitejs/plugin-react`, with **disjoint** ranges (`^0.145.0` vs `^0.152.0`). No version satisfies both. | Declaring it — which was the original plan, because it seemed more rigorous — creates an unsolvable peer warning on `install` for a package nobody requires. Corrected during implementation; see [research.md, Decision 5](./research.md). |
+| `@types/node@^24` instead of the `latest` `^26` | The tests use `node:fs`/`node:url`; without the types, `astro check` fails with `ts(2591)`. | The `^26` line would describe APIs of a runtime ahead of the environment's Node 24. |
 
-### Trabalho além do mínimo pedido
+### Work beyond the requested minimum
 
-| Item | Por que foi incluído | O mínimo foi rejeitado porque |
+| Item | Why it was included | The minimum was rejected because |
 |---|---|---|
-| `tests/static-build.test.ts` — teste que roda o build e afirma ausência da ilha no HTML | Dá execução ao Princípio IV, cuja verificação na constituição é um `grep` manual. | Só o componente de prova (o que FR-012 pede) é documentação, e documentação não impede regressão. A troca de `client:only` por `client:load` passaria silenciosa e o defeito apareceria num celular, longe de quem escreveu a linha. |
-| `astro/tsconfigs/strictest` em vez de `strict` | Traz `noUncheckedIndexedAccess` e `exactOptionalPropertyTypes`, que são exatamente as travas que a Fase 3 vai querer ao ler payload corrompido (Princípio VII) e ao modelar `GameDefinition` sem `any` (Princípio V). | `strict` atende a constituição ao pé da letra, mas apertar depois custa mais: a Fase 3 já teria código escrito contra a regra frouxa. |
-| `exclude` explícito da POC no `tsconfig` | Sem isso `astro check` reprova por erros em `script.js`, e o comando só passaria corrigindo a POC — proibido pela constituição. | Não é opcional: é a diferença entre o pipeline funcionar e travar. Registrado aqui porque parece higiene e é bloqueio. |
+| `tests/static-build.test.ts` — test that runs the build and asserts the island is absent from the HTML | Gives enforcement to Principle IV, whose verification in the constitution is a manual `grep`. | Only the proof component (what FR-012 asks for) is documentation, and documentation does not prevent regression. Swapping `client:only` for `client:load` would go through silently and the defect would show up on a phone, far from whoever wrote the line. |
+| `astro/tsconfigs/strictest` instead of `strict` | Brings `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`, which are exactly the locks Phase 3 will want when reading a corrupted payload (Principle VII) and when modeling `GameDefinition` without `any` (Principle V). | `strict` meets the constitution to the letter, but tightening later costs more: Phase 3 would already have code written against the loose rule. |
+| Explicit POC `exclude` in the `tsconfig` | Without it `astro check` fails on errors in `script.js`, and the command would only pass by fixing the POC — forbidden by the constitution. | It is not optional: it is the difference between the pipeline working and hanging. Recorded here because it looks like hygiene and is a blocker. |
 
-### Não feito de propósito
+### Not done on purpose
 
-| Item | Por que não | Quando |
+| Item | Why not | When |
 |---|---|---|
-| Regra de ESLint proibindo `client:load` em componente de estado | O Princípio IV só se aplica a componentes que leem estado de partida, e nenhum existe. Escrever a regra agora seria contra um alvo imaginário. | Fase 3, quando o store nascer. Recomendação registrada. |
-| Teste de navegador (Playwright) para hydration mismatch | Verificação mais fiel, mas traz binário de navegador e tempo de CI para uma fase sem tela. A spec já registra em Assumptions que a checagem de console é manual aqui. | Fase 4, quando houver tela que justifique o custo. |
-| Criar o projeto na Vercel | Não há conexão Vercel disponível para agentes nesta instância; é passo humano, em decisão no MJR-8. Astro estático é detectado sem adapter e sem variável de ambiente. | Passo humano, fora desta fase. |
-| `src/games/`, registry, `GameDefinition`, store de `localStorage` | FR-018. Seria palpite sobre um contrato que a Fase 3 ainda vai definir. | Fase 3. |
-| Design system, tokens de cor, dark mode | FR-018. | Fase 4. |
+| ESLint rule forbidding `client:load` on a state component | Principle IV only applies to components that read match state, and none exist. Writing the rule now would be against an imaginary target. | Phase 3, when the store is born. Recommendation recorded. |
+| Browser test (Playwright) for hydration mismatch | A more faithful check, but it brings a browser binary and CI time for a phase with no screen. The spec already records in Assumptions that the console check is manual here. | Phase 4, when there is a screen that justifies the cost. |
+| Creating the project on Vercel | There is no Vercel connection available to agents in this instance; it is a human step, under decision in MJR-8. Static Astro is detected without an adapter and without environment variables. | Human step, outside this phase. |
+| `src/games/`, registry, `GameDefinition`, `localStorage` store | FR-018. It would be a guess about a contract that Phase 3 has yet to define. | Phase 3. |
+| Design system, color tokens, dark mode | FR-018. | Phase 4. |

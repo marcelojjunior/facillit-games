@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Fundação técnica e pipeline estático
+# Specification Quality Checklist: Technical foundation and static pipeline
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-11-02
@@ -6,9 +6,9 @@
 
 ## Content Quality
 
-- [x] No implementation details (languages, frameworks, APIs) — *com ressalva, ver Notas item 1*
+- [x] No implementation details (languages, frameworks, APIs) — *with a caveat, see Notes item 1*
 - [x] Focused on user value and business needs
-- [x] Written for non-technical stakeholders — *com ressalva, ver Notas item 2*
+- [x] Written for non-technical stakeholders — *with a caveat, see Notes item 2*
 - [x] All mandatory sections completed
 
 ## Requirement Completeness
@@ -29,32 +29,32 @@
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
-## Notas
+## Notes
 
-1. **"No implementation details" — ressalva aceita, não contornada.** Esta
-   feature é, por natureza, a fundação técnica: seu produto *é* configuração de
-   build. A regra foi atendida onde importa — FR-001 a FR-018 e SC-001 a SC-008
-   estão redigidos sem nomear ferramenta ("comando de instalação", "comando de
-   build", "verificação de tipos em modo estrito", "ilha exclusiva de cliente"),
-   e portanto continuam verificáveis se a stack mudar por emenda. Os nomes
-   próprios da stack aparecem em dois lugares intencionais: a citação literal do
-   `Input` e a seção "Nota sobre o leitor desta spec", que os identifica como
-   restrição herdada da constituição (`Additional Constraints → Stack fixa`), não
-   como escolha desta spec.
+1. **"No implementation details" — caveat accepted, not worked around.** This
+   feature is, by nature, the technical foundation: its product *is* build
+   configuration. The rule was met where it matters — FR-001 to FR-018 and SC-001 to SC-008
+   are worded without naming a tool ("install command", "build
+   command", "type checking in strict mode", "client-exclusive island"),
+   and therefore remain verifiable if the stack changes by amendment. The stack's
+   proper names appear in two intentional places: the literal quotation of the
+   `Input` and the section "Note on the reader of this spec", which identifies them as a
+   constraint inherited from the constitution (`Additional Constraints → Fixed stack`), not
+   as a choice of this spec.
 
-2. **"Written for non-technical stakeholders" — ressalva aceita.** O
-   destinatário desta feature é quem implementa as Fases 3 a 5 e o pipeline de
-   publicação, não o jogador. A spec declara isso no topo em vez de fingir um
-   usuário final que não existe nesta fase. Nenhuma spec de fase posterior
-   (contrato de jogo, design system, jogos) herda essa ressalva.
+2. **"Written for non-technical stakeholders" — caveat accepted.** The
+   audience of this feature is whoever implements Phases 3 to 5 and the publishing
+   pipeline, not the player. The spec states this at the top instead of pretending there is an
+   end user who does not exist in this phase. No later phase spec
+   (game contract, design system, games) inherits this caveat.
 
-3. **Achado de processo (dogfood).** Os dois itens acima são atrito real e
-   previsto do template genérico do Spec Kit aplicado a uma tarefa de
-   infraestrutura. O atrito é de redação, não de conteúdo: o template não tem
-   uma faixa para "feature cujo usuário é o próprio time". A conclusão do
-   dogfood é que o ciclo serve — mas features de fundação devem declarar o
-   leitor no topo, como esta fez. Nada aqui motiva emenda da constituição.
+3. **Process finding (dogfood).** The two items above are real and
+   expected friction of the generic Spec Kit template applied to an
+   infrastructure task. The friction is in wording, not content: the template has no
+   track for "a feature whose user is the team itself". The conclusion of the
+   dogfood is that the cycle works — but foundation features should state the
+   reader at the top, as this one did. Nothing here motivates a constitution amendment.
 
-4. **Escopo negativo é requisito, não comentário.** FR-018 e SC-008 tornam o "o
-   que NÃO está nesta fase" verificável em review, em vez de confiar na memória
-   de quem revisa. Essa foi a adição mais valiosa que o ciclo forçou.
+4. **Negative scope is a requirement, not a comment.** FR-018 and SC-008 make the "what
+   is NOT in this phase" verifiable in review, instead of relying on the memory
+   of whoever reviews. That was the most valuable addition the cycle forced.

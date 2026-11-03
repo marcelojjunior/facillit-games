@@ -1,64 +1,67 @@
-# Phase 1 — Data Model: Fundação técnica e pipeline estático
+# Phase 1 — Data Model: Technical foundation and static pipeline
 
 **Feature**: `specs/001-astro-foundation/`
 
-## Nenhuma entidade de domínio, por decisão
+## No domain entity, by decision
 
-Esta feature **não introduz nenhum dado persistido, nenhuma entidade de domínio
-e nenhuma leitura ou escrita em `localStorage`**. FR-018 e SC-008 tornam isso
-verificável: uma busca no código e no artefato não deve encontrar referência a
-armazenamento local nem a schema persistido.
+This feature **introduces no persisted data, no domain entity and no read or
+write to `localStorage`**. FR-018 and SC-008 make this verifiable: a search of
+the code and the artifact must find no reference to local storage nor to a
+persisted schema.
 
-Este arquivo existe para registrar a ausência como escolha, não como esquecimento.
+This file exists to record the absence as a choice, not as an oversight.
 
-## Por que não antecipar o modelo
+## Why not anticipate the model
 
-Seria tentador desenhar aqui o `GameDefinition` e o schema de `localStorage` —
-eles já estão razoavelmente claros na mente de quem leu a constituição, e a
-Fase 3 vai precisar deles de qualquer forma. Dois motivos para não fazer isso:
+It would be tempting to sketch the `GameDefinition` and the `localStorage`
+schema here — they are already reasonably clear in the mind of anyone who has
+read the constitution, and Phase 3 will need them anyway. Two reasons not to do
+it:
 
-1. **A constituição manda spec antes de código, e o inverso também vale: não
-   escreva código antes da spec que o governa.** O Princípio VIII trata regra de
-   jogo e schema persistido como material de ciclo completo. Um modelo escrito
-   aqui, numa spec cujo escopo negativo o proíbe (FR-018), nasceria sem spec
-   própria — e seria exatamente o atalho que o princípio existe para fechar.
+1. **The constitution mandates spec before code, and the converse also holds:
+   do not write code before the spec that governs it.** Principle VIII treats
+   game rules and persisted schema as full-cycle material. A model written here,
+   in a spec whose negative scope forbids it (FR-018), would be born without its
+   own spec — and would be exactly the shortcut the principle exists to close.
 
-2. **Um modelo escrito agora seria um palpite com aparência de decisão.** O
-   risco não é errar; é acertar parcialmente. A Fase 3 encontraria um
-   `data-model.md` plausível, escrito pela mesma pessoa, e teria todo incentivo
-   para tratá-lo como ponto de partida em vez de reexaminar o problema. O custo
-   aparece depois, quando o segundo jogo não couber no contrato e a casca
-   precisar mudar — que é precisamente a propriedade que a constituição existe
-   para proteger.
+2. **A model written now would be a guess that looks like a decision.** The
+   risk is not getting it wrong; it is getting it partially right. Phase 3 would
+   find a plausible `data-model.md`, written by the same person, and would have
+   every incentive to treat it as a starting point instead of re-examining the
+   problem. The cost shows up later, when the second game does not fit the
+   contract and the shell has to change — which is precisely the property the
+   constitution exists to protect.
 
-## O que esta fase deixa pronto para o modelo da Fase 3
+## What this phase leaves ready for the Phase 3 model
 
-Sem desenhar o modelo, a fundação remove três obstáculos concretos para quem o
-desenhar:
+Without designing the model, the foundation removes three concrete obstacles for
+whoever designs it:
 
-| Obstáculo removido | Como | Onde |
+| Obstacle removed | How | Where |
 |---|---|---|
-| Modelar schema persistido sem travas de tipo | `astro/tsconfigs/strictest` ativa `noUncheckedIndexedAccess` e `exactOptionalPropertyTypes` — o que força tratar explicitamente payload ausente ou corrompido, exigência do Princípio VII | [research.md, Decisão 3](./research.md) |
-| Escrever regra pura sem corredor de teste | Vitest configurado e provadamente executando, com ambiente padrão `node` — uma regra que toque DOM **falha**, em vez de passar silenciosa | [research.md, Decisão 4](./research.md) |
-| Descobrir tarde que estado não pode renderizar no build | Ilha `client:only` provada, com teste que roda o build e afirma ausência da marcação no HTML | [research.md, Decisão 7](./research.md) |
+| Modeling persisted schema without type guards | `astro/tsconfigs/strictest` enables `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` — which forces explicit handling of missing or corrupted payload, a requirement of Principle VII | [research.md, Decision 3](./research.md) |
+| Writing a pure rule without a test runner | Vitest configured and provably running, with default `node` environment — a rule that touches the DOM **fails**, instead of passing silently | [research.md, Decision 4](./research.md) |
+| Discovering late that state cannot render at build time | `client:only` island proven, with a test that runs the build and asserts the markup is absent from the HTML | [research.md, Decision 7](./research.md) |
 
-## Estado efêmero desta fase
+## Ephemeral state in this phase
 
-A ilha de prova (`ClientOnlyProbe.tsx`) lê uma API só de navegador para
-demonstrar que não executa no build. Para evitar leitura errada do seu papel:
+The probe island (`ClientOnlyProbe.tsx`) reads a browser-only API to
+demonstrate that it does not execute at build time. To avoid misreading its
+role:
 
-- Ela **não** persiste nada e **não** usa `localStorage` — usar seria violar
-  FR-018 e criar uma chave órfã que a Fase 3 encontraria e teria que interpretar.
-- A API que ela lê é escolhida por ser inequivocamente indisponível fora do
-  navegador, não por relação com o domínio.
-- Ela é **descartável**: a Fase 4 a remove ao entregar as telas reais. O
-  **teste** que a acompanha não é descartável — ele é o que guarda o Princípio IV
-  contra regressão e deve sobreviver à remoção do componente, apontando então
-  para a primeira ilha real de estado de partida.
+- It does **not** persist anything and does **not** use `localStorage` — doing
+  so would violate FR-018 and create an orphan key that Phase 3 would find and
+  have to interpret.
+- The API it reads is chosen because it is unequivocally unavailable outside the
+  browser, not for any relation to the domain.
+- It is **disposable**: Phase 4 removes it when delivering the real screens. The
+  **test** that accompanies it is not disposable — it is what guards Principle
+  IV against regression and must survive the removal of the component, then
+  pointing at the first real match state island.
 
-## Nenhuma chave de `localStorage` reservada
+## No `localStorage` key reserved
 
-Esta fase **não** reserva prefixo, namespace nem `schemaVersion` inicial. A
-convenção de nomes de chave e o versionamento pertencem à spec da Fase 3, junto
-com o caminho de migração que o Princípio VII exige. Reservar um nome aqui
-criaria um compromisso sem a decisão que o justifica.
+This phase does **not** reserve a prefix, namespace or initial `schemaVersion`.
+The key naming convention and versioning belong to the Phase 3 spec, together
+with the migration path that Principle VII requires. Reserving a name here would
+create a commitment without the decision that justifies it.

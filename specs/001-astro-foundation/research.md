@@ -1,177 +1,178 @@
-# Phase 0 — Research: Fundação técnica e pipeline estático
+# Phase 0 — Research: Technical foundation and static pipeline
 
 **Feature**: `specs/001-astro-foundation/`
-**Data da apuração**: 2026-11-02
-**Método**: consulta direta ao registry (`npm view`) e inspeção do tarball
-publicado, não memória do modelo. Todas as versões abaixo foram lidas do
-registry nesta data.
+**Date of survey**: 2026-11-02
+**Method**: direct query to the registry (`npm view`) and inspection of the
+published tarball, not model memory. All versions below were read from the
+registry on this date.
 
-> **Por que isso importa.** A constituição fixa a stack por *nome de camada*
-> (Astro, TypeScript, Tailwind, React, Vitest, pnpm), não por versão. A escolha
-> de versão é desta fase, e três das combinações "óbvias" não funcionam. O que
-> segue é o resultado de verificar em vez de supor.
+> **Why this matters.** The constitution fixes the stack by *layer name*
+> (Astro, TypeScript, Tailwind, React, Vitest, pnpm), not by version. The
+> version choice belongs to this phase, and three of the "obvious" combinations
+> do not work. What follows is the result of verifying instead of assuming.
 
 ---
 
-## Decisão 1 — TypeScript fica em `6.0.3`, não no `latest` (`7.0.2`)
+## Decision 1 — TypeScript stays on `6.0.3`, not on `latest` (`7.0.2`)
 
-**Decisão**: pinar `typescript@6.0.3`.
+**Decision**: pin `typescript@6.0.3`.
 
-**Rationale**: `latest` é `7.0.2`, mas as duas ferramentas que precisam ler
-nossos tipos ainda não suportam a linha 7:
+**Rationale**: `latest` is `7.0.2`, but the two tools that need to read our
+types do not support the 7 line yet:
 
-| Pacote | Peer declarado em `typescript` | Aceita 6.0.3? | Aceita 7.0.2? |
+| Package | Declared peer on `typescript` | Accepts 6.0.3? | Accepts 7.0.2? |
 |---|---|---|---|
-| `@astrojs/check@0.9.12` | `^5.0.0 \|\| ^6.0.0` | sim | **não** |
-| `typescript-eslint@8.72.1` | `>=4.8.4 <6.1.0` | sim | **não** |
+| `@astrojs/check@0.9.12` | `^5.0.0 \|\| ^6.0.0` | yes | **no** |
+| `typescript-eslint@8.72.1` | `>=4.8.4 <6.1.0` | yes | **no** |
 
-A interseção das duas faixas é exatamente `6.0.x`. `6.0.3` é a maior release
-estável dessa linha (`6.1.x` já estouraria o teto do `typescript-eslint`).
-
-**Alternatives considered**:
-
-- **`typescript@7.0.2` (o `latest`)** — rejeitado. Quebraria `astro check` e o
-  lint com tipos. Entregaria uma fundação em que o comando de verificação de
-  tipos não roda, que é o oposto do objetivo da fase.
-- **`typescript@5.9.x`** — rejeitado. Também é compatível, mas abre mão de um
-  major de melhorias sem ganho nenhum; `6.0.3` é o teto compatível e é estável.
-- **Abrir mão do `typescript-eslint`** para poder usar TS 7 — rejeitado.
-  Trocaria lint com informação de tipos (o que realmente pega `any` implícito e
-  promessa não aguardada, exigidos pelo Princípio V) por um número de versão
-  maior. Mau negócio.
-
-**Consequência registrada**: `typescript` fica pinado com faixa `~6.0.3`, e
-subir para a linha 7 passa a ser uma decisão que depende de `@astrojs/check` e
-`typescript-eslint` liberarem o peer. Isso vai para o `README` da fundação.
-
----
-
-## Decisão 2 — Tailwind entra por `@tailwindcss/vite`, e `@astrojs/tailwind` está fora
-
-**Decisão**: `tailwindcss@4.3.3` + `@tailwindcss/vite@4.3.3`, registrado como
-plugin Vite dentro de `astro.config.mjs`. Estilos importados via `@import
-"tailwindcss"` em um CSS global.
-
-**Rationale**: a integração histórica `@astrojs/tailwind` não serve mais. Sua
-última versão publicada é `6.0.2`, e os peers são:
-
-```
-astro:       ^3.0.0 || ^4.0.0 || ^5.0.0      (estamos em Astro 7)
-tailwindcss: ^3.0.24                          (queremos Tailwind 4.3.3)
-```
-
-Ou seja, ela é incompatível em **duas** dimensões ao mesmo tempo. Tailwind 4
-abandonou o pipeline de PostCSS com `tailwind.config.js` em favor de um plugin
-de bundler e de configuração em CSS; o caminho suportado em Astro é registrar
-`@tailwindcss/vite` em `vite.plugins`.
+The intersection of the two ranges is exactly `6.0.x`. `6.0.3` is the highest
+stable release of that line (`6.1.x` would already break the
+`typescript-eslint` ceiling).
 
 **Alternatives considered**:
 
-- **`@astrojs/tailwind` + Tailwind 3** — rejeitado. Exigiria segurar Tailwind
-  uma major atrás e ainda assim o peer de `astro` não fecha com Astro 7. Seria
-  dívida nascida pronta, bem no arquivo que a Fase 4 (design system) mais vai
-  mexer.
-- **PostCSS manual com `@tailwindcss/postcss`** — rejeitado. Funciona, mas
-  adiciona um arquivo de configuração e um passo de pipeline sem ganho sobre o
-  plugin de Vite, que o Astro já carrega.
+- **`typescript@7.0.2` (the `latest`)** — rejected. It would break `astro check`
+  and type-aware lint. It would deliver a foundation in which the type check
+  command does not run, which is the opposite of the phase's goal.
+- **`typescript@5.9.x`** — rejected. Also compatible, but gives up a major's
+  worth of improvements for no gain; `6.0.3` is the compatible ceiling and is
+  stable.
+- **Giving up `typescript-eslint`** to be able to use TS 7 — rejected. It would
+  trade type-aware lint (what actually catches implicit `any` and unawaited
+  promises, required by Principle V) for a bigger version number. Bad deal.
 
-**Pegadinha herdada**: não existe `tailwind.config.js` neste projeto. Quem
-chegar na Fase 4 procurando por ele e não achar deve ler isto: os tokens de
-design vão em CSS, com `@theme`. Registrado no `README` da fundação.
+**Recorded consequence**: `typescript` is pinned with range `~6.0.3`, and moving
+to the 7 line becomes a decision that depends on `@astrojs/check` and
+`typescript-eslint` releasing the peer. This goes into the foundation `README`.
 
 ---
 
-## Decisão 3 — `tsconfig` estende `astro/tsconfigs/strictest`, e exclui a POC explicitamente
+## Decision 2 — Tailwind comes in via `@tailwindcss/vite`, and `@astrojs/tailwind` is out
 
-**Decisão**: `extends: "astro/tsconfigs/strictest"`, com `exclude` explícito de
-`script.js`, `index.html`, `style.css` e `dist`.
+**Decision**: `tailwindcss@4.3.3` + `@tailwindcss/vite@4.3.3`, registered as a
+Vite plugin inside `astro.config.mjs`. Styles imported via `@import
+"tailwindcss"` in a global CSS.
 
-**Rationale**: dois achados da inspeção do tarball do Astro 7.4.4.
+**Rationale**: the historical `@astrojs/tailwind` integration no longer works.
+Its last published version is `6.0.2`, and the peers are:
 
-**(a) `strictest` é um superset útil, não ruído.** Os presets publicados são
-`base` → `strict` → `strictest`. O `strict` só adiciona `strict: true`. O
-`strictest` adiciona, entre outros, `noUncheckedIndexedAccess` e
-`exactOptionalPropertyTypes`. Esses dois são exatamente as travas que a Fase 3
-vai querer ao ler payload de `localStorage` possivelmente corrompido
-(Princípio VII manda degradar com segurança) e ao modelar o contrato
-`GameDefinition` sem `any` (Princípio V). Adotar `strictest` agora é mais
-barato do que apertar depois, quando já houver código escrito contra a regra
-frouxa.
+```
+astro:       ^3.0.0 || ^4.0.0 || ^5.0.0      (we are on Astro 7)
+tailwindcss: ^3.0.24                          (we want Tailwind 4.3.3)
+```
 
-**(b) `astro/tsconfigs/base` contém uma armadilha direta contra o congelamento
-da POC.** O preset traz:
+That is, it is incompatible in **two** dimensions at once. Tailwind 4 dropped
+the PostCSS pipeline with `tailwind.config.js` in favor of a bundler plugin and
+CSS-based configuration; the supported path in Astro is registering
+`@tailwindcss/vite` in `vite.plugins`.
+
+**Alternatives considered**:
+
+- **`@astrojs/tailwind` + Tailwind 3** — rejected. It would require holding
+  Tailwind one major behind and even so the `astro` peer does not close with
+  Astro 7. It would be debt born ready-made, right in the file that Phase 4
+  (design system) will touch the most.
+- **Manual PostCSS with `@tailwindcss/postcss`** — rejected. It works, but adds
+  a configuration file and a pipeline step with no gain over the Vite plugin,
+  which Astro already loads.
+
+**Inherited gotcha**: there is no `tailwind.config.js` in this project. Whoever
+reaches Phase 4 looking for it and does not find it should read this: the design
+tokens go in CSS, with `@theme`. Recorded in the foundation `README`.
+
+---
+
+## Decision 3 — `tsconfig` extends `astro/tsconfigs/strictest`, and excludes the POC explicitly
+
+**Decision**: `extends: "astro/tsconfigs/strictest"`, with an explicit `exclude`
+of `script.js`, `index.html`, `style.css` and `dist`.
+
+**Rationale**: two findings from inspecting the Astro 7.4.4 tarball.
+
+**(a) `strictest` is a useful superset, not noise.** The published presets are
+`base` → `strict` → `strictest`. `strict` only adds `strict: true`.
+`strictest` adds, among others, `noUncheckedIndexedAccess` and
+`exactOptionalPropertyTypes`. These two are exactly the guards Phase 3 will want
+when reading possibly corrupted `localStorage` payload (Principle VII mandates
+degrading safely) and when modeling the `GameDefinition` contract without `any`
+(Principle V). Adopting `strictest` now is cheaper than tightening later, when
+there is already code written against the looser rule.
+
+**(b) `astro/tsconfigs/base` contains a trap aimed squarely at the POC
+freeze.** The preset ships:
 
 ```json
 "allowJs": true,
 "include": ["${configDir}/.astro/types.d.ts", "${configDir}/**/*"]
 ```
 
-Com `allowJs: true` e um `include` de `**/*`, o `script.js` da POC — 16 KB de
-JavaScript de 2026 sem nenhuma tipagem — entra no programa do TypeScript. O
-`astro check` passaria a reprovar por erros num arquivo que a constituição
-proíbe corrigir (Princípio de branches: *"a POC [...] MUST NOT receber correção
-de bug novo"*). Seria um impasse: o comando de tipos só passaria violando o
-congelamento.
+With `allowJs: true` and an `include` of `**/*`, the POC's `script.js` — 16 KB
+of 2026 JavaScript with no typing at all — enters the TypeScript program.
+`astro check` would start failing on errors in a file the constitution forbids
+fixing (Development Workflow, Git conventions: *"it MUST NOT receive new bug fixes"*).
+It would be a deadlock: the type command would only pass by violating the
+freeze.
 
-A saída é `exclude` explícito. Isso é a razão real por trás de FR-015, que na
-spec parecia só higiene de formatação.
-
-**Alternatives considered**:
-
-- **`astro/tsconfigs/strict`** — rejeitado por (a). Atende a constituição ao pé
-  da letra, mas deixa de graça as travas que a Fase 3 vai pedir.
-- **`allowJs: false` em vez de `exclude`** — rejeitado. Resolveria o `script.js`
-  por acidente, mas de forma frágil: qualquer `.js` legítimo que a gente venha a
-  precisar (um arquivo de config, por exemplo) voltaria a quebrar, e o motivo
-  real ficaria invisível. `exclude` nomeia a POC e documenta a intenção.
-- **Mover a POC para uma subpasta** — rejeitado. A POC está publicada no
-  GitHub Pages servindo da raiz; mover é o cutover da Fase 6, não desta fase.
-
----
-
-## Decisão 4 — Vitest usa `getViteConfig` de `astro/config`
-
-**Decisão**: `vitest.config.ts` com `getViteConfig({ test: { ... } })`,
-importado de `astro/config`.
-
-**Rationale**: confirmado por inspeção do tarball — `astro@7.4.4` exporta
-`./config` → `dist/config/entrypoint.js`, que reexporta
-`{ defineConfig, getViteConfig }`. Usar esse helper faz os testes herdarem a
-resolução de módulos, os aliases e os plugins do projeto (incluindo
-`@tailwindcss/vite` e o JSX de React), em vez de manter uma segunda
-configuração de bundler que inevitavelmente divergiria.
-
-Isso atende FR-010 ("os testes MUST resolver módulos TypeScript do projeto sem
-configuração adicional por teste") pela construção, não por tentativa.
+The way out is an explicit `exclude`. This is the real reason behind FR-015,
+which in the spec looked like mere formatting hygiene.
 
 **Alternatives considered**:
 
-- **`vitest.config.ts` autônomo com `defineConfig` do Vitest** — rejeitado.
-  Funciona hoje para uma função pura, mas duplica resolução de módulo. No
-  momento em que a Fase 3 tiver um teste que importa um módulo com alias, as
-  duas configurações divergem e o erro aparece longe da causa.
-- **Ambiente `jsdom` para toda a suíte** — rejeitado como padrão. As regras de
-  pontuação do Princípio III são funções puras: proibidas de tocar DOM. Rodar a
-  suíte inteira em `jsdom` esconderia uma violação justamente onde ela importa —
-  uma regra que toca DOM passaria no teste. O padrão é `node`; `jsdom` fica
-  disponível para ser pedido por arquivo, via comentário de ambiente, quando um
-  teste de componente precisar.
+- **`astro/tsconfigs/strict`** — rejected because of (a). It meets the
+  constitution to the letter, but leaves on the table, for free, the guards
+  Phase 3 will ask for.
+- **`allowJs: false` instead of `exclude`** — rejected. It would solve
+  `script.js` by accident, but in a fragile way: any legitimate `.js` we may come
+  to need (a config file, for example) would break again, and the real reason
+  would be invisible. `exclude` names the POC and documents the intent.
+- **Moving the POC to a subfolder** — rejected. The POC is published on GitHub
+  Pages serving from the root; moving it is the Phase 6 cutover, not this phase.
 
 ---
 
-## Decisão 5 — React 19 com `@astrojs/react@7.1.2`, e um peer que NÃO deve ser declarado
+## Decision 4 — Vitest uses `getViteConfig` from `astro/config`
 
-> **Corrigida durante a implementação.** A primeira versão desta decisão
-> mandava declarar `oxc-transform-react@^0.156.0` explicitamente, por dois
-> erros de leitura — ambos pegos pelo `pnpm install`. A correção está abaixo,
-> com o erro preservado, porque o erro é a parte instrutiva. O Princípio VIII
-> exige atualizar a spec no mesmo PR quando a realidade a contraria.
+**Decision**: `vitest.config.ts` with `getViteConfig({ test: { ... } })`,
+imported from `astro/config`.
 
-**Decisão**: `@astrojs/react@7.1.2` + `react@19.3.1` + `react-dom@19.3.1` +
+**Rationale**: confirmed by tarball inspection — `astro@7.4.4` exports
+`./config` → `dist/config/entrypoint.js`, which re-exports
+`{ defineConfig, getViteConfig }`. Using this helper makes the tests inherit the
+project's module resolution, aliases and plugins (including
+`@tailwindcss/vite` and React's JSX), instead of maintaining a second bundler
+configuration that would inevitably diverge.
+
+This meets FR-010 ("the tests MUST resolve the project's TypeScript modules
+without additional per-test configuration") by construction, not by trial.
+
+**Alternatives considered**:
+
+- **Standalone `vitest.config.ts` with Vitest's `defineConfig`** — rejected. It
+  works today for a pure function, but duplicates module resolution. The moment
+  Phase 3 has a test that imports a module with an alias, the two configurations
+  diverge and the error shows up far from the cause.
+- **`jsdom` environment for the whole suite** — rejected as the default. The
+  scoring rules of Principle III are pure functions: forbidden from touching the
+  DOM. Running the whole suite in `jsdom` would hide a violation precisely where
+  it matters — a rule that touches the DOM would pass the test. The default is
+  `node`; `jsdom` stays available to be requested per file, via an environment
+  comment, when a component test needs it.
+
+---
+
+## Decision 5 — React 19 with `@astrojs/react@7.1.2`, and a peer that must NOT be declared
+
+> **Corrected during implementation.** The first version of this decision
+> mandated declaring `oxc-transform-react@^0.156.0` explicitly, due to two
+> reading errors — both caught by `pnpm install`. The correction is below, with
+> the error preserved, because the error is the instructive part. Principle VIII
+> requires updating the spec in the same PR when reality contradicts it.
+
+**Decision**: `@astrojs/react@7.1.2` + `react@19.3.1` + `react-dom@19.3.1` +
 `@types/react@19.3.0` + `@types/react-dom@19.3.0`. **`oxc-transform-react`
-não é declarado.**
+is not declared.**
 
-**Rationale**: os peers de `@astrojs/react@7.1.2` são:
+**Rationale**: the peers of `@astrojs/react@7.1.2` are:
 
 ```
 react, react-dom:               ^17.0.2 || ^18.0.0 || ^19.0.0
@@ -179,213 +180,218 @@ react, react-dom:               ^17.0.2 || ^18.0.0 || ^19.0.0
 oxc-transform-react:            ^0.145.0   (optional: true)
 ```
 
-React 19 está dentro da faixa. O item que chamou atenção foi
-`oxc-transform-react`, e os dois erros foram estes:
+React 19 is within range. The item that drew attention was
+`oxc-transform-react`, and the two errors were these:
 
-**Erro 1 — `^` em versão `0.x` não faz o que parece.** A anotação original
-dizia que `0.156.0` satisfaz `^0.145.0`. Não satisfaz: para versões `0.x`, o
-caret trava a **minor**, então `^0.145.0` significa `>=0.145.0 <0.146.0` — uma
-única versão. Declarar `0.156.0` criou aviso de peer imediatamente.
+**Error 1 — `^` on a `0.x` version does not do what it looks like.** The
+original note said that `0.156.0` satisfies `^0.145.0`. It does not: for `0.x`
+versions, the caret locks the **minor**, so `^0.145.0` means
+`>=0.145.0 <0.146.0` — a single version. Declaring `0.156.0` created a peer
+warning immediately.
 
-**Erro 2 — e não há versão que resolva.** Ao investigar o aviso, apareceu um
-conflito mais fundo: `@astrojs/react@7.1.2` depende de
-`@vitejs/plugin-react@^6.1.2`, cujo peer é `oxc-transform-react: ^0.152.0`
-(`>=0.152.0 <0.153.0`). As duas faixas são **disjuntas** — `^0.145.0` e
-`^0.152.0` não têm interseção. Nenhuma versão única satisfaz as duas. É
-inconsistência do upstream: `@astrojs/react` declara um peer uma minor atrás do
-que sua própria dependência exige.
+**Error 2 — and there is no version that resolves it.** While investigating the
+warning, a deeper conflict showed up: `@astrojs/react@7.1.2` depends on
+`@vitejs/plugin-react@^6.1.2`, whose peer is `oxc-transform-react: ^0.152.0`
+(`>=0.152.0 <0.153.0`). The two ranges are **disjoint** — `^0.145.0` and
+`^0.152.0` have no intersection. No single version satisfies both. It is an
+upstream inconsistency: `@astrojs/react` declares a peer one minor behind what
+its own dependency requires.
 
-**A saída é não declarar.** Os dois declarantes marcam
-`peerDependenciesMeta: { 'oxc-transform-react': { optional: true } }`. O peer é
-opcional em ambos: nada o exige, o build funciona sem ele, e declará-lo era a
-única forma de *criar* um aviso insolúvel. Depois de remover,
-`pnpm peers check` responde "No peer dependency issues found", e `pnpm build`,
-`pnpm test` e `pnpm typecheck` passam.
+**The way out is not to declare it.** Both declarers mark
+`peerDependenciesMeta: { 'oxc-transform-react': { optional: true } }`. The peer
+is optional in both: nothing requires it, the build works without it, and
+declaring it was the only way to *create* an unsolvable warning. After removing
+it, `pnpm peers check` answers "No peer dependency issues found", and
+`pnpm build`, `pnpm test` and `pnpm typecheck` pass.
 
-**A lição que vale para as fases seguintes**: a tentação aqui foi ser
-caprichoso — "declarar o peer explicitamente é mais rigoroso que confiar em
-`auto-install-peers`". O raciocínio soava bem e estava errado em duas camadas.
-Ler `peerDependenciesMeta` antes de declarar qualquer peer custa uma consulta e
-evita as duas.
+**The lesson that holds for the following phases**: the temptation here was to
+be meticulous — "declaring the peer explicitly is more rigorous than relying on
+`auto-install-peers`". The reasoning sounded good and was wrong on two levels.
+Reading `peerDependenciesMeta` before declaring any peer costs one query and
+avoids both.
 
 **Alternatives considered**:
 
-- **Declarar `oxc-transform-react@0.145.0`** (satisfazendo `@astrojs/react`) —
-  rejeitado. Deixa `@vitejs/plugin-react`, que é quem de fato usa a transformação
-  de JSX, com peer insatisfeito. Resolveria a declaração e não a realidade.
-- **Declarar `oxc-transform-react@0.152.0`** (satisfazendo
-  `@vitejs/plugin-react`) — rejeitado pelo espelho do anterior: apaga o aviso
-  que importa e mantém o outro. Qualquer escolha aqui deixa um aviso permanente
-  no `install` de um peer que ninguém precisa.
-- **Preact em vez de React** — rejeitado. Seria mais leve e tentador para um
-  app mobile-first, mas a constituição fixa React em `Additional Constraints`.
-  Trocar exige emenda, e não há motivo técnico nesta fase para propor uma.
+- **Declare `oxc-transform-react@0.145.0`** (satisfying `@astrojs/react`) —
+  rejected. It leaves `@vitejs/plugin-react`, which is what actually uses the JSX
+  transform, with an unsatisfied peer. It would solve the declaration and not
+  reality.
+- **Declare `oxc-transform-react@0.152.0`** (satisfying
+  `@vitejs/plugin-react`) — rejected as the mirror of the previous one: it
+  erases the warning that matters and keeps the other. Any choice here leaves a
+  permanent warning on `install` for a peer nobody needs.
+- **Preact instead of React** — rejected. It would be lighter and tempting for a
+  mobile-first app, but the constitution fixes React in `Additional
+  Constraints`. Changing it requires an amendment, and there is no technical
+  reason in this phase to propose one.
 
 ---
 
-## Decisão 6 — Node: piso real é `22.23.4`, não "LTS atual"
+## Decision 6 — Node: the real floor is `22.23.4`, not "current LTS"
 
-**Decisão**: declarar `engines.node: ">=22.23.4"` e fixar o pnpm via
+**Decision**: declare `engines.node: ">=22.23.4"` and pin pnpm via
 `packageManager`.
 
-**Rationale**: lido do registry:
+**Rationale**: read from the registry:
 
 - `astro@7.4.4` → `engines: { node: ">=22.23.4", npm: ">=9.6.5", pnpm: ">=7.1.0" }`
 - `vitest@5.0.5` → `engines: { node: "^22.12.0 || ^24.0.0 || >=26.0.0" }`
 
-O piso efetivo é o do Astro. O ambiente desta máquina é Node `v24.22.2` e pnpm
-`11.23.0`, ambos dentro das faixas — mas a faixa do Vitest tem um detalhe que
-vale registrar: ela é uma lista de majors, não um `>=`. Node 25 (ímpar, não-LTS)
-está **fora**. Declarar o piso no `package.json` faz o `install` avisar em vez
-de falhar obscuramente depois.
+The effective floor is Astro's. This machine's environment is Node `v24.22.2`
+and pnpm `11.23.0`, both within range — but Vitest's range has a detail worth
+recording: it is a list of majors, not a `>=`. Node 25 (odd, non-LTS) is
+**out**. Declaring the floor in `package.json` makes `install` warn instead of
+failing obscurely later.
 
-`packageManager` atende FR-004 e faz o Corepack usar a versão revisada, em vez
-de produzir uma árvore de dependências diferente da que passou no review.
+`packageManager` meets FR-004 and makes Corepack use the reviewed version,
+instead of producing a dependency tree different from the one that passed
+review.
 
 **Alternatives considered**:
 
-- **Não declarar `engines`** — rejeitado. Transfere para o próximo
-  desenvolvedor a descoberta de um piso que já custou uma consulta.
-- **Declarar `engines.node: ">=22"`** — rejeitado por ser falso: `22.0`–`22.23.3`
-  não satisfazem o Astro.
+- **Not declaring `engines`** — rejected. It hands the next developer the
+  discovery of a floor that has already cost a query.
+- **Declaring `engines.node: ">=22"`** — rejected for being false:
+  `22.0`–`22.23.3` do not satisfy Astro.
 
 ---
 
-## Decisão 7 — A prova de ilha `client:only` é um teste, não só um componente
+## Decision 7 — The `client:only` island proof is a test, not just a component
 
-**Decisão**: entregar (a) uma ilha `client:only` trivial que lê uma API só de
-navegador e (b) um **teste automatizado que roda o build e afirma que a marcação
-dessa ilha não está no HTML gerado**.
+**Decision**: deliver (a) a trivial `client:only` island that reads a
+browser-only API and (b) an **automated test that runs the build and asserts
+that this island's markup is not in the generated HTML**.
 
-**Rationale**: FR-012 pede o componente de prova, e a spec já observa que o
-componente é descartável mas o teste não é. O motivo: um componente de prova é
-documentação, e documentação não impede regressão. Se alguém na Fase 5 trocar
-`client:only` por `client:load` — que é a falha mais provável, porque
-`client:load` é o default que todo tutorial mostra — nada reclama. O build passa.
-O defeito aparece como "flash de tela vazia", num celular, em cima da mesa,
-longe de quem escreveu a linha.
+**Rationale**: FR-012 asks for the probe component, and the spec already notes
+that the component is disposable but the test is not. The reason: a probe
+component is documentation, and documentation does not prevent regression. If
+someone in Phase 5 swaps `client:only` for `client:load` — which is the most
+likely failure, because `client:load` is the default every tutorial shows —
+nothing complains. The build passes. The defect shows up as a "flash of empty
+screen", on a phone, on top of the table, far from whoever wrote the line.
 
-Um teste que lê o HTML construído e exige ausência da marcação transforma o
-Princípio IV em algo que falha no CI. É a diferença entre um princípio escrito e
-um princípio vigente.
+A test that reads the built HTML and requires the markup to be absent turns
+Principle IV into something that fails in CI. It is the difference between a
+written principle and an enforced principle.
 
-Esse teste também é o que faz `pnpm test` ser mais que trivial, atendendo FR-009
-(“ao menos um teste que execute de fato”) com substância em vez de um
+This test is also what makes `pnpm test` more than trivial, meeting FR-009
+(“at least one test that actually executes”) with substance instead of an
 `expect(true).toBe(true)`.
 
 **Alternatives considered**:
 
-- **Só o componente, sem teste** — rejeitado pelo motivo acima. Era o caminho
-  mais curto e deixaria a armadilha exatamente tão viva quanto antes.
-- **Teste de navegador real (Playwright) verificando ausência de hydration
-  mismatch** — rejeitado para esta fase. É a verificação mais fiel, mas traz um
-  runner de navegador, binários e tempo de CI para uma fase cujo objetivo é a
-  casca. A spec já registra em Assumptions que a checagem de console é manual
-  aqui. Fica como candidato honesto para a Fase 4, quando houver tela de verdade
-  para valer o custo.
-- **Lint rule proibindo `client:load`** — considerado e **adiado**, não
-  rejeitado. É complementar e provavelmente certo, mas escrever regra de ESLint
-  para diretiva de template Astro é trabalho de pesquisa própria, e o Princípio
-  IV só se aplica a componentes que leem estado de partida — que não existem
-  nesta fase. Registrado como recomendação para a Fase 3, quando o store nascer
-  e a regra puder ser escrita contra um alvo concreto.
+- **Only the component, no test** — rejected for the reason above. It was the
+  shortest path and would leave the trap exactly as alive as before.
+- **Real browser test (Playwright) checking for the absence of hydration
+  mismatch** — rejected for this phase. It is the most faithful check, but
+  brings a browser runner, binaries and CI time to a phase whose goal is the
+  shell. The spec already records in Assumptions that the console check is
+  manual here. It stays as an honest candidate for Phase 4, when there is a real
+  screen to make the cost worthwhile.
+- **Lint rule forbidding `client:load`** — considered and **deferred**, not
+  rejected. It is complementary and probably right, but writing an ESLint rule
+  for an Astro template directive is a research effort of its own, and Principle
+  IV only applies to components that read match state — which do not exist in
+  this phase. Recorded as a recommendation for Phase 3, when the store is born
+  and the rule can be written against a concrete target.
 
 ---
 
-## Versões apuradas (2026-11-02)
+## Surveyed versions (2026-11-02)
 
-| Pacote | `latest` no registry | Adotado | Motivo de divergir do `latest` |
+| Package | `latest` on the registry | Adopted | Reason for diverging from `latest` |
 |---|---|---|---|
 | `astro` | 7.4.4 | 7.4.4 | — |
 | `@astrojs/react` | 7.1.2 | 7.1.2 | — |
 | `@astrojs/check` | 0.9.12 | 0.9.12 | — |
 | `react` / `react-dom` | 19.3.1 | 19.3.1 | — |
 | `@types/react` / `-dom` | 19.3.0 | 19.3.0 | — |
-| `oxc-transform-react` | 0.156.0 | **não instalado** | peer `optional` com faixas disjuntas no upstream (Decisão 5) |
-| `@types/node` | 26.6.6 | 24.19.2 | achado na implementação; ver abaixo |
+| `oxc-transform-react` | 0.156.0 | **not installed** | `optional` peer with disjoint ranges upstream (Decision 5) |
+| `@types/node` | 26.6.6 | 24.19.2 | found during implementation; see below |
 | `tailwindcss` | 4.3.3 | 4.3.3 | — |
-| `@tailwindcss/vite` | 4.3.3 | 4.3.3 | substitui `@astrojs/tailwind` (Decisão 2) |
-| `typescript` | **7.0.2** | **6.0.3** | teto de `@astrojs/check` e `typescript-eslint` (Decisão 1) |
+| `@tailwindcss/vite` | 4.3.3 | 4.3.3 | replaces `@astrojs/tailwind` (Decision 2) |
+| `typescript` | **7.0.2** | **6.0.3** | ceiling of `@astrojs/check` and `typescript-eslint` (Decision 1) |
 | `vitest` | 5.0.5 | 5.0.5 | — |
 | `eslint` | 10.14.0 | 10.14.0 | — |
 | `typescript-eslint` | 8.72.1 | 8.72.1 | — |
-| `eslint-plugin-astro` | 3.2.1 | 3.2.1 | peers: `eslint>=10`, `typescript-eslint>=8.61` — fecham |
+| `eslint-plugin-astro` | 3.2.1 | 3.2.1 | peers: `eslint>=10`, `typescript-eslint>=8.61` — they close |
 | `prettier` | 3.9.10 | 3.9.10 | — |
 | `prettier-plugin-astro` | 1.1.2 | 1.1.2 | — |
-| `jsdom` | 30.1.3 | 30.1.3 | disponível por arquivo, não padrão (Decisão 4) |
+| `jsdom` | 30.1.3 | 30.1.3 | available per file, not default (Decision 4) |
 
-**`@astrojs/tailwind`**: última publicada `6.0.2`. **Não adotado** — peers
-incompatíveis em duas dimensões (Decisão 2).
-
----
-
-## Unknowns — resolvidos na implementação
-
-Nenhum `NEEDS CLARIFICATION` da Technical Context ficou aberto.
-
-As duas incertezas de execução registradas na Fase 0 foram resolvidas. Ficam
-aqui com o resultado real, não com a pergunta — deixá-las "em aberto" depois de
-respondidas faria a próxima pessoa repetir a investigação.
-
-1. **Peers de a11y de `eslint-plugin-astro@3.2.1`** — ✅ **nada a declarar.**
-   O `pnpm install` não exigiu `eslint-plugin-jsx-a11y` nem
-   `eslint-plugin-jsx-a11y-x`, e `pnpm peers check` responde "No peer dependency
-   issues found". A redundância aparente nos peers declarados não se traduz em
-   exigência de instalação. O palpite de declarar os dois teria adicionado duas
-   dependências desnecessárias.
-
-2. **`astro check` com `typescript@6.0.3`** — ✅ **funciona.** `pnpm typecheck`
-   roda e reporta `Result (8 files): 0 errors, 0 warnings, 0 hints`. O plano de
-   contingência (descer para `typescript@5.9.x`) **não** foi necessário e fica
-   registrado apenas como resposta pré-aprovada caso uma atualização futura
-   quebre a combinação. Em nenhuma hipótese relaxar `strict` — seria violação do
-   Princípio V.
+**`@astrojs/tailwind`**: last published `6.0.2`. **Not adopted** — peers
+incompatible in two dimensions (Decision 2).
 
 ---
 
-## Achados da implementação (não previstos na Fase 0)
+## Unknowns — resolved during implementation
 
-Cinco coisas que só apareceram ao rodar os comandos. Registradas porque todas
-custariam tempo a quem repetisse o caminho.
+No `NEEDS CLARIFICATION` from the Technical Context remained open.
 
-1. **`@types/node` é necessário e não vem por transitividade.** Os testes usam
-   `node:fs` e `node:url`; sem `@types/node`, `astro check` reprova com
-   `ts(2591)`. Adotado `24.19.2` (linha `^24`) em vez do `latest` `26.6.6`, para
-   casar com o Node 24 do ambiente — tipos de uma major à frente do runtime
-   descrevem APIs que não existem na execução.
+The two execution uncertainties recorded in Phase 0 were resolved. They stay
+here with the real outcome, not with the question — leaving them "open" after
+being answered would make the next person repeat the investigation.
 
-2. **`getViteConfig` não tipa a chave `test`.** Ele devolve `UserConfig` do
-   Vite, que não conhece `test`, e o typecheck reprova com `ts(2353)`. A correção
-   é `/// <reference types="vitest/config" />` no topo de `vitest.config.ts`.
-   Isso não enfraquece a Decisão 4 — o helper continua sendo o jeito certo de
-   herdar a resolução de módulos; só precisa da referência de tipos.
+1. **a11y peers of `eslint-plugin-astro@3.2.1`** — ✅ **nothing to declare.**
+   `pnpm install` did not require `eslint-plugin-jsx-a11y` nor
+   `eslint-plugin-jsx-a11y-x`, and `pnpm peers check` answers "No peer
+   dependency issues found". The apparent redundancy in the declared peers does
+   not translate into an installation requirement. The guess of declaring both
+   would have added two unnecessary dependencies.
 
-3. **`tseslint.config()` está deprecated em `typescript-eslint@8.72.1`.** Usá-la
-   faz `astro check` reportar um hint `ts(6387)` em todo typecheck. A substituta
-   é `defineConfig` de `eslint/config`, que o ESLint 10 já fornece. Com ela o
-   typecheck fica em `0 hints`.
+2. **`astro check` with `typescript@6.0.3`** — ✅ **works.** `pnpm typecheck`
+   runs and reports `Result (8 files): 0 errors, 0 warnings, 0 hints`. The
+   contingency plan (dropping to `typescript@5.9.x`) was **not** needed and is
+   recorded only as a pre-approved response in case a future update breaks the
+   combination. Under no circumstances relax `strict` — that would violate
+   Principle V.
 
-4. **Regras de lint com tipos vazam para os `.astro` e derrubam o `pnpm lint`.**
-   Espalhar `...tseslint.configs.recommendedTypeChecked` na raiz da flat config
-   faz as regras tipadas alcançarem arquivos `.astro`, que usam
-   `astro-eslint-parser`. Esse parser não repassa `parserOptions.project` ao
-   `@typescript-eslint/parser`, e o ESLint morre com erro de infraestrutura
-   (`exit 2`, "you have used a rule which requires type information") em vez de
-   apontar defeito de código. A correção é escopar o preset tipado dentro de um
-   bloco `files: ['**/*.{ts,tsx}']` com `extends`, e deixar
-   `astro.configs.recommended` cuidar dos `.astro` sem tipos.
+---
 
-5. **`pnpm format` alcança bem mais do que código, e isso é nocivo aqui.** Na
-   primeira execução, o Prettier reescreveu 15 arquivos de documentação —
-   incluindo `.claude/skills/speckit-*/SKILL.md` com o *quoting* do frontmatter
-   YAML, e as tabelas de `AGENTS.md` esticadas para mais de 100 colunas. Os
-   arquivos do Spec Kit são mantidos pelo CLI fixado em 1.2.5, e a constituição
-   exige poder revisar o diff do `init`; reformatá-los torna esse diff ilegível.
-   Decisão: `.prettierignore` passa a excluir `*.md`, `.specify/` e `.claude/`
-   — **o Prettier formata código neste repositório, não prosa.** Quebra de linha
-   em documentação é decisão de quem escreve.
+## Implementation findings (not foreseen in Phase 0)
 
-   Vale notar o que *não* aconteceu: a POC (`index.html`, `script.js`,
-   `style.css`) saiu intacta da primeira execução, com hash idêntico. As três
-   linhas de exclusão previstas em FR-016 funcionaram. O vazamento foi em
-   arquivos que a Fase 0 não tinha pensado em proteger.
+Five things that only showed up when running the commands. Recorded because all
+of them would cost time to whoever repeated the path.
+
+1. **`@types/node` is required and does not come transitively.** The tests use
+   `node:fs` and `node:url`; without `@types/node`, `astro check` fails with
+   `ts(2591)`. Adopted `24.19.2` (line `^24`) instead of the `latest` `26.6.6`,
+   to match the environment's Node 24 — types one major ahead of the runtime
+   describe APIs that do not exist at execution time.
+
+2. **`getViteConfig` does not type the `test` key.** It returns Vite's
+   `UserConfig`, which does not know `test`, and typecheck fails with
+   `ts(2353)`. The fix is `/// <reference types="vitest/config" />` at the top
+   of `vitest.config.ts`. This does not weaken Decision 4 — the helper is still
+   the right way to inherit module resolution; it just needs the types
+   reference.
+
+3. **`tseslint.config()` is deprecated in `typescript-eslint@8.72.1`.** Using it
+   makes `astro check` report a `ts(6387)` hint on every typecheck. The
+   replacement is `defineConfig` from `eslint/config`, which ESLint 10 already
+   provides. With it, typecheck stays at `0 hints`.
+
+4. **Type-aware lint rules leak into the `.astro` files and bring down
+   `pnpm lint`.** Spreading `...tseslint.configs.recommendedTypeChecked` at the
+   root of the flat config makes the typed rules reach `.astro` files, which use
+   `astro-eslint-parser`. That parser does not pass `parserOptions.project` on
+   to `@typescript-eslint/parser`, and ESLint dies with an infrastructure error
+   (`exit 2`, "you have used a rule which requires type information") instead of
+   pointing to a code defect. The fix is to scope the typed preset inside a
+   `files: ['**/*.{ts,tsx}']` block with `extends`, and let
+   `astro.configs.recommended` handle the `.astro` files without types.
+
+5. **`pnpm format` reaches far more than code, and that is harmful here.** On
+   the first run, Prettier rewrote 15 documentation files — including
+   `.claude/skills/speckit-*/SKILL.md` with the YAML frontmatter *quoting*, and
+   the `AGENTS.md` tables stretched to more than 100 columns. The Spec Kit files
+   are maintained by the CLI pinned at 1.2.5, and the constitution requires
+   being able to review the `init` diff; reformatting them makes that diff
+   unreadable. Decision: `.prettierignore` now excludes `*.md`, `.specify/` and
+   `.claude/` — **Prettier formats code in this repository, not prose.** Line
+   wrapping in documentation is the writer's decision.
+
+   Worth noting what did *not* happen: the POC (`index.html`, `script.js`,
+   `style.css`) came out of the first run intact, with an identical hash. The
+   three exclusion lines foreseen in FR-016 worked. The leak was in files that
+   Phase 0 had not thought to protect.

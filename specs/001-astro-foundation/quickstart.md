@@ -1,88 +1,88 @@
-# Phase 1 — Quickstart: validar a fundação
+# Phase 1 — Quickstart: validate the foundation
 
 **Feature**: `specs/001-astro-foundation/`
 
-Roteiro para provar que a fundação funciona. Cada passo aponta para o critério
-de sucesso que ele verifica, para que um revisor possa conferir a spec em vez de
-confiar no relato.
+Script to prove that the foundation works. Each step points to the success
+criterion it verifies, so that a reviewer can check the spec instead of
+trusting the report.
 
-A ordem importa: os passos 1 a 5 provam que os comandos **passam**; os passos 6
-a 9 provam que eles **reprovam**. A segunda metade é a que importa — um comando
-de verificação que nunca falha não verifica nada.
+The order matters: steps 1 to 5 prove that the commands **pass**; steps 6
+to 9 prove that they **fail**. The second half is the one that matters — a
+verification command that never fails verifies nothing.
 
-## Pré-requisitos
+## Prerequisites
 
-- Node `>=22.23.4` — piso real de `astro@7.4.4`, não "LTS atual". Confira com
+- Node `>=22.23.4` — the real floor of `astro@7.4.4`, not "current LTS". Check with
   `node -v`.
-- Corepack habilitado, ou pnpm na versão declarada em `packageManager`.
-- **Nenhuma** variável de ambiente, arquivo `.env` ou credencial. A ausência é
-  parte do que se está testando (FR-003).
+- Corepack enabled, or pnpm at the version declared in `packageManager`.
+- **No** environment variables, `.env` file or credentials. The absence is
+  part of what is being tested (FR-003).
 
-## Parte 1 — os comandos passam
+## Part 1 — the commands pass
 
-### 1. Instalar a partir de um clone limpo → SC-001
+### 1. Install from a clean clone → SC-001
 
 ```sh
 pnpm install
 ```
 
-**Esperado**: termina com sucesso, usando `pnpm-lock.yaml`. Não pede
-configuração nem variável de ambiente.
+**Expected**: finishes successfully, using `pnpm-lock.yaml`. Does not ask for
+configuration or environment variables.
 
-Confirme também com `pnpm peers check`: a resposta esperada é **"No peer
+Also confirm with `pnpm peers check`: the expected response is **"No peer
 dependency issues found"**.
 
-> Se aparecer aviso sobre `oxc-transform-react`, alguém o declarou como
-> dependência. Remova. É peer `optional` em `@astrojs/react` e em
-> `@vitejs/plugin-react`, com faixas **disjuntas** — nenhuma versão satisfaz as
-> duas, e declará-lo é a única forma de criar o aviso. Ver
-> [research.md, Decisão 5](./research.md).
+> If a warning about `oxc-transform-react` shows up, someone declared it as a
+> dependency. Remove it. It is an `optional` peer in `@astrojs/react` and in
+> `@vitejs/plugin-react`, with **disjoint** ranges — no version satisfies
+> both, and declaring it is the only way to create the warning. See
+> [research.md, Decision 5](./research.md).
 
-### 2. Gerar o artefato estático → SC-001, FR-002
+### 2. Generate the static artifact → SC-001, FR-002
 
 ```sh
 pnpm build
 ls dist/
 ```
 
-**Esperado**: `dist/` existe e contém `index.html`. O build termina com código
+**Expected**: `dist/` exists and contains `index.html`. The build finishes with code
 `0`.
 
-**Confira que não há runtime de servidor** (Princípio I):
+**Check that there is no server runtime** (Principle I):
 
 ```sh
 find dist -name '*.func' -o -name '_worker.js' -o -name 'entry.mjs' | head
 ```
 
-**Esperado**: saída vazia.
+**Expected**: empty output.
 
-### 3. Servir o artefato sem nenhuma lógica → SC-002
+### 3. Serve the artifact with no logic → SC-002
 
 ```sh
 pnpm preview
 ```
 
-Abra a URL impressa. **Esperado**: a página carrega, a ilha de prova aparece com
-o valor lido do navegador, e o console fica **sem erro e sem aviso de hydration
-mismatch**.
+Open the printed URL. **Expected**: the page loads, the proof island appears with
+the value read from the browser, and the console stays **free of errors and of hydration
+mismatch warnings**.
 
-> Esta checagem é manual nesta fase, por decisão registrada em
-> [spec.md § Assumptions](./spec.md). Teste de navegador automatizado é
-> candidato da Fase 4.
+> This check is manual in this phase, by a decision recorded in
+> [spec.md § Assumptions](./spec.md). An automated browser test is a
+> Phase 4 candidate.
 
-### 4. Confirmar que a ilha não renderizou no build → SC-005, Princípio IV
+### 4. Confirm that the island did not render at build time → SC-005, Principle IV
 
 ```sh
 grep -c 'client-only-probe' dist/index.html
 ```
 
-**Esperado**: `0`. A marcação renderizada da ilha **não** está no HTML gerado —
-é isso que distingue `client:only` de `client:load`.
+**Expected**: `0`. The island's rendered markup is **not** in the generated HTML —
+that is what distinguishes `client:only` from `client:load`.
 
-O passo 5 verifica o mesmo automaticamente; faça este à mão uma vez, para ver
-com os próprios olhos o que o teste afirma.
+Step 5 checks the same thing automatically; do this one by hand once, to see
+with your own eyes what the test asserts.
 
-### 5. Rodar a suíte, o typecheck e o lint → SC-003, SC-004, SC-007
+### 5. Run the suite, the typecheck and the lint → SC-003, SC-004, SC-007
 
 ```sh
 pnpm test
@@ -91,50 +91,50 @@ pnpm lint
 pnpm format:check
 ```
 
-**Esperado**: todos com código `0`. `pnpm test` relata **ao menos um teste
-executado** e zero falhas, e **não entra em modo watch**.
+**Expected**: all with code `0`. `pnpm test` reports **at least one test
+run** and zero failures, and **does not enter watch mode**.
 
-### 6. Confirmar que a POC está intocada → SC-006, FR-016
+### 6. Confirm that the POC is untouched → SC-006, FR-016
 
 ```sh
 git diff --stat chore/spec-kit -- index.html script.js style.css
 ```
 
-**Esperado**: saída vazia — zero linha alterada nos três arquivos.
+**Expected**: empty output — zero lines changed in the three files.
 
-Rode também **depois** de `pnpm format`, que é o comando com maior chance de
-reescrever a POC por acidente:
+Also run it **after** `pnpm format`, which is the command most likely to
+rewrite the POC by accident:
 
 ```sh
 pnpm format && git status --porcelain -- index.html script.js style.css
 ```
 
-**Esperado**: saída vazia.
+**Expected**: empty output.
 
-### 7. Confirmar o escopo negativo → SC-008, FR-018
+### 7. Confirm the negative scope → SC-008, FR-018
 
 ```sh
 grep -rniE 'localStorage|schemaVersion|GameDefinition|meche' dist/
 ```
 
-**Esperado**: saída vazia. Esta fase não antecipa o contrato de jogo, o schema
-persistido nem nenhum jogo por nome.
+**Expected**: empty output. This phase does not anticipate the game contract, the persisted
+schema or any game by name.
 
-> A busca é no **artefato** (`dist/`), não em `src/` e `tests/`. Estes dois
-> mencionam os termos em comentários e na própria asserção que exige a ausência
-> deles (`tests/static-build.test.ts`) — grep ali retorna falso positivo. O que
-> SC-008 quer dizer é que nada disso chega ao navegador, e é isso que `dist/`
-> responde. O mesmo teste faz essa verificação automaticamente.
+> The search is over the **artifact** (`dist/`), not `src/` and `tests/`. Those two
+> mention the terms in comments and in the very assertion that requires their
+> absence (`tests/static-build.test.ts`) — grep there returns a false positive. What
+> SC-008 means is that none of this reaches the browser, and that is what `dist/`
+> answers. The same test performs this check automatically.
 
-## Parte 2 — os comandos reprovam
+## Part 2 — the commands fail
 
-Cada passo abaixo introduz um defeito proposital, confirma que o comando
-correspondente **falha**, e desfaz. Se algum passar, o comando é decorativo e a
-fase não está pronta.
+Each step below introduces a deliberate defect, confirms that the
+corresponding command **fails**, and undoes it. If any of them passes, the command is decorative and the
+phase is not done.
 
-### 8. O corredor de testes reprova de verdade → SC-003, FR-009
+### 8. The test runner really fails → SC-003, FR-009
 
-Adicione a um arquivo de teste:
+Add to a test file:
 
 ```ts
 it('falha de proposito', () => {
@@ -146,11 +146,11 @@ it('falha de proposito', () => {
 pnpm test; echo "exit=$?"
 ```
 
-**Esperado**: `exit` diferente de `0`. Remova o teste.
+**Expected**: `exit` other than `0`. Remove the test.
 
-### 9. O typecheck reprova um erro de tipo → SC-004, FR-006
+### 9. The typecheck fails on a type error → SC-004, FR-006
 
-Adicione a um arquivo `.ts` de `src/`:
+Add to a `.ts` file under `src/`:
 
 ```ts
 const n: number = 'texto';
@@ -160,42 +160,42 @@ const n: number = 'texto';
 pnpm typecheck; echo "exit=$?"
 ```
 
-**Esperado**: `exit` diferente de `0`. Remova a linha.
+**Expected**: `exit` other than `0`. Remove the line.
 
-### 10. A verificação de formatação reprova → SC-007, FR-014
+### 10. The formatting check fails → SC-007, FR-014
 
-Estrague a indentação de um arquivo em `src/` e rode:
+Break the indentation of a file in `src/` and run:
 
 ```sh
 pnpm format:check; echo "exit=$?"
 ```
 
-**Esperado**: `exit` diferente de `0`, apontando o arquivo. Depois:
-`pnpm format` para restaurar.
+**Expected**: `exit` other than `0`, pointing at the file. Then:
+`pnpm format` to restore.
 
-### 11. O build reprova API de navegador em tempo de build → Princípio IV
+### 11. The build fails on a browser API at build time → Principle IV
 
-Troque `client:only` por `client:load` na ilha de prova em
-`src/pages/index.astro` e rode:
+Swap `client:only` for `client:load` on the proof island in
+`src/pages/index.astro` and run:
 
 ```sh
 pnpm build; echo "exit=$?"
 pnpm test; echo "exit=$?"
 ```
 
-**Esperado**: o build falha, **ou** passa e `pnpm test` falha ao encontrar a
-marcação da ilha em `dist/index.html`. Em qualquer dos dois casos, o pipeline
-acusa — que é o ponto.
+**Expected**: the build fails, **or** it passes and `pnpm test` fails on finding the
+island's markup in `dist/index.html`. In either case, the pipeline
+flags it — which is the point.
 
-**Este é o passo mais importante do roteiro.** Ele é a única verificação de que
-a armadilha central deste projeto está coberta por algo que falha
-automaticamente, e não apenas documentada. Reverta a diretiva ao terminar.
+**This is the most important step of the script.** It is the only verification that
+this project's central trap is covered by something that fails
+automatically, and not merely documented. Revert the directive when done.
 
-## Critério de pronto da fase (resumo)
+## Phase done criteria (summary)
 
-| Critério da issue MJR-9 | Verificado em |
+| Criterion from issue MJR-9 | Verified in |
 |---|---|
-| `pnpm install && pnpm build` gera artefato estático | passos 1 e 2 |
-| `pnpm test` roda o Vitest com sucesso | passo 5 (e passo 8 prova que reprova) |
-| `specs/NNN-*/spec.md` commitado e `plan.md` com Constitution Check | `61cc74a`; [plan.md § Constitution Check](./plan.md) |
-| Nenhum arquivo da POC alterado | passo 6 |
+| `pnpm install && pnpm build` generates a static artifact | steps 1 and 2 |
+| `pnpm test` runs Vitest successfully | step 5 (and step 8 proves it fails) |
+| `specs/NNN-*/spec.md` committed and `plan.md` with Constitution Check | `61cc74a`; [plan.md § Constitution Check](./plan.md) |
+| No POC file changed | step 6 |

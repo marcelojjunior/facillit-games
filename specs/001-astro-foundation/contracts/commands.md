@@ -1,64 +1,64 @@
-# Phase 1 — Contract: scripts de pipeline
+# Phase 1 — Contract: pipeline scripts
 
 **Feature**: `specs/001-astro-foundation/`
 
-A única interface que esta feature expõe é o **conjunto de scripts de
-`package.json`**. Não há API, endpoint nem contrato de dados — a aplicação é
-estática e client-side (Princípio I).
+The only interface this feature exposes is the **set of
+`package.json` scripts**. There is no API, endpoint or data contract — the application is
+static and client-side (Principle I).
 
-Esse conjunto é contrato de verdade, não documentação: as Fases 3 a 6, o review
-e o pipeline de publicação dependem desses nomes. Renomear ou remover um script
-daqui é mudança quebrável e exige atualização desta spec no mesmo PR
-(Princípio VIII).
+This set is a real contract, not documentation: Phases 3 to 6, review
+and the publishing pipeline depend on these names. Renaming or removing a script
+from here is a breaking change and requires updating this spec in the same PR
+(Principle VIII).
 
 ## Scripts
 
-| Script | Faz | Sai com erro quando | Requisito |
+| Script | Does | Exits with an error when | Requirement |
 |---|---|---|---|
-| `pnpm install` | Instala dependências a partir do lockfile versionado | lockfile divergente de `package.json`, ou Node fora de `engines` | FR-001, FR-004 |
-| `pnpm build` | Gera o artefato estático em `dist/` | qualquer erro de build, incluindo execução de API de navegador em tempo de build | FR-001, FR-002 |
-| `pnpm dev` | Servidor de desenvolvimento com HMR | porta ocupada | conveniência — não é critério de pronto |
-| `pnpm preview` | Serve `dist/` como arquivos estáticos, sem lógica | `dist/` ausente | SC-002 |
-| `pnpm typecheck` | Verificação de tipos em modo estrito (`astro check`) | qualquer erro de tipo | FR-006, SC-004 |
-| `pnpm test` | Suíte unitária (Vitest, uma passada, sem watch) | qualquer teste falhando | FR-008, FR-009, SC-003 |
-| `pnpm test:watch` | Vitest em watch, para desenvolvimento | — | conveniência |
-| `pnpm lint` | ESLint sobre `src/` e `tests/` | qualquer erro de lint | FR-014, FR-015 |
-| `pnpm format` | Prettier **escrevendo** | — | conveniência |
-| `pnpm format:check` | Prettier **verificando**, sem escrever | qualquer arquivo fora do padrão | FR-014, SC-007 |
+| `pnpm install` | Installs dependencies from the versioned lockfile | lockfile diverges from `package.json`, or Node outside `engines` | FR-001, FR-004 |
+| `pnpm build` | Generates the static artifact in `dist/` | any build error, including execution of a browser API at build time | FR-001, FR-002 |
+| `pnpm dev` | Development server with HMR | port in use | convenience — not a done criterion |
+| `pnpm preview` | Serves `dist/` as static files, with no logic | `dist/` missing | SC-002 |
+| `pnpm typecheck` | Type checking in strict mode (`astro check`) | any type error | FR-006, SC-004 |
+| `pnpm test` | Unit suite (Vitest, a single pass, no watch) | any failing test | FR-008, FR-009, SC-003 |
+| `pnpm test:watch` | Vitest in watch mode, for development | — | convenience |
+| `pnpm lint` | ESLint over `src/` and `tests/` | any lint error | FR-014, FR-015 |
+| `pnpm format` | Prettier **writing** | — | convenience |
+| `pnpm format:check` | Prettier **checking**, without writing | any file not matching the standard | FR-014, SC-007 |
 
-## Invariantes do contrato
+## Contract invariants
 
-Estas propriedades são o que as fases seguintes têm direito de assumir. Quebrar
-qualquer uma é quebra de contrato, mesmo que os nomes dos scripts continuem iguais.
+These properties are what the following phases are entitled to assume. Breaking
+any of them is a contract break, even if the script names stay the same.
 
-1. **`pnpm test` é uma passada, não watch.** Um `pnpm test` que entra em watch
-   trava CI e trava sessão de agente. A variante interativa tem nome próprio
+1. **`pnpm test` is a single pass, not watch.** A `pnpm test` that enters watch mode
+   hangs CI and hangs agent sessions. The interactive variant has its own name
    (`test:watch`).
-2. **Nenhum script exige variável de ambiente, segredo ou credencial** (FR-003,
-   Princípio I). Rodar com ambiente vazio é o caso testado, não o degradado.
-3. **Nenhum script exige rede depois do `install`.** `build`, `test`,
-   `typecheck`, `lint` e `format:check` rodam offline.
-4. **`typecheck`, `lint` e `format:check` ignoram `index.html`, `script.js` e
-   `style.css`** (FR-015, FR-016). Nenhuma ferramenta pode reescrever ou reprovar
-   a POC congelada. Em particular, `pnpm format` **não** altera esses arquivos.
-5. **`build` produz só arquivos estáticos** — sem função de servidor, sem
-   adapter, sem processo residente (FR-002).
-6. **Cada comando de verificação reprova de verdade.** `test`, `typecheck`,
-   `lint` e `format:check` devem falhar diante de um defeito proposital; um
-   comando que passa vazio não cumpre o contrato (FR-009, SC-003, SC-004,
-   SC-007). O roteiro de [quickstart.md](../quickstart.md) exercita isso.
-7. **`build` falha se uma API de navegador for executada em tempo de build.**
-   É o que torna a violação do Princípio IV visível no pipeline em vez de no
-   celular do usuário.
+2. **No script requires an environment variable, secret or credential** (FR-003,
+   Principle I). Running with an empty environment is the tested case, not the degraded one.
+3. **No script requires network access after `install`.** `build`, `test`,
+   `typecheck`, `lint` and `format:check` run offline.
+4. **`typecheck`, `lint` and `format:check` ignore `index.html`, `script.js` and
+   `style.css`** (FR-015, FR-016). No tool may rewrite or fail
+   the frozen POC. In particular, `pnpm format` does **not** change these files.
+5. **`build` produces only static files** — no server function, no
+   adapter, no resident process (FR-002).
+6. **Each verification command really fails.** `test`, `typecheck`,
+   `lint` and `format:check` must fail when faced with a deliberate defect; a
+   command that passes vacuously does not fulfill the contract (FR-009, SC-003, SC-004,
+   SC-007). The [quickstart.md](../quickstart.md) script exercises this.
+7. **`build` fails if a browser API is executed at build time.**
+   That is what makes a Principle IV violation visible in the pipeline instead of on the
+   user's phone.
 
-## O que este contrato deliberadamente não fixa
+## What this contract deliberately does not pin
 
-- **Nome do diretório de saída** além de `dist/` — é o default do Astro e a
-  plataforma de hospedagem o detecta sozinha. Fixar outro só criaria
-  configuração para manter.
-- **Script de deploy.** A publicação é passo humano nesta instância (sem
-  conexão Vercel para agentes) e o build estático é detectado automaticamente.
-  Um `pnpm deploy` falso-prestativo esconderia que o passo é humano.
-- **Script de CI agregador** (`pnpm ci` ou similar). Útil, mas ainda não há CI
-  configurado; inventar o nome agora é palpite sobre uma fase que não começou.
-  Quem configurar CI compõe a partir dos scripts acima.
+- **Output directory name** beyond `dist/` — it is Astro's default and the
+  hosting platform detects it on its own. Pinning another would only create
+  configuration to maintain.
+- **Deploy script.** Publishing is a human step in this instance (no
+  Vercel connection for agents) and the static build is detected automatically.
+  A falsely helpful `pnpm deploy` would hide that the step is human.
+- **Aggregating CI script** (`pnpm ci` or similar). Useful, but there is no CI
+  configured yet; inventing the name now is a guess about a phase that has not started.
+  Whoever configures CI composes it from the scripts above.
