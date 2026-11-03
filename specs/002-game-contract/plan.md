@@ -57,7 +57,7 @@ page in this phase
 | Principle | Verdict | How this plan complies |
 |---|---|---|
 | **I — Pure Client-Side** *(NON-NEGOTIABLE)* | **PASS** | No server, no `fetch`. Persistence is `localStorage` only. The build stays static (`tests/static-build.test.ts` unchanged). |
-| **II — A Game Is a Plugin** *(NON-NEGOTIABLE)* | **PASS** | Shell code under `src/shell/` receives a `Registry` and never imports `src/games/<id>/`. `createRegistry` and the id lookup live in `src/games/registry.ts`, the only file allowed to compare ids (research D8). Enforced by `tests/shell-boundary.test.ts` (D7). |
+| **II — A Game Is a Plugin** *(NON-NEGOTIABLE)* | **PASS** | Shell code under `src/shell/` receives a `Registry` and never imports `src/games/<id>/`. `createRegistry` and the id lookup live in `src/games/registry.ts`, the only file allowed to compare ids (research D8). Enforced by `tests/shell-boundary.test.ts` (D7). Fixture games outside `src/games/` are a recorded deviation — see Complexity Tracking. |
 | **III — A Scoring Rule Is a Pure, Tested Function** *(NON-NEGOTIABLE)* | **PASS** | Rules take inputs and return values; randomness (player ids) is injected into the shell, never read by rules (D5). Each fixture game has `rules.test.ts` beside `rules.ts` with normal, edge, and tie cases. Ties return lists. |
 | **IV — Match State Is a `client:only` Island** | **PASS** | No component reads the store in this phase. The store reads storage only when created, and the contract requires creating it in the browser. The deferred `client:load` lint rule stays deferred to Phase 4 with a reason (D7). |
 | **V — TypeScript `strict`** | **PASS** | `strictest` already on. Heterogeneous games are held through type erasure in a closure (D2), not `any` or bivariant methods. Loaded data is `unknown` until parsed (D1, D6). |
@@ -70,7 +70,7 @@ page in this phase
 |---|---|---|
 | **Spec gate** | **PASS** | See VIII. |
 | **Test gate** | **PASS** | Every rule function of both fixture games is tested (SC-002). |
-| **Constitution gate** | **PASS** | This section is filled; no violation to record. |
+| **Constitution gate** | **PASS** | This section is filled; one justified deviation recorded in Complexity Tracking (fixture games location). |
 | **Git conventions** | **PASS** | Branch `feature/game-contract` from `develop`; conventional commits; no AI attribution. |
 
 ### Post-design re-evaluation
@@ -111,9 +111,10 @@ specs/002-game-contract/
 src/
 ├── shell/                       # NEW — the shell; never names a game
 │   ├── game/
-│   │   ├── contract.ts          # GameDefinition<R>, Game, defineGame, result types
+│   │   ├── contract.ts          # GameDefinition<R>, Game, Registry type, defineGame, result types
 │   │   └── contract.test.ts
 │   └── match/
+│       ├── types.ts             # Player, Match, MatchStatus, MatchError, MatchResult
 │       ├── match.ts             # pure operations (FR-013)
 │       ├── match.test.ts
 │       ├── persistence.ts       # envelope, parsePersistedState, safe storage access
@@ -131,7 +132,8 @@ src/
 tests/
 ├── fixtures/games/              # NEW — never shipped (FR-025)
 │   ├── highest-wins/{index.ts, rules.ts, rules.test.ts}
-│   └── lowest-wins/{index.ts, rules.ts, rules.test.ts}
+│   ├── lowest-wins/{index.ts, rules.ts, rules.test.ts}
+│   └── registry.ts              # testRegistry with both fixtures
 ├── two-games.test.ts            # NEW — User Story 1 end to end
 ├── shell-boundary.test.ts       # NEW — SC-005
 ├── smoke.test.ts                # unchanged
@@ -148,8 +150,11 @@ config file changes are needed.
 
 ## Complexity Tracking
 
-No constitution violation to justify. Recorded for the reviewer — things
-deliberately **not** built:
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|---|---|---|
+| Fixture games `highest-wins` and `lowest-wins` live in `tests/fixtures/games/<id>/`, not in `src/games/<id>/` (Principle II: "each game MUST live in `src/games/<id>/`") | The contract must be proven against two games of different shapes now (FR-006), while no real game exists until Phase 5; these games exist only to test the shell | Placing them in `src/games/<id>/` and registering them would ship them in the artifact (FR-025, SC-006); placing them there unregistered would leave folders under `src/games/` that the registry does not know, making "only the registry resolves games" ambiguous. They mirror the `src/games/<id>/` layout and keep `rules.test.ts` beside `rules.ts` (Principle III) |
+
+Recorded for the reviewer — things deliberately **not** built:
 
 | Not built | Why | When |
 |---|---|---|

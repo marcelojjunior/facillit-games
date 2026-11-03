@@ -340,7 +340,7 @@ the game's rule now rejects) and check that each one yields the initial state.
   load validation of FR-020, the instance MUST fall back to the initial state.
   Edits made at the same instant in two instances resolve as last write wins.
 - **FR-022**: Player names MUST be trimmed, MUST NOT be blank, MUST NOT exceed
-  30 characters after trimming, MUST NOT contain control characters, MUST be
+  30 Unicode code points after trimming, MUST NOT contain control characters, MUST be
   unique within a match ignoring case but not accents ("Ana" equals "ana";
   "José" differs from "Jose"), and MUST be stored exactly as typed otherwise.
   Renaming a player to their own name, or to a case variant of it, is allowed.

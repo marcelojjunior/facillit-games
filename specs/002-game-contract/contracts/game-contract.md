@@ -47,7 +47,7 @@ type RoundValidation<R> =
   | { ok: false; reasons: readonly RoundRejection[] };   // at least one
 
 interface RoundRejection {
-  code: string;      // English identifier, e.g. 'duplicate_rank'
+  code: string;      // English identifier, e.g. 'rank_out_of_range'
   message: string;   // Portuguese, shown to the player as is
 }
 ```
@@ -88,6 +88,8 @@ type Evaluation =
 export function createRegistry(games: readonly Game[]): Registry;
 export const registry: Registry;   // createRegistry([]) in this phase
 
+// src/shell/game/contract.ts — the type lives in the shell, so shell code never
+// imports from src/games/ just to name it
 interface Registry {
   list(): readonly Game[];                  // registration order (stable)
   get(id: string): Game | undefined;        // undefined = game not found (FR-009)
@@ -96,6 +98,12 @@ interface Registry {
 
 `createRegistry` throws if two games share an id (programming error, caught by
 tests).
+
+`RoundValidation` with `ok: false` and an empty `reasons` list is also a
+programming error: `defineGame`'s wrapper throws (FR-003, FR-009a).
+
+The game's `id` MUST equal its folder name (FR-001); `tests/shell-boundary.test.ts`
+checks it for every game folder.
 
 **Adding a game (SC-001)**: create `src/games/<id>/`, then add one import and
 one array entry in `src/games/registry.ts`. No other file changes.

@@ -247,8 +247,8 @@ by id is a comparison on game identity — allowed only inside the registry
 - FR-025 / SC-006: no test game in the built artifact. Anything under `src/`
   that the registry imports would ship.
 - The two fixtures are chosen to break a contract built around one game: they
-  differ in player limits (2–4 vs 3–6), round input shape (one exclusive rank
-  per player vs a free number per player), and winner direction.
+  differ in player limits (2–4 vs 3–6), round input shape (a finishing place
+  per player, shared places allowed, vs a free number per player), and winner direction.
 - An empty production registry is honest: the first real game is Phase 5. The
   registry file still exists so Phase 5's diff is "add a folder, add one line
   here" (SC-001).

@@ -14,7 +14,7 @@ TypeScript interface; the exact signatures are in
 | Field | Type | Rules |
 |---|---|---|
 | `id` | `string` | Opaque, unique within the match, assigned on add, never changes (research D5) |
-| `name` | `string` | Trimmed; not blank; ≤ 30 characters; no control characters; unique in the match ignoring case, not accents; stored as typed (FR-022, D9) |
+| `name` | `string` | Trimmed; not blank; ≤ 30 Unicode code points; no control characters; unique in the match ignoring case, not accents; stored as typed (FR-022, D9) |
 
 Order in `Match.players` is the order players were added; it is the order the
 screens show and the order a rematch keeps (FR-017a).
