@@ -10,12 +10,12 @@ dist/
 # === Vercel ===
 .vercel/
 
-# === Ambiente ===
+# === Environment ===
 .env
 .env.*
 !.env.example
 
-# === Logs / SO ===
+# === Logs / OS ===
 *.log
 npm-debug.log*
 pnpm-debug.log*
@@ -25,14 +25,15 @@ Thumbs.db
 # === Coverage ===
 coverage/
 
-# === Agentes ===
-# Permissoes e configuracao locais de maquina. Pode conter caminhos absolutos
-# e credenciais. O restante de .claude/ (as skills do Spec Kit) É versionado
-# de proposito: e o que faz o processo existir em todo clone sem reinstalar.
+# === Agents ===
+# Machine-local permissions and configuration. May contain absolute paths and
+# credentials. The rest of .claude/ (the Spec Kit skills) IS versioned on
+# purpose: it is what makes the process exist in every clone without reinstalling.
 .claude/settings.local.json
 
 # === Spec Kit ===
-# .specify/ tem seu proprio .gitignore (mantido pelo CLI) cobrindo
-# feature.json, overrides locais e pacotes de integracao. Nao duplicar aqui.
-# O que falta e o cache do catalogo de extensoes, que e download, nao estado:
+# .specify/ has its own .gitignore (maintained by the CLI) covering
+# feature.json, local overrides, and integration packages. Do not duplicate it
+# here. What is missing is the extension catalog cache, which is a download,
+# not state:
 .specify/extensions/.cache/

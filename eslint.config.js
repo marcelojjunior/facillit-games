@@ -2,14 +2,14 @@ import { defineConfig } from 'eslint/config';
 import astro from 'eslint-plugin-astro';
 import tseslint from 'typescript-eslint';
 
-// `defineConfig` vem do proprio ESLint 10. Nao use `tseslint.config()`: a
-// funcao esta marcada como deprecated em typescript-eslint 8.72 e `astro check`
-// a reporta como hint em todo typecheck.
+// `defineConfig` comes from ESLint 10 itself. Do not use `tseslint.config()`:
+// the function is marked deprecated in typescript-eslint 8.72 and `astro check`
+// reports it as a hint on every typecheck.
 export default defineConfig([
   {
-    // A POC (index.html, script.js, style.css) fica congelada e publicada ate
-    // o cutover da Fase 6. Nenhuma ferramenta deste repositorio pode reprova-la
-    // nem reescreve-la (FR-015/FR-016 da spec 001).
+    // The POC (index.html, script.js, style.css) stays frozen and published
+    // until the Phase 6 cutover. No tool in this repository may fail it or
+    // rewrite it (FR-015/FR-016 of spec 001).
     ignores: [
       'dist/',
       '.astro/',
@@ -17,22 +17,22 @@ export default defineConfig([
       'index.html',
       'script.js',
       'style.css',
-      // Mantido pelo CLI do Spec Kit, fixado em 1.2.5. Lintar aqui criaria
-      // divergencia contra o diff do `init`, que a constituicao exige poder
-      // revisar.
+      // Maintained by the Spec Kit CLI, pinned at 1.2.5. Linting here would
+      // create drift against the `init` diff, which the constitution requires
+      // being able to review.
       '.specify/',
     ],
   },
 
   {
-    // Lint com informacao de tipos SO em .ts/.tsx.
+    // Type-aware lint ONLY on .ts/.tsx.
     //
-    // Espalhar `recommendedTypeChecked` na raiz da configuracao faz as regras
-    // tipadas alcancarem tambem os .astro, que usam astro-eslint-parser. O
-    // parser do Astro nao repassa `parserOptions.project` ao
-    // @typescript-eslint/parser, e o lint morre com erro de infraestrutura
-    // ("you have used a rule which requires type information") em vez de
-    // apontar defeito de codigo.
+    // Spreading `recommendedTypeChecked` at the root of the config makes the
+    // typed rules also reach .astro files, which use astro-eslint-parser. The
+    // Astro parser does not pass `parserOptions.project` on to
+    // @typescript-eslint/parser, and lint dies with an infrastructure error
+    // ("you have used a rule which requires type information") instead of
+    // pointing at a code defect.
     files: ['**/*.{ts,tsx}'],
     extends: [tseslint.configs.recommendedTypeChecked],
     languageOptions: {
@@ -43,6 +43,6 @@ export default defineConfig([
     },
   },
 
-  // Regras de .astro, sem informacao de tipos, pelo motivo acima.
+  // .astro rules, without type information, for the reason above.
   ...astro.configs.recommended,
 ]);

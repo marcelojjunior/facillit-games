@@ -17,16 +17,17 @@ import ClientOnlyProbe from '../components/ClientOnlyProbe';
     </p>
 
     <!--
-      client:only, NAO client:load.
+      client:only, NOT client:load.
 
-      Com client:load o componente renderiza no build, onde a API de navegador
-      que ele le nao existe: da hydration mismatch e flash de tela vazia a cada
-      abertura -- que e o uso normal do app (celular na mesa, aba descartada
-      pelo navegador). Principio IV da constituicao.
+      With client:load the component renders at build time, where the browser
+      API it reads does not exist: that causes a hydration mismatch and an
+      empty-screen flash on every open -- which is the normal use of the app
+      (phone on the table, tab discarded by the browser). Constitution
+      Principle IV.
 
-      tests/static-build.test.ts afirma que a marcacao desta ilha NAO aparece em
-      dist/index.html. Trocar a diretiva aqui faz esse teste falhar, o que e o
-      ponto: sem ele, a troca passaria silenciosa.
+      tests/static-build.test.ts asserts that this island's markup does NOT
+      appear in dist/index.html. Changing the directive here makes that test
+      fail, which is the point: without it, the change would go unnoticed.
     -->
     <ClientOnlyProbe client:only="react" />
   </main>

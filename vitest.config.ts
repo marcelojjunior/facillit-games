@@ -1,20 +1,20 @@
 /// <reference types="vitest/config" />
-// A referencia acima e necessaria: getViteConfig tipa o retorno como UserConfig
-// do Vite, que nao conhece a chave `test`. Sem ela, `pnpm typecheck` reprova
-// este arquivo com ts(2353).
+// The reference above is required: getViteConfig types its return value as
+// Vite's UserConfig, which does not know the `test` key. Without it,
+// `pnpm typecheck` fails this file with ts(2353).
 import { getViteConfig } from 'astro/config';
 
 export default getViteConfig({
   test: {
-    // Ambiente `node`, NAO `jsdom`.
+    // `node` environment, NOT `jsdom`.
     //
-    // O Principio III manda que regra de pontuacao seja funcao pura, proibida
-    // de tocar DOM. Rodar a suite inteira em jsdom esconderia exatamente essa
-    // violacao: uma regra que lesse `document` passaria no teste. Com `node`,
-    // ela falha.
+    // Principle III requires a scoring rule to be a pure function, forbidden
+    // from touching the DOM. Running the whole suite in jsdom would hide
+    // exactly that violation: a rule that read `document` would pass the test.
+    // With `node`, it fails.
     //
-    // jsdom esta disponivel para ser pedido por arquivo, via comentario de
-    // ambiente, quando um teste de componente precisar.
+    // jsdom is available to be requested per file, via an environment comment,
+    // when a component test needs it.
     environment: 'node',
 
     include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],

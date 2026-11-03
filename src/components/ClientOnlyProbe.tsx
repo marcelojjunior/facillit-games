@@ -1,24 +1,25 @@
 /**
- * Prova, antes de existir qualquer tela de partida, que um componente pode
- * executar so no navegador e nunca durante o build (Principio IV).
+ * Proves, before any match screen exists, that a component can run only in
+ * the browser and never during the build (Principle IV).
  *
- * Tres coisas que este componente deliberadamente NAO faz:
+ * Three things this component deliberately does NOT do:
  *
- * - Nao toca localStorage. Usar aqui violaria o escopo negativo da fase
- *   (FR-018) e deixaria uma chave orfa que a Fase 3 encontraria e teria que
- *   interpretar.
- * - Nao guarda estado de partida. Nao ha schema persistido nesta fase.
- * - Nao tenta ser bonito. A Fase 4 remove este componente.
+ * - It does not touch localStorage. Using it here would violate the phase's
+ *   negative scope (FR-018) and leave an orphan key that Phase 3 would find
+ *   and have to interpret.
+ * - It does not hold match state. There is no persisted schema in this phase.
+ * - It does not try to be pretty. Phase 4 removes this component.
  *
- * O que NAO e descartavel e o teste que o acompanha
- * (tests/static-build.test.ts). O componente e documentacao, e documentacao
- * nao impede regressao; o teste e o que faz o Principio IV falhar no CI.
+ * What is NOT disposable is the test that comes with it
+ * (tests/static-build.test.ts). The component is documentation, and
+ * documentation does not prevent regressions; the test is what makes
+ * Principle IV fail in CI.
  */
 export default function ClientOnlyProbe() {
-  // `screen` e inequivocamente indisponivel fora do navegador. Se esta linha
-  // executasse durante o build, o build quebraria aqui -- que e exatamente a
-  // deteccao que se quer.
-  const largura = globalThis.screen.width;
+  // `screen` is unambiguously unavailable outside the browser. If this line
+  // ran during the build, the build would break here -- which is exactly the
+  // detection we want.
+  const screenWidth = globalThis.screen.width;
 
   return (
     <p
@@ -26,7 +27,7 @@ export default function ClientOnlyProbe() {
       className="mt-6 rounded border border-current/20 px-3 py-2 text-sm"
     >
       Ilha <code>client:only</code> ativa. Largura de tela lida no navegador:{' '}
-      <strong>{largura}px</strong>.
+      <strong>{screenWidth}px</strong>.
     </p>
   );
 }

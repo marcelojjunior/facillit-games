@@ -1,47 +1,48 @@
-# === POC congelada ===
+# === Frozen POC ===
 #
-# Esta e a defesa mais fragil dos tres arquivos da POC: ao contrario do lint,
-# que apenas reclama, `pnpm format` ESCREVE. Sem estas tres linhas, o primeiro
-# `pnpm format` reformata silenciosamente a POC que esta publicada e no ar ate
-# o cutover da Fase 6.
+# This is the most fragile defense of the three POC files: unlike lint, which
+# only complains, `pnpm format` WRITES. Without these three lines, the first
+# `pnpm format` silently reformats the POC that is published and live until
+# the Phase 6 cutover.
 #
-# FR-016 e SC-006 da spec 001. Nao remover sem ler.
+# FR-016 and SC-006 of spec 001. Do not remove without reading.
 index.html
 script.js
 style.css
 
-# === Gerados ===
+# === Generated ===
 dist/
 .astro/
 node_modules/
 coverage/
 pnpm-lock.yaml
 
-# === Mantido pelo CLI do Spec Kit ===
+# === Maintained by the Spec Kit CLI ===
 #
-# .specify/ e .claude/skills/speckit-* sao gerados e mantidos pelo CLI, fixado
-# em 1.2.5. A constituicao exige que atualizar o CLI seja decisao explicita
-# "com o diff do init revisado" -- reformatar aqui torna esse diff ilegivel.
-# Vale para o YAML e o JSON, nao so para o markdown.
+# .specify/ and .claude/skills/speckit-* are generated and maintained by the
+# CLI, pinned at 1.2.5. The constitution requires that updating the CLI be an
+# explicit decision "with the init diff reviewed" -- reformatting here makes
+# that diff unreadable. Applies to YAML and JSON, not just markdown.
 .specify/
 .claude/
 
 # === Markdown ===
 #
-# Prettier formata CODIGO neste repositorio, nao prosa. Motivo apurado na
-# pratica, nao por gosto: rodar `pnpm format` sem esta regra reescreveu 15
-# arquivos de documentacao de uma vez, e de duas formas nocivas.
+# Prettier formats CODE in this repository, not prose. The reason was found in
+# practice, not by taste: running `pnpm format` without this rule rewrote 15
+# documentation files at once, in two harmful ways.
 #
-# 1. Reescreveu .claude/skills/speckit-*/SKILL.md -- inclusive o quoting do
-#    frontmatter YAML. Esses arquivos sao mantidos pelo CLI do Spec Kit, fixado
-#    em 1.2.5, e a constituicao exige poder revisar o diff do `init` ao
-#    atualizar. Reformata-los torna esse diff ilegivel e mexe na definicao das
-#    skills que fazem o processo existir.
+# 1. It rewrote .claude/skills/speckit-*/SKILL.md -- including the quoting of
+#    the YAML frontmatter. Those files are maintained by the Spec Kit CLI,
+#    pinned at 1.2.5, and the constitution requires being able to review the
+#    `init` diff when updating. Reformatting them makes that diff unreadable
+#    and touches the definition of the skills that make the process exist.
 #
-# 2. Esticou as tabelas de AGENTS.md para mais de 100 colunas. A documentacao
-#    deste repo e escrita a mao em ~80 colunas porque e lida em terminal, por
-#    pessoas e por agentes. Padding de tabela do Prettier trabalha contra isso.
+# 2. It stretched the tables in AGENTS.md beyond 100 columns. The documentation
+#    in this repo is hand-written at ~80 columns because it is read in a
+#    terminal, by people and by agents. Prettier's table padding works against
+#    that.
 #
-# O que se perde: markdown nao entra em `pnpm format:check`. Aceito --
-# quebra de linha em prosa e decisao de quem escreve, nao de ferramenta.
+# What is lost: markdown is not covered by `pnpm format:check`. Accepted --
+# line wrapping in prose is the writer's decision, not a tool's.
 *.md

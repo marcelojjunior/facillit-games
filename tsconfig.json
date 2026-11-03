@@ -1,34 +1,34 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
 
-  // `strictest` e superset de `strict: true` (Principio V). Adiciona
-  // noUncheckedIndexedAccess e exactOptionalPropertyTypes, que sao exatamente
-  // as travas que a Fase 3 vai querer ao ler payload de localStorage
-  // possivelmente corrompido (Principio VII) e ao modelar GameDefinition sem
-  // `any`. Apertar depois custaria mais: ja haveria codigo escrito contra a
-  // regra frouxa.
+  // `strictest` is a superset of `strict: true` (Principle V). It adds
+  // noUncheckedIndexedAccess and exactOptionalPropertyTypes, which are exactly
+  // the locks Phase 3 will want when reading a possibly corrupted localStorage
+  // payload (Principle VII) and when modeling GameDefinition without `any`.
+  // Tightening later would cost more: there would already be code written
+  // against the looser rule.
   "extends": "astro/tsconfigs/strictest",
 
   "compilerOptions": {
-    // Necessario para que `astro check` entenda os .tsx das ilhas React. O
-    // preset do Astro usa `jsx: "preserve"`, que serve para .astro mas nao
-    // resolve o JSX de componentes React.
+    // Required for `astro check` to understand the React island .tsx files.
+    // The Astro preset uses `jsx: "preserve"`, which works for .astro but does
+    // not resolve the JSX of React components.
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
 
-  // ATENCAO: este `exclude` nao e higiene, e bloqueio.
+  // WARNING: this `exclude` is not hygiene, it is a blocker.
   //
-  // O preset astro/tsconfigs/base traz `allowJs: true` com
-  // `include: ["${configDir}/**/*"]`. Sem as tres linhas da POC abaixo, os
-  // 16 KB de script.js entram no programa do TypeScript e `pnpm typecheck`
-  // passa a reprovar por erros num arquivo que a constituicao proibe corrigir
-  // (a POC fica congelada e publicada ate o cutover da Fase 6). O comando so
-  // passaria violando o congelamento.
+  // The astro/tsconfigs/base preset brings `allowJs: true` with
+  // `include: ["${configDir}/**/*"]`. Without the three POC lines below, the
+  // 16 KB of script.js enter the TypeScript program and `pnpm typecheck`
+  // starts failing on errors in a file the constitution forbids fixing (the
+  // POC stays frozen and published until the Phase 6 cutover). The command
+  // would only pass by violating the freeze.
   //
-  // Sobrescrever `exclude` tambem descarta o `["${configDir}/dist"]` do preset,
-  // entao `dist` precisa ser repetido aqui.
+  // Overriding `exclude` also drops the preset's `["${configDir}/dist"]`, so
+  // `dist` has to be repeated here.
   //
-  // Ver specs/001-astro-foundation/research.md, Decisao 3.
+  // See specs/001-astro-foundation/research.md, Decision 3.
   "exclude": ["dist", "node_modules", ".astro", "index.html", "script.js", "style.css"]
 }

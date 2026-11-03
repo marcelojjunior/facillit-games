@@ -3,26 +3,26 @@ import { describe, expect, it } from 'vitest';
 import ClientOnlyProbe from '../src/components/ClientOnlyProbe';
 
 /**
- * Prova que o corredor de testes esta operante (FR-009) e que resolve modulos
- * TypeScript do projeto sem configuracao por arquivo (FR-010).
+ * Proves that the test runner works (FR-009) and that it resolves the
+ * project's TypeScript modules without per-file configuration (FR-010).
  *
- * Nao e `expect(true).toBe(true)` de proposito: aquilo atenderia FR-009 na
- * aparencia e nao provaria nada. Importar um .tsx exercita de fato a cadeia que
- * a Fase 3 vai depender -- resolucao de modulo, transformacao de JSX e a
- * configuracao herdada de getViteConfig.
+ * It is not `expect(true).toBe(true)` on purpose: that would satisfy FR-009 in
+ * appearance and prove nothing. Importing a .tsx actually exercises the chain
+ * Phase 3 will depend on -- module resolution, JSX transformation, and the
+ * configuration inherited from getViteConfig.
  */
-describe('corredor de testes', () => {
-  it('resolve um modulo TypeScript do projeto', () => {
+describe('test runner', () => {
+  it('resolves a project TypeScript module', () => {
     expect(ClientOnlyProbe).toBeTypeOf('function');
   });
 
-  it('roda em ambiente sem DOM, para que regra de pontuacao impura falhe', () => {
-    // O Principio III proibe regra de pontuacao de tocar DOM. O ambiente
-    // padrao e `node` justamente para que uma regra impura FALHE no teste em
-    // vez de passar silenciosa num jsdom complacente.
+  it('runs in an environment without DOM, so an impure scoring rule fails', () => {
+    // Principle III forbids a scoring rule from touching the DOM. The default
+    // environment is `node` precisely so that an impure rule FAILS the test
+    // instead of passing silently in a lenient jsdom.
     //
-    // Se esta asercao quebrar, alguem trocou o ambiente default para jsdom e
-    // desarmou a verificacao do Principio III sem perceber.
+    // If this assertion breaks, someone switched the default environment to
+    // jsdom and disarmed the Principle III check without noticing.
     expect(globalThis).not.toHaveProperty('document');
   });
 });
