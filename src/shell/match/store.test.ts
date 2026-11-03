@@ -303,3 +303,61 @@ describe('match store — fixing a wrong round (US4)', () => {
     expect(createStore(storage).getState()?.match.rounds).toHaveLength(2);
   });
 });
+
+describe('match store — corrupted or old data (US5, FR-020a)', () => {
+  const bad: [string, string][] = [
+    ['unreadable', '{not json'],
+    ['wrong_shape', '[]'],
+    ['unsupported_version', JSON.stringify({ schemaVersion: 2, match: null })],
+    [
+      'unknown_game',
+      serializeState({ gameId: 'removed-game', status: 'setting_up', players: [], rounds: [] }),
+    ],
+    [
+      'invalid_round',
+      serializeState({
+        gameId: 'highest-wins',
+        status: 'in_progress',
+        players: [
+          { id: 'p1', name: 'Ana' },
+          { id: 'p2', name: 'Bia' },
+        ],
+        rounds: [{ ranks: { p1: 9 } }],
+      }),
+    ],
+  ];
+
+  it.each(bad)('%s: starts empty, removes the key, and shows the notice once', (reason, raw) => {
+    const { storage, data, calls } = fakeStorage(raw);
+    const store = createStore(storage);
+
+    expect(store.getState()).toBeNull();
+    expect(store.getDiscardNotice()).toEqual({ reason });
+    expect(calls.removeItem).toBe(1);
+    expect(data.has(STORAGE_KEY)).toBe(false);
+
+    store.acknowledgeDiscardNotice();
+    expect(store.getDiscardNotice()).toBeNull();
+    expect(createStore(storage).getDiscardNotice()).toBeNull();
+  });
+
+  it('starts empty with no notice when storage cannot be read', () => {
+    const { storage } = fakeStorage('{not json');
+    storage.failReads = true;
+    const store = createStore(storage);
+
+    expect(store.getState()).toBeNull();
+    expect(store.getDiscardNotice()).toBeNull();
+  });
+
+  it('falls back to no match, with the notice, when another tab writes bad data', () => {
+    const { events, otherTabWrote } = fakeEvents();
+    const store = createStore(fakeStorage().storage, events);
+    playing(store);
+
+    otherTabWrote(STORAGE_KEY, '{not json');
+
+    expect(store.getState()).toBeNull();
+    expect(store.getDiscardNotice()).toEqual({ reason: 'unreadable' });
+  });
+});

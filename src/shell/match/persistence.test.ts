@@ -76,3 +76,59 @@ describe('safeStorage (FR-024)', () => {
     expect(safeStorage()).toBe(fake);
   });
 });
+
+describe('persistence — bad data is discarded with a reason (US5, FR-020)', () => {
+  const envelope = (value: unknown) => JSON.stringify({ schemaVersion: 1, match: value });
+  const withMatch = (patch: Record<string, unknown>) => envelope({ ...match, ...patch });
+
+  it.each([
+    ['unreadable', 'invalid JSON', '{not json'],
+    ['wrong_shape', 'a JSON array', '[]'],
+    ['wrong_shape', 'a JSON string', '"hello"'],
+    ['wrong_shape', 'no schemaVersion', JSON.stringify({ match: null })],
+    ['wrong_shape', 'no match', JSON.stringify({ schemaVersion: 1 })],
+    ['unsupported_version', 'version 0', JSON.stringify({ schemaVersion: 0, match: null })],
+    ['unsupported_version', 'a newer version', JSON.stringify({ schemaVersion: 2, match: null })],
+    [
+      'unsupported_version',
+      'a string version',
+      JSON.stringify({ schemaVersion: '1', match: null }),
+    ],
+    ['wrong_shape', 'a bad status', withMatch({ status: 'paused' })],
+    ['wrong_shape', 'a missing gameId', withMatch({ gameId: undefined })],
+    ['wrong_shape', 'rounds that are not an array', withMatch({ rounds: {} })],
+    [
+      'wrong_shape',
+      'duplicate player ids',
+      withMatch({ players: [players[0], { id: 'p1', name: 'Outra' }] }),
+    ],
+    ['wrong_shape', 'a blank name', withMatch({ players: [{ id: 'p1', name: '  ' }] })],
+    [
+      'wrong_shape',
+      'a 31-code-point name',
+      withMatch({ players: [{ id: 'p1', name: 'x'.repeat(31) }] }),
+    ],
+    ['wrong_shape', 'an untrimmed name', withMatch({ players: [{ id: 'p1', name: ' Ana' }] })],
+    ['unknown_game', 'an unregistered game', withMatch({ gameId: 'removed-game' })],
+    [
+      'invalid_round',
+      'a round the game rejects',
+      withMatch({ rounds: [{ ranks: { p1: 9, p2: 1 } }] }),
+    ],
+  ])('%s: %s', (reason, _label, raw) => {
+    expect(parsePersistedState(raw, testRegistry)).toEqual({ match: null, notice: { reason } });
+  });
+
+  it('keeps a stored round valid after its player is renamed (rounds use ids)', () => {
+    const renamed = withMatch({ players: [{ id: 'p1', name: 'Aninha' }, players[1]] });
+
+    expect(parsePersistedState(renamed, testRegistry).match?.players[0]?.name).toBe('Aninha');
+  });
+
+  it.each([null, 42, 'texto', [1, 2], { deep: { nested: true } }])(
+    'accepts any JSON draft without validating it: %j',
+    (draft) => {
+      expect(parsePersistedState(withMatch({ draft }), testRegistry).notice).toBeNull();
+    },
+  );
+});
