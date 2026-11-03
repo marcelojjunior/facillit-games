@@ -14,7 +14,7 @@ TypeScript interface; the exact signatures are in
 | Field | Type | Rules |
 |---|---|---|
 | `id` | `string` | Opaque, unique within the match, assigned on add, never changes (research D5) |
-| `name` | `string` | Trimmed; not blank; unique in the match ignoring case, not accents; stored as typed (FR-022, D9) |
+| `name` | `string` | Trimmed; not blank; ≤ 30 characters; no control characters; unique in the match ignoring case, not accents; stored as typed (FR-022, D9) |
 
 Order in `Match.players` is the order players were added; it is the order the
 screens show and the order a rematch keeps (FR-017a).
@@ -28,8 +28,10 @@ Stored as the game's own JSON value; the shell treats it as `unknown`
 ### Draft round
 
 `unknown` JSON value, or absent. Whatever the screen is filling in for the next
-round. Not validated until confirmed. Persisted on every update (FR-018,
-User Story 2).
+round. Its content is never validated by the shell; a value that cannot be
+serialized is rejected (FR-018a). Persisted on every update (FR-018, User
+Story 2). Cleared by `confirmRound`; untouched by `replaceRound` and
+`removeLastRound` (FR-015a).
 
 ### Match
 
@@ -93,11 +95,11 @@ Storage key: `facillit-games:state` (FR-023, research D6).
 | Operation | Allowed in | Fails with |
 |---|---|---|
 | `createMatch` | none, finished | `match_in_progress`, `game_not_found` |
-| `addPlayer` | setting_up | `roster_full`, `blank_name`, `duplicate_name` |
-| `renamePlayer` | setting_up, in_progress | `player_not_found`, `blank_name`, `duplicate_name` |
+| `addPlayer` | setting_up | `roster_full`, `blank_name`, `name_too_long`, `invalid_name`, `duplicate_name` |
+| `renamePlayer` | setting_up, in_progress | `player_not_found`, `blank_name`, `name_too_long`, `invalid_name`, `duplicate_name` |
 | `removePlayer` | setting_up | `player_not_found` |
 | `start` | setting_up | `roster_too_small`, `roster_too_large` |
-| `updateDraft` | in_progress | — |
+| `updateDraft` | in_progress | `invalid_draft` (not serializable) |
 | `confirmRound` | in_progress | `invalid_round` (with game reasons) |
 | `replaceRound` | in_progress | `round_not_found`, `invalid_round` |
 | `removeLastRound` | in_progress | `round_not_found` (no rounds) |
@@ -112,14 +114,18 @@ failed operation leaves the match unchanged and writes nothing.
 
 ## Load validation order (FR-020)
 
-1. `getItem` throws or returns `null` → initial state.
-2. Not valid JSON → discard.
-3. Envelope is not an object with `schemaVersion` and `match` → discard.
-4. `schemaVersion !== 1` → discard (no older versions exist; future migrations
-   go here).
-5. `match` has the wrong shape (fields, types, status value, duplicate player
-   ids) → discard.
-6. `registry.get(match.gameId)` not found → discard.
-7. `game.evaluate(match.rounds, match.players)` rejects → discard.
+| Step | Condition | Result | Notice reason (FR-020a) |
+|---|---|---|---|
+| 1 | Storage not accessible, or `getItem` returns `null` | initial state | none |
+| 2 | Not valid JSON | discard | `unreadable` |
+| 3 | Envelope is not an object with `schemaVersion` and `match` | discard | `wrong_shape` |
+| 4 | `schemaVersion !== 1` (unknown or newer; future migrations go here) | discard | `unsupported_version` |
+| 5 | `match` has the wrong shape (fields, types, status, duplicate player ids, bad names) | discard | `wrong_shape` |
+| 6 | `registry.get(match.gameId)` not found | discard | `unknown_game` |
+| 7 | `game.evaluate(match.rounds, match.players)` rejects | discard | `invalid_round` |
 
-"Discard" means: remove the key and return the initial state. It never throws.
+"Discard" means: remove the key, return the initial state, and expose the
+notice. It never throws. The draft is not checked beyond being part of valid
+JSON (FR-018a).
+
+The same validation runs when another tab changes the key (FR-021a).

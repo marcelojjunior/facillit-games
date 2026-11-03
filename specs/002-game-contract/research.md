@@ -271,6 +271,40 @@ in Portuguese; ignoring case avoids "Ana" and "ana" side by side in the table.
 
 ---
 
+## Decision 10 — Tab sync through the `storage` event
+
+**Decision**: the store subscribes to `window`'s `storage` event, filtered by
+its key. On an event it re-parses the new value through the same load
+validation (D6), replaces its in-memory state, and notifies subscribers. It
+does not write in response. `dispose()` removes the listener.
+
+**Rationale**: the browser fires `storage` in every other same-origin tab when
+one tab writes, so sync costs one listener and reuses the loader — no new
+mechanism, no dependency (FR-021a). Not writing back avoids ping-pong between
+tabs. "Last write wins" on truly simultaneous edits is acceptable for a game
+table, where two people editing the same match at the same instant is not the
+normal case.
+
+**Alternatives considered**:
+
+- **`BroadcastChannel`.** Rejected: it would duplicate what `storage` already
+  delivers, and still needs the storage value as the source of truth.
+- **Single-tab lock (Web Locks API or a heartbeat key).** Rejected in the
+  clarification: it punishes the legitimate case of reopening the app in a new
+  tab while an old one is still around.
+
+## Decision 11 — The discard notice lives in memory only
+
+**Decision**: when load validation discards data, the store keeps a
+`DiscardNotice` with a reason code in memory and exposes it until
+`acknowledgeDiscardNotice()` is called. It is never written to storage, and no
+copy of the bad data is kept (FR-020a).
+
+**Rationale**: the notice is about *this* opening of the app. Persisting it
+would show it again after a reload even though the storage is now clean.
+Keeping the bad payload would need a second key and a cleanup rule for a case
+with no recovery path the player could use.
+
 ## Carried over from spec 001
 
 - `tests/static-build.test.ts` keeps asserting that `dist/index.html` does not

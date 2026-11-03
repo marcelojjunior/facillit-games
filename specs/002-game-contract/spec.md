@@ -35,6 +35,12 @@ used here as given.
   whole app.
 - Q: What happens to a finished match? → A: no history; keep only the roster
   for a rematch, as in the POC.
+- Q: What happens when the app is open in two tabs and both change the same
+  match? → A: keep tabs in sync — when one tab saves, the others reload the
+  match immediately; on truly simultaneous edits the last write wins.
+- Q: Should the player be told when stored data had to be discarded? → A: yes —
+  discard safely and expose a one-time notice with a reason code; the screen
+  shows it once.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -176,6 +182,9 @@ the game's rule now rejects) and check that each one yields the initial state.
 3. **Given** a match stored for a game id that is no longer registered, **When**
    the app opens, **Then** that match is discarded and the rest of the app
    works.
+4. **Given** any of the discard cases above, **When** the app opens, **Then**
+   a one-time notice with the discard reason is available to show the player,
+   and after it is acknowledged it does not come back.
 
 ---
 
@@ -196,6 +205,9 @@ the game's rule now rejects) and check that each one yields the initial state.
 - **Storage unavailable or full**: if a write fails, the in-memory match keeps
   working and the failure is reported so the screen can warn the player; the
   app does not crash.
+- **Two tabs open on the same match**: a save in one tab is picked up by the
+  others immediately (FR-021a), so a forgotten background tab cannot later
+  overwrite newer rounds with its stale copy.
 - **The POC's stored data**: the POC's existing stored match is not read or
   migrated (see Assumptions).
 - **Name casing**: names are kept exactly as typed (after trimming). The POC
@@ -208,20 +220,28 @@ the game's rule now rejects) and check that each one yields the initial state.
 
 **Game contract**
 
-- **FR-001**: Each game MUST declare, through the game contract: a unique id, a
-  display name in Portuguese, a minimum and maximum number of players, and the
-  four rule functions `validateRound`, `scoreRound`, `computeTotals`, and
-  `resolveWinners`.
+- **FR-001**: Each game MUST declare, through the game contract: a unique id
+  (kebab-case, equal to its folder name), a display name in Portuguese, a
+  minimum and maximum number of players (integers, `1 ≤ minimum ≤ maximum`;
+  a single-player game is allowed by the contract), and the four rule functions
+  `validateRound`, `scoreRound`, `computeTotals`, and `resolveWinners`.
+- **FR-001a**: Every score a game produces (per round or total) MUST be a
+  finite integer; negative values are allowed. `scoreRound` and
+  `computeTotals` MUST return exactly one score for each player of the match,
+  and no other.
 - **FR-002**: Each game MUST define its own round input shape. The shell MUST
   store and pass that input without interpreting it.
-- **FR-003**: `validateRound` MUST return either acceptance or a list of
-  reasons, so the screen can show them. It MUST NOT throw for invalid player
-  input.
+- **FR-003**: `validateRound` MUST return either acceptance or a non-empty list
+  of reasons, so the screen can show them. Each reason MUST carry a stable
+  English code and a Portuguese message for the player. It MUST NOT throw for
+  invalid player input.
 - **FR-004**: `resolveWinners` MUST return a list of players, which has more
-  than one element on a tie.
+  than one element on a tie. With zero confirmed rounds, every player is a
+  winner, whatever the game's winner direction.
 - **FR-005**: The four rule functions MUST be pure: same input, same output; no
-  reading of storage, screen, clock, or randomness. Any non-deterministic input
-  MUST be passed in as a parameter.
+  reading of storage, screen, clock, or randomness; no mutation of their inputs;
+  no module-level mutable state. Any non-deterministic input MUST be passed in
+  as a parameter.
 - **FR-006**: The contract MUST support games where the lowest total wins, not
   only the highest — the decision lives in `resolveWinners`. No game beyond
   MECHE-MECHE is planned yet, so the contract is validated against the two
@@ -231,14 +251,22 @@ the game's rule now rejects) and check that each one yields the initial state.
 **Registry**
 
 - **FR-007**: There MUST be a single registry that lists all available games
-  and resolves a game by id. It is the only place allowed to name a game.
+  and resolves a game by id. It is the only place allowed to name a game. Game
+  ids MUST be unique in it.
 - **FR-008**: Adding a game MUST require only creating its folder and adding it
   to the registry.
 - **FR-009**: Requesting an unknown game id MUST produce an explicit "game not
   found" result, never an unhandled failure.
-- **FR-010**: Shell code MUST NOT branch on a game's identity and MUST NOT
-  import a game's folder directly. This MUST be checked automatically, so a
-  violation fails the test suite.
+- **FR-009a**: "Never throws" in this spec covers player input and stored
+  data. Programming errors — an invalid game declaration, a duplicate id in the
+  registry, a rule function breaking FR-001a — MUST fail loudly and immediately,
+  so that the game's own tests catch them before release.
+- **FR-010**: Shell code — every source file of the app outside the games
+  folder — MUST NOT branch on a game's identity and MUST NOT import a game's
+  folder directly; only the registry may be imported. This MUST be checked
+  automatically, so a violation fails the test suite. The automated check MUST
+  cover at least: imports from any game folder, equality or inequality against a
+  game id, and `switch` on a game id.
 
 **Match**
 
@@ -246,20 +274,29 @@ the game's rule now rejects) and check that each one yields the initial state.
   confirmed rounds with each round's input as entered, the round currently being
   filled in (if any), and an explicit status.
 - **FR-011a**: There MUST be at most one current match for the whole app.
-  Creating a match while another one is setting up or in progress MUST replace
-  it only through an explicit discard; it MUST NOT be replaced silently.
+  Creating a match while another one is setting up or in progress MUST be
+  rejected; the caller has to invoke the discard operation first. A finished
+  match is replaced by creating a new one.
 - **FR-012**: Status MUST be one of: setting up, in progress, finished. Whether
   a match is in progress MUST be read from the status, never inferred from the
   number of rounds.
-- **FR-013**: Supported operations: create a match for a game; add, rename, and
-  remove players while setting up; start the match; update the round being
-  filled in; confirm it; replace a confirmed round; remove the last confirmed
-  round; finish the match; discard the match.
+- **FR-013**: Supported operations: create a match for a game; add and remove
+  players while setting up; rename players while setting up or in progress (not
+  once finished); start the match; update the round being filled in; confirm
+  it; replace a confirmed round, identified by its position in play order;
+  remove the last confirmed round; finish the match; create a rematch from a
+  finished match; discard the match. Replacing a position that does not exist,
+  or removing when there are no rounds, MUST be rejected.
 - **FR-014**: Starting MUST be rejected when the roster is outside the game's
   player limits. Adding a player MUST be rejected when the roster is at the
   game's maximum.
 - **FR-015**: Confirming or replacing a round MUST run the game's
-  `validateRound` first. An invalid round MUST NOT change the match.
+  `validateRound` first, against the current roster (players are matched by
+  identifier, so a rename never invalidates a round). An invalid round MUST NOT
+  change the match, and the game's reasons MUST reach the caller unchanged.
+- **FR-015a**: Confirming a round clears the draft round; a rejected confirm
+  keeps it. Replacing a round or removing the last one leaves the draft
+  untouched.
 - **FR-016**: Totals and winners MUST always be computed from the confirmed
   rounds through the game's rule. They MUST NOT be stored as an independent
   value.
@@ -267,24 +304,46 @@ the game's rule now rejects) and check that each one yields the initial state.
   available. A finished match MUST NOT accept round changes.
 - **FR-017a**: There is no match history. A finished match stays available
   (with its winners) until a new match is created or it is discarded. Creating a
-  rematch for the same game MUST be able to reuse the finished match's roster
-  (same names, same order), with no rounds.
+  rematch replaces the finished match with a new match for the same game, in
+  setting up, with the same players (names and order) and no rounds; the old
+  winners are no longer available. Player limits are checked again at start.
 
 **Persistence**
 
-- **FR-018**: Every successful mutation of the match MUST be persisted before
-  the operation is reported as complete, including updates to the round being
-  filled in.
+- **FR-018**: Every successful mutation of the match MUST be written to storage
+  before the operation is reported as complete, including updates to the round
+  being filled in. If the write fails, FR-021 applies.
+- **FR-018a**: A draft round MUST be serializable for storage; a draft that is
+  not MUST be rejected and leave the match unchanged. The shell never validates
+  a draft's content; screens MUST tolerate any stored draft.
 - **FR-019**: All persisted data MUST carry a schema version, starting at 1.
 - **FR-020**: Loading MUST degrade safely: unreadable data, a wrong shape, an
   unknown or newer version, an unregistered game id, or stored rounds that the
-  game's `validateRound` now rejects MUST result in discarding that data and
-  returning to the initial state, without breaking the app.
-- **FR-021**: A failed write MUST NOT lose the in-memory state or crash the
-  app, and MUST be reported to the caller.
-- **FR-022**: Player names MUST be trimmed, MUST NOT be blank, MUST be unique
-  within a match (case-insensitive), and MUST be stored exactly as typed
-  otherwise.
+  game's `validateRound` now rejects MUST result in discarding that data —
+  removing it from storage — and returning to the initial state (no current
+  match), without breaking the app. If storage itself cannot be accessed, the
+  app MUST start from the initial state without a discard notice, since nothing
+  was discarded.
+- **FR-020a**: When FR-020 discards data, the app MUST expose a one-time
+  discard notice carrying a stable reason code (unreadable, wrong shape,
+  unsupported version, unknown game, invalid round). The notice MUST be
+  available until acknowledged, and MUST NOT be persisted: a later reload with
+  clean storage shows no notice. No copy of the discarded data is kept.
+- **FR-021**: If a write fails, the operation still takes effect in memory and
+  is reported as complete but **not persisted**; it MUST NOT crash the app.
+  Storage keeps the last successfully written state, which is what a reload
+  shows. Every later successful write stores the full current state, so
+  persistence recovers on its own once storage works again.
+- **FR-021a**: When another tab or window of the app saves a change, every
+  other open instance MUST replace its in-memory match with the stored one and
+  notify its subscribers, without writing back. If the stored data fails the
+  load validation of FR-020, the instance MUST fall back to the initial state.
+  Edits made at the same instant in two instances resolve as last write wins.
+- **FR-022**: Player names MUST be trimmed, MUST NOT be blank, MUST NOT exceed
+  30 characters after trimming, MUST NOT contain control characters, MUST be
+  unique within a match ignoring case but not accents ("Ana" equals "ana";
+  "José" differs from "Jose"), and MUST be stored exactly as typed otherwise.
+  Renaming a player to their own name, or to a case variant of it, is allowed.
 - **FR-023**: Every key written to browser storage MUST belong to a namespace
   of this app, so it cannot collide with the POC's key or other apps on the same
   origin.
@@ -293,10 +352,13 @@ the game's rule now rejects) and check that each one yields the initial state.
 
 - **FR-024**: The match state MUST only be read in the browser. The existing
   build-time guard (the test that asserts the client-only island does not
-  render at build time) MUST keep passing.
+  render at build time) MUST keep passing. Creating the match state where
+  browser storage does not exist MUST yield the initial state without error.
 - **FR-025**: This phase MUST NOT ship any user-visible screen or any real game.
   The test games of User Story 1 exist only in the test suite and MUST NOT be
-  in the built artifact.
+  in the built artifact. They are not shipped games, so the constitution's
+  `src/games/<id>/` rule does not apply to them; they mirror that layout under
+  the test fixtures folder.
 
 ### Key Entities
 
@@ -322,17 +384,24 @@ the game's rule now rejects) and check that each one yields the initial state.
 - **SC-001**: Adding a second game requires changes to zero shell files: in the
   change that adds it, the only file outside its own folder is the registry.
 - **SC-002**: 100% of the rule functions of every game in the suite have tests
-  covering a normal case, an edge case, and a tie.
+  covering a normal case, an edge case, and a tie — where "tie" means two or
+  more players with equal values in that function's input or output (equal
+  claims for `validateRound`, equal round points for `scoreRound`, equal totals
+  for `computeTotals`, several winners for `resolveWinners`).
 - **SC-003**: After each of the operations in FR-013, reloading the persisted
-  state yields a match identical to the one before reload — 0 differences.
-- **SC-004**: For each of the 6 kinds of bad stored data in FR-020, opening the
-  app reaches the initial state in 100% of attempts, with no unhandled error.
+  state yields a match identical to the one before reload — structurally equal,
+  including status, player ids, rounds, and draft.
+- **SC-004**: For each of the five discard reasons of FR-020a (with both an
+  unknown and a newer version under "unsupported version"), opening the app
+  reaches the initial state with the matching notice in 100% of attempts, with
+  no unhandled error.
 - **SC-005**: An automated check fails when a shell file names a game or
   imports a game folder directly.
-- **SC-006**: The built artifact contains no test game and no user-visible
-  screen beyond what Phase 2 shipped.
-- **SC-007**: Totals computed for a 20-round, 7-player match are correct on
-  every recomputation, with no stored total to drift.
+- **SC-006**: No file in the built artifact contains a test game's id, and the
+  artifact has no user-visible screen beyond what Phase 2 shipped.
+- **SC-007**: For a 20-round, 7-player match, totals equal the values computed
+  independently in the test from the fixture game's documented rule, after
+  every operation, with no stored total to drift.
 
 ## Assumptions
 
@@ -354,4 +423,12 @@ the game's rule now rejects) and check that each one yields the initial state.
 - **No history.** Past matches are not kept; only the roster can be reused for
   a rematch. A history screen would need its own spec.
 - **Single device.** No sync between devices; this is client-side only by
-  principle.
+  principle. Tabs on the same device stay in sync (FR-021a).
+- **No performance target.** A match is bounded by the game's player limit and
+  a few dozen rounds; recomputing everything on each operation is negligible.
+  This is a decision, not an omission.
+- **Privacy.** Player names stay on the device only; discarding a match removes
+  them from storage.
+- **Forward-only versions.** A deploy rollback that meets data with a newer
+  `schemaVersion` discards it (FR-020). Accepted: rollbacks are rare and the
+  player is told (FR-020a).

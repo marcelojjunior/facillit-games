@@ -81,6 +81,12 @@ g.id === id)` is exactly the id comparison Principle II forbids outside the
 registry. It moved to `src/games/registry.ts`. No other change; all rows above
 hold.
 
+**After `/speckit-clarify` (2026-11-02)**: tab sync through the `storage`
+event (D10) and an in-memory discard notice (D11) were added, plus name
+limits, draft serializability, and the failed-write semantics. All use
+browser features already in scope; no new dependency, no new principle
+concern. All rows above still hold.
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -88,7 +94,7 @@ hold.
 ```text
 specs/002-game-contract/
 ├── plan.md              # This file
-├── research.md          # Decisions D1–D9
+├── research.md          # Decisions D1–D11
 ├── data-model.md        # Entities, transitions, load order
 ├── quickstart.md        # Validation guide
 ├── contracts/

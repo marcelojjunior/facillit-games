@@ -11,6 +11,8 @@ createMatchStore(options: {
   registry: Registry;
   storage?: StorageLike;        // default: browser localStorage, safely accessed
   createId?: () => string;      // default: crypto.randomUUID
+  events?: Pick<Window, 'addEventListener' | 'removeEventListener'>;
+                                // default: window, if present (tab sync)
 }): MatchStore
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
@@ -27,8 +29,16 @@ It must only be called in the browser (FR-024): Phase 4 creates it inside a
 interface MatchStore {
   getState(): MatchView | null;                 // null = no match
   subscribe(listener: () => void): () => void;  // returns unsubscribe
+  getDiscardNotice(): DiscardNotice | null;     // FR-020a
+  acknowledgeDiscardNotice(): void;             // clears it; never persisted
+  dispose(): void;                              // stops listening to other tabs
   // ...operations below
 }
+
+type DiscardNotice = {
+  reason: 'unreadable' | 'wrong_shape' | 'unsupported_version'
+        | 'unknown_game' | 'invalid_round';
+};
 ```
 
 `getState` returns the same object until the next successful operation, so it
@@ -60,8 +70,8 @@ type MatchError =
   | { code:
         | 'game_not_found' | 'match_in_progress' | 'no_match' | 'invalid_status'
         | 'roster_full' | 'roster_too_small' | 'roster_too_large'
-        | 'blank_name' | 'duplicate_name' | 'player_not_found'
-        | 'round_not_found' };
+        | 'blank_name' | 'name_too_long' | 'invalid_name' | 'duplicate_name'
+        | 'player_not_found' | 'round_not_found' | 'invalid_draft' };
 ```
 
 | Method | Arguments |
@@ -92,6 +102,12 @@ transitions](../data-model.md#state-transitions). Any operation other than
 3. **A failed write keeps the state (FR-021).** If writing throws (quota,
    private mode), the operation still succeeds in memory and returns
    `{ ok: true, persisted: false }`. The screen decides how to warn the player.
-4. **Error codes are English and stable.** Portuguese copy for them is written
+4. **Tabs stay in sync (FR-021a).** The store listens to the browser's
+   `storage` event for its key. When another tab writes, it re-runs the load
+   validation on the new value, replaces its state, and notifies subscribers —
+   without writing back. If the new value fails validation, it falls back to
+   the initial state and exposes the notice. Simultaneous edits: last write
+   wins.
+5. **Error codes are English and stable.** Portuguese copy for them is written
    by the Phase 4 screens; `invalid_round` reasons arrive already in Portuguese
    from the game.
