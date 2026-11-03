@@ -1,123 +1,130 @@
 # Facillit Games
 
-Plataforma de **marcadores de pontuação, um por jogo**. A casca (cadastro de
-jogadores, navegação de rodadas, tabela acumulada, persistência) é
-compartilhada; cada jogo declara a sua própria regra de pontuação.
+A platform of **scorekeepers, one per game**. The shell (player registration,
+round navigation, cumulative table, persistence) is shared; each game declares
+its own scoring rule.
 
-100% client-side: sem backend, sem API, sem autenticação. Dados só em
+100% client-side: no backend, no API, no authentication. Data only in
 `localStorage`.
 
-- **Como trabalhar neste repo:** [`AGENTS.md`](AGENTS.md)
-- **A regra que governa tudo:** [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
+- **How to work in this repo:** [`AGENTS.md`](AGENTS.md)
+- **The rule that governs everything:** [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 
-## Estado atual
+## Current state
 
-A reescrita está em andamento. Dois conjuntos de arquivos coexistem na raiz:
+The rewrite is in progress. Two sets of files coexist at the root:
 
-| | O que é |
+| | What it is |
 |---|---|
-| `index.html`, `script.js`, `style.css` | **POC congelada.** Publicada e no ar até o cutover. **Não receba correção de bug novo** — os bugs conhecidos são critério de aceite da reescrita. |
-| `src/`, `tests/`, e as configurações | A aplicação nova (Astro). Fundação entregue; sem telas de jogo ainda. |
+| `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation delivered; no game screens yet. |
 
-A fundação é especificada em
+The foundation is specified in
 [`specs/001-astro-foundation/`](specs/001-astro-foundation/).
 
-## Requisitos
+## Requirements
 
-- **Node `>=22.23.4`.** Não é "LTS atual": é o piso real declarado por
-  `astro@7.4.4`. Node 25 (ímpar, não-LTS) está fora da faixa do Vitest.
-- **pnpm**, na versão de `packageManager`. Use Corepack.
+- **Node `>=22.23.4`.** This is not "current LTS": it is the real floor declared
+  by `astro@7.4.4`. Node 25 (odd, non-LTS) is outside Vitest's range.
+- **pnpm**, at the `packageManager` version. Use Corepack.
 
-Nenhuma variável de ambiente, arquivo `.env` ou credencial é necessária — por
-princípio, não por acaso.
+No environment variable, `.env` file, or credential is needed — by principle,
+not by accident.
 
-## Comandos
+## Commands
 
-| Comando | O que faz |
+| Command | What it does |
 |---|---|
-| `pnpm dev` | Servidor de desenvolvimento com HMR |
-| `pnpm build` | Gera o artefato estático em `dist/` |
-| `pnpm preview` | Serve `dist/` como arquivos estáticos |
-| `pnpm test` | Suíte unitária, uma passada |
-| `pnpm test:watch` | Suíte em watch |
-| `pnpm typecheck` | Verificação de tipos em modo estrito |
+| `pnpm dev` | Development server with HMR |
+| `pnpm build` | Generates the static artifact in `dist/` |
+| `pnpm preview` | Serves `dist/` as static files |
+| `pnpm test` | Unit suite, single run |
+| `pnpm test:watch` | Suite in watch mode |
+| `pnpm typecheck` | Strict-mode type check |
 | `pnpm lint` | ESLint |
-| `pnpm format` | Prettier, escrevendo |
-| `pnpm format:check` | Prettier, apenas verificando |
+| `pnpm format` | Prettier, writing |
+| `pnpm format:check` | Prettier, check only |
 
-O contrato desses comandos (o que cada um garante, e o que **não** garante) está
-em
+The contract of these commands (what each one guarantees, and what it does
+**not**) is in
 [`specs/001-astro-foundation/contracts/commands.md`](specs/001-astro-foundation/contracts/commands.md).
-As Fases 3 a 6 dependem desses nomes: renomear é mudança quebrável.
+Phases 3 to 6 depend on these names: renaming them is a breaking change.
 
-> `tests/static-build.test.ts` lê `dist/index.html`. Rode `pnpm build` antes de
-> `pnpm test`, ou o teste falha com instrução para isso. Ele falha de propósito
-> em vez de passar vazio — um teste que passa sem artefato dá confiança falsa.
+> `tests/static-build.test.ts` reads `dist/index.html`. Run `pnpm build` before
+> `pnpm test`, or the test fails with instructions to do so. It fails on purpose
+> instead of passing empty — a test that passes without an artifact gives false
+> confidence.
 
-## Três coisas que vão te custar tempo se ninguém avisar
+## Three things that will cost you time if nobody warns you
 
-### 1. TypeScript está em `6.0.x` de propósito. Não suba para a linha 7.
+### 1. TypeScript is on `6.0.x` on purpose. Do not move to the 7 line.
 
-`latest` é `7.0.2`, mas as duas ferramentas que leem nossos tipos não suportam
-a linha 7:
+`latest` is `7.0.2`, but the two tools that read our types do not support the 7
+line:
 
 ```
 @astrojs/check@0.9.12      typescript: ^5.0.0 || ^6.0.0
 typescript-eslint@8.72.1   typescript: >=4.8.4 <6.1.0
 ```
 
-A interseção é `6.0.x`. Subir agora quebra `pnpm typecheck` e o lint com tipos.
+The intersection is `6.0.x`. Upgrading now breaks `pnpm typecheck` and
+type-aware lint.
 
-**Condição para subir**: `@astrojs/check` **e** `typescript-eslint` liberarem o
-peer de TS 7. Até lá, um `pnpm update` descuidado quebra o pipeline.
+**Condition to upgrade**: `@astrojs/check` **and** `typescript-eslint` release
+the TS 7 peer. Until then, a careless `pnpm update` breaks the pipeline.
 
-### 2. Não existe `tailwind.config.js`. Não crie um.
+### 2. There is no `tailwind.config.js`. Do not create one.
 
-Tailwind 4 configura por CSS. Tokens de design vão em
-[`src/styles/global.css`](src/styles/global.css), com `@theme`.
+Tailwind 4 is configured in CSS. Design tokens go in
+[`src/styles/global.css`](src/styles/global.css), with `@theme`.
 
-A integração `@astrojs/tailwind` **não serve** aqui: sua última versão declara
-`astro: ^3||^4||^5` e `tailwindcss: ^3.0.24` — incompatível em duas dimensões
-com Astro 7 + Tailwind 4. Tailwind entra como plugin de Vite, em
+The `@astrojs/tailwind` integration **does not work** here: its latest version
+declares `astro: ^3||^4||^5` and `tailwindcss: ^3.0.24` — incompatible in two
+dimensions with Astro 7 + Tailwind 4. Tailwind comes in as a Vite plugin, in
 `astro.config.mjs`.
 
-### 3. O `tsconfig.json` exclui a POC de propósito. Remover o `exclude` trava o typecheck.
+### 3. `tsconfig.json` excludes the POC on purpose. Removing the `exclude` breaks the typecheck.
 
-O preset `astro/tsconfigs/base` traz `allowJs: true` com
-`include: ["${configDir}/**/*"]`. Sem as exclusões, os 16 KB de `script.js`
-entram no programa do TypeScript e `pnpm typecheck` passa a reprovar por erros
-num arquivo que a constituição proíbe corrigir.
+The `astro/tsconfigs/base` preset brings `allowJs: true` with
+`include: ["${configDir}/**/*"]`. Without the exclusions, the 16 KB of
+`script.js` enter the TypeScript program and `pnpm typecheck` starts failing on
+errors in a file the constitution forbids fixing.
 
-As mesmas três exclusões existem em `eslint.config.js` e `.prettierignore`. A
-do Prettier é a mais importante: ao contrário do lint, `pnpm format` **escreve**.
+The same three exclusions exist in `eslint.config.js` and `.prettierignore`. The
+Prettier one is the most important: unlike lint, `pnpm format` **writes**.
 
-## Estado de partida tem que ser ilha `client:only`
+## Match state must be a `client:only` island
 
-Astro renderiza no build, onde `localStorage` não existe. Toda tela com estado
-de partida **tem** que ser ilha `client:only`.
+Astro renders at build time, where `localStorage` does not exist. Every screen
+with match state **must** be a `client:only` island.
 
-Com `client:load` dá hydration mismatch e flash de tela vazia a cada abertura —
-que é o uso normal do app: celular na mesa, aba descartada pelo navegador. É o
-Princípio IV da constituição.
+With `client:load` you get a hydration mismatch and an empty-screen flash on
+every open — which is the normal use of the app: phone on the table, tab
+discarded by the browser. This is Principle IV of the constitution.
 
-Isso não depende de você lembrar: `tests/static-build.test.ts` roda contra o
-HTML construído e falha se a ilha renderizar no build.
-`src/components/ClientOnlyProbe.tsx` é a prova viva, e é descartável — **o teste
-não é**. Quando a primeira tela real de partida existir, reaponte o teste para
-ela em vez de removê-lo.
+This does not depend on you remembering: `tests/static-build.test.ts` runs
+against the built HTML and fails if the island renders at build time.
+`src/components/ClientOnlyProbe.tsx` is the living proof, and it is disposable
+— **the test is not**. When the first real match screen exists, repoint the test
+to it instead of removing it.
 
-## Prettier formata código, não prosa
+## Prettier formats code, not prose
 
-`*.md`, `.specify/` e `.claude/` estão em `.prettierignore`. Motivo apurado na
-prática: sem isso, o primeiro `pnpm format` reescreveu 15 arquivos de
-documentação, incluindo o frontmatter YAML das skills do Spec Kit — que são
-mantidas pelo CLI fixado em 1.2.5, e cujo diff a constituição exige poder
-revisar.
+`*.md`, `.specify/`, and `.claude/` are in `.prettierignore`. Reason found in
+practice: without it, the first `pnpm format` rewrote 15 documentation files,
+including the YAML frontmatter of the Spec Kit skills — which are maintained by
+the CLI pinned at 1.2.5, and whose diff the constitution requires being able to
+review.
+
+## Language
+
+Code, comments, docs, specs, commits, and PRs are in English. Only what the end
+user sees is in Brazilian Portuguese. See constitution Principle IX.
 
 ## Deploy
 
-Vercel, estático. O Astro com `output: 'static'` é detectado automaticamente:
-**sem adapter, sem variável de ambiente, sem configuração**.
+Vercel, static. Astro with `output: 'static'` is detected automatically:
+**no adapter, no environment variable, no configuration**.
 
-A criação do projeto na Vercel é passo humano. Se `pnpm build` passa localmente,
-o artefato está pronto.
+Creating the project on Vercel is a human step. If `pnpm build` passes locally,
+the artifact is ready.

@@ -1,176 +1,231 @@
-# Facillit Games — guia para agentes
+# Facillit Games — guide for agents
 
-Leia este arquivo antes de agir neste repositório.
+Read this file before acting in this repository.
 
-## O que este projeto é
+## What this project is
 
-Uma plataforma de **marcadores de pontuação, um por jogo**. A casca (cadastro de
-jogadores, navegação de rodadas, tabela acumulada, persistência) é
-compartilhada; cada jogo declara a sua própria regra de pontuação através do
-contrato `GameDefinition`.
+A platform of **scorekeepers, one per game**. The shell (player registration,
+round navigation, cumulative table, persistence) is shared; each game declares
+its own scoring rule through the `GameDefinition` contract.
 
-O primeiro jogo é o **MECHE-MECHE**. O projeto é 100% client-side: sem backend,
-sem API, sem autenticação, dados só em `localStorage`.
+The first game is **MECHE-MECHE**. The project is 100% client-side: no backend,
+no API, no authentication, data only in `localStorage`.
 
-**A propriedade que todo trabalho aqui tem que preservar:** adicionar um jogo
-novo não deve exigir alteração na casca.
+**The property all work here must preserve:** adding a new game must not require
+changing the shell.
 
-## A regra que governa tudo
+## The rule that governs everything
 
-[`.specify/memory/constitution.md`](.specify/memory/constitution.md) é a
-constituição do projeto. Ela supersede plano, comentário, documento e
-preferência de agente. Em conflito, a constituição vence.
+[`.specify/memory/constitution.md`](.specify/memory/constitution.md) is the
+project constitution. It supersedes plans, comments, documents, and agent
+preferences. In a conflict, the constitution wins.
 
-Se você vai escrever código, leia a constituição primeiro. Ela é curta e todos
-os princípios são verificáveis.
+If you are going to write code, read the constitution first. It is short and
+every principle is verifiable.
 
-## Fluxo obrigatório: Spec antes de código
+## Language
 
-Este repositório usa [GitHub Spec Kit](https://github.com/github/spec-kit).
-Os comandos estão instalados como skills em `.claude/skills/speckit-*` e são
-versionados em git — não precisa instalar nada para usá-los.
+- **Everything in the repository is in English**: code, identifiers, comments,
+  tests and their messages, configuration, documentation, specs, plans, tasks,
+  commit messages, branch names, and PR descriptions.
+- **Only what the end user sees is in Brazilian Portuguese**: UI copy, labels,
+  on-screen messages, `lang="pt-BR"`.
+- When a Spec Kit command generates a spec, plan, or tasks file, write it in
+  English even if the conversation is in Portuguese.
+- Exempt: the frozen POC and git history before constitution v1.1.0.
 
-### Faixa 1 — ciclo completo
+Constitution, Principle IX.
 
-Para qualquer coisa que **crie ou altere regra de jogo, schema persistido ou
-fluxo visível ao usuário** (jogo novo, mudança de pontuação, tela nova):
+## Mandatory workflow: spec before code
+
+This repository uses [GitHub Spec Kit](https://github.com/github/spec-kit) as
+the development workflow. The commands are installed as skills in
+`.claude/skills/speckit-*` and versioned in git — nothing to install to use
+them.
+
+### Track 1 — full cycle
+
+For anything that **creates or changes a game rule, persisted schema, or
+user-visible flow** (new game, scoring change, new screen):
 
 ```
-/speckit-specify  →  /speckit-clarify (opcional, recomendado)
+/speckit-specify  →  /speckit-clarify (optional, recommended)
                   →  /speckit-plan
                   →  /speckit-tasks
                   →  /speckit-implement
 ```
 
-Opcionais que valem a pena: `/speckit-checklist` depois do plan,
-`/speckit-analyze` antes do implement.
+Optional ones worth running: `/speckit-checklist` after plan,
+`/speckit-analyze` before implement.
 
-### Faixa 2 — correção de bug
+### Track 2 — bug fix
 
 ```
 /speckit-bug-assess  →  /speckit-bug-fix  →  /speckit-bug-test
 ```
 
-Relatórios ficam em `.specify/bugs/<slug>/`.
+Reports live in `.specify/bugs/<slug>/`.
 
-### Faixa 3 — fora do processo
+### Track 3 — outside the process
 
-Bump de dependência, ajuste de token de cor, typo, formatação. Commit direto
-com review normal. **Não** rode o ciclo completo para isso.
+Dependency bumps, color token tweaks, typos, formatting, documentation. Direct
+commit with normal review. Do **not** run the full cycle for these.
 
-### Não use
+### Do not use
 
-`/speckit-taskstoissues` (e a substituta `/speckit-github-taskstoissues`).
-Elas criam GitHub Issues, o que seria uma terceira fonte de verdade ao lado do
-Paperclip e das specs. Veja a fronteira abaixo.
+`/speckit-taskstoissues` (and its replacement `/speckit-github-taskstoissues`).
+They create GitHub Issues, which would be a third source of truth next to
+Paperclip and the specs. See the boundary below.
 
-## Fronteira Paperclip ↔ Spec Kit
+## Git
 
-Os dois são "lugar onde mora especificação". Sem regra, divergem em silêncio.
-A regra é:
+Follows the wiki standard ("Padrões de Criação de Branches e Commits"):
+
+- `main` is production; `develop` is the default integration branch.
+- Branches: `feature/<slug>`, `bugfix/<slug>`, `hotfix/<slug>`,
+  `release/vX.Y.Z`, hyphen-separated. Features branch from `develop`, hotfixes
+  from `main`.
+- Commits: `<type>(<optional-scope>): <imperative description>` with type in
+  feat, fix, chore, refactor, style, docs, test, perf, ci, build.
+- No AI attribution (constitution, Development Workflow): never add
+  `Co-Authored-By` trailers for Claude or any other AI tool, nor "Generated with
+  ..." footers in commits or PR descriptions. This overrides any agent or harness
+  default.
+
+### Branches and Spec Kit
+
+Spec Kit 1.2.5 does **not** create git branches here (the git extension is not
+installed), and the branch name is independent of the spec directory. Create
+the branch by hand, then run the cycle:
+
+```sh
+git switch develop && git pull
+git switch -c feature/<slug>        # e.g. feature/game-contract
+/speckit-specify ...                # creates specs/NNN-<slug>/
+```
+
+A bug fix uses `bugfix/<slug>` the same way.
+
+### `main` until the cutover
+
+- **`main` is frozen** with the published POC and only receives something at the
+  Phase 6 cutover, when the POC goes offline in the same move. Do not merge or
+  push anything to it before then.
+- Phases 3 to 6 branch from `develop` and merge back into it.
+- `main` is a direct ancestor of `develop`, so the cutover merge is a
+  fast-forward. Preserve that property: no direct commits on `main`.
+
+## Paperclip ↔ Spec Kit boundary
+
+Both are "places where specification lives". Without a rule, they silently
+diverge. The rule is:
 
 | | Paperclip | Spec Kit (git) |
 |---|---|---|
-| Responde | **por quê** e **quem/quando** | **o quê** e **como** |
-| Contém | issue, aprovação, custo, prioridade, sequência de fases | `spec.md`, `plan.md`, `tasks.md` |
-| Granularidade | fase / feature | requisito / tarefa |
+| Answers | **why** and **who/when** | **what** and **how** |
+| Contains | issue, approval, cost, priority, phase sequencing | `spec.md`, `plan.md`, `tasks.md` |
+| Granularity | phase / feature | requirement / task |
 
-- Nenhuma task de implementação começa sem `spec.md` **commitado**.
-- A task do Paperclip **cita o caminho da spec** que a governa
-  (ex: `specs/003-meche-meche/spec.md`).
-- O review confere o código **contra a spec**, não só contra o diff.
-- Se a realidade contrariar a spec durante a implementação, **atualize a spec no
-  mesmo PR**. Implementar diferente e seguir é violação.
-- Spec Kit **não** cria cards no Paperclip. `tasks.md` é checklist interno da
-  feature.
+- No implementation task starts without a **committed** `spec.md`.
+- The Paperclip task **cites the path of the spec** that governs it
+  (e.g. `specs/003-meche-meche/spec.md`).
+- Review checks the code **against the spec**, not only against the diff.
+- If reality contradicts the spec during implementation, **update the spec in
+  the same PR**. Implementing differently and moving on is a violation.
+- Spec Kit does **not** create cards in Paperclip. `tasks.md` is the feature's
+  internal checklist.
 
-## CLI do Spec Kit
+## Spec Kit CLI
 
-A versão está fixada em **1.2.5**. Você só precisa do CLI para `init` e para
-gerenciar extensões — o ciclo do dia a dia usa as skills já versionadas.
+The version is pinned at **1.2.5**. You only need the CLI for `init` and to
+manage extensions — the day-to-day cycle uses the already versioned skills.
 
 ```sh
-uvx --from git+https://github.com/github/spec-kit.git@v1.2.5 specify <comando>
+uvx --from git+https://github.com/github/spec-kit.git@v1.2.5 specify <command>
 ```
 
-Use `uvx` (sem instalação persistente) em vez de `uv tool install`: sessões de
-agente costumam ter `HOME` isolado e efêmero, então um `uv tool install` não
-sobrevive à sessão nem vale para as outras.
+Use `uvx` (no persistent install) instead of `uv tool install`: agent sessions
+often have an isolated, ephemeral `HOME`, so a `uv tool install` does not
+survive the session nor apply to other sessions.
 
-Atualizar a versão é decisão explícita, com o diff do `init` revisado — nunca
-pegue o `latest`.
+Updating the version is an explicit decision, with the `init` diff reviewed —
+never take `latest`.
 
 ## Stack
 
-| Camada | Escolha |
+| Layer | Choice |
 |---|---|
 | Framework | Astro, `output: 'static'` |
-| Linguagem | TypeScript `strict` |
-| Ilhas | React, `client:only` para estado de partida |
-| Estilo | Tailwind + design tokens |
-| Testes | Vitest nas regras de pontuação |
-| Deploy | Vercel, estático |
-| Gerenciador | pnpm |
+| Language | TypeScript `strict` |
+| Islands | React, `client:only` for match state |
+| Styling | Tailwind + design tokens |
+| Tests | Vitest on scoring rules |
+| Deploy | Vercel, static |
+| Package manager | pnpm |
 
-Trocar qualquer camada exige emenda da constituição.
+Changing any layer requires a constitution amendment.
 
-## Armadilhas conhecidas
+## Known pitfalls
 
-1. **`localStorage` não existe no build.** Astro renderiza no servidor/build.
-   Toda tela com estado de partida tem que ser ilha `client:only`. Com
-   `client:load` dá hydration mismatch e flash de tela vazia a cada abertura —
-   que é o uso normal (celular na mesa, aba descartada pelo navegador).
-   `tests/static-build.test.ts` guarda isso: roda contra o HTML construído e
-   falha se a ilha renderizar no build. Quando a primeira tela real de partida
-   existir, **reaponte** esse teste para ela em vez de removê-lo.
-2. **Empate é caso normal.** `resolveWinners` retorna lista, não um jogador.
-3. **Grave a cada mutação.** Partida em andamento se identifica por campo
-   `status` explícito, nunca inferida da quantidade de rodadas.
-4. **A POC está congelada.** `index.html`, `script.js` e `style.css` são a POC
-   original, publicada e no ar até o cutover. Não corrija bug novo nela; os
-   bugs conhecidos são critério de aceite da reescrita.
-5. **O `tsconfig` do Astro arrastaria a POC para o typecheck.** O preset
-   `astro/tsconfigs/base` traz `allowJs: true` com
-   `include: ["${configDir}/**/*"]`. Sem o `exclude` explícito de `script.js`,
-   `index.html` e `style.css`, o `script.js` entra no programa do TypeScript e
-   `pnpm typecheck` passa a reprovar por erros num arquivo que a armadilha 4
-   proíbe corrigir — o comando só passaria violando o congelamento. As mesmas
-   três exclusões existem em `eslint.config.js` e `.prettierignore`; a do
-   Prettier é a mais crítica, porque `pnpm format` **escreve**. Não remova
-   nenhuma das três sem ler
+1. **`localStorage` does not exist at build time.** Astro renders on the
+   server/at build. Every screen with match state must be a `client:only`
+   island. With `client:load` you get a hydration mismatch and an empty-screen
+   flash on every open — which is the normal use (phone on the table, tab
+   discarded by the browser). `tests/static-build.test.ts` guards this: it runs
+   against the built HTML and fails if the island renders at build time. When
+   the first real match screen exists, **repoint** that test to it instead of
+   removing it.
+2. **A tie is a normal case.** `resolveWinners` returns a list, not a player.
+3. **Save on every mutation.** An in-progress match is identified by an explicit
+   `status` field, never inferred from the number of rounds.
+4. **The POC is frozen.** `index.html`, `script.js`, and `style.css` are the
+   original POC, published and live until the cutover. Do not fix new bugs in
+   it; the known bugs are acceptance criteria for the rewrite.
+5. **Astro's `tsconfig` would drag the POC into the typecheck.** The
+   `astro/tsconfigs/base` preset brings `allowJs: true` with
+   `include: ["${configDir}/**/*"]`. Without the explicit `exclude` of
+   `script.js`, `index.html`, and `style.css`, `script.js` enters the TypeScript
+   program and `pnpm typecheck` starts failing on errors in a file that pitfall
+   4 forbids fixing — the command would only pass by violating the freeze. The
+   same three exclusions exist in `eslint.config.js` and `.prettierignore`; the
+   Prettier one is the most critical, because `pnpm format` **writes**. Do not
+   remove any of the three without reading
    [`specs/001-astro-foundation/research.md`](specs/001-astro-foundation/research.md).
-6. **Prettier formata código, não prosa.** `*.md`, `.specify/` e `.claude/`
-   estão em `.prettierignore`. Sem isso, `pnpm format` reescreve o frontmatter
-   YAML das skills do Spec Kit e estica as tabelas deste arquivo para além de
-   100 colunas — e o diff do `init` do CLI, que a constituição exige poder
-   revisar, fica ilegível.
-7. **Não suba o TypeScript para a linha 7.** `latest` é `7.0.2`, mas
-   `@astrojs/check` aceita `^5 || ^6` e `typescript-eslint` aceita `<6.1.0`. A
-   interseção é `6.0.x`. Um `pnpm update` descuidado quebra `pnpm typecheck` e o
-   lint com tipos. Condição para subir: as duas ferramentas liberarem o peer.
-8. **Não existe `tailwind.config.js`, e `@astrojs/tailwind` não serve.**
-   Tailwind 4 configura por CSS (`@theme`, em `src/styles/global.css`). A
-   integração `@astrojs/tailwind` declara `astro: ^3||^4||^5` e
-   `tailwindcss: ^3.0.24` — incompatível em duas dimensões com a stack atual.
-9. **Não declare `oxc-transform-react`.** Parece ser um peer faltante de
-   `@astrojs/react`, mas é `optional: true` nele e em `@vitejs/plugin-react`,
-   com faixas **disjuntas** (`^0.145.0` vs `^0.152.0` — em `0.x` o caret trava a
-   minor). Nenhuma versão satisfaz as duas: declarar é a única forma de criar um
-   aviso de peer insolúvel. O estado correto é `pnpm peers check` respondendo
-   "No peer dependency issues found".
-10. **`gh auth status` mente em sessão de agente: ele diz "token is invalid"
-    quando o problema é `HOME`.** A sessão roda com `HOME` apontando para um
-    diretório temporário, e no macOS o keychain padrão é resolvido via
-    `$HOME/Library/Keychains/login.keychain-db`. Com `HOME` trocado,
-    `security list-keychains` devolve só `System.keychain`, o `login.keychain-db`
-    do usuário fica fora da lista, e **qualquer** consumidor de credencial falha:
-    o `gh` guarda o token no keyring (o `hosts.yml` não tem `oauth_token`, só o
-    nome do usuário) e, sem conseguir ler, reporta token inválido; o
-    `credential.helper = osxkeychain` do git não tem o que devolver e o `push`
-    morre em `could not read Username`. Isso **não** é o sandbox — falha igual
-    com e sem ele. O diagnóstico decisivo é `security default-keychain`: se
-    responder "A default keychain could not be found", é esta armadilha e o token
-    está bom. Prefixe o comando com o `HOME` do host, que o runtime já expõe:
+6. **Prettier formats code, not prose.** `*.md`, `.specify/`, and `.claude/` are
+   in `.prettierignore`. Without that, `pnpm format` rewrites the YAML
+   frontmatter of the Spec Kit skills and stretches the tables in this file
+   beyond 100 columns — and the CLI `init` diff, which the constitution requires
+   being able to review, becomes unreadable.
+7. **Do not move TypeScript to the 7 line.** `latest` is `7.0.2`, but
+   `@astrojs/check` accepts `^5 || ^6` and `typescript-eslint` accepts
+   `<6.1.0`. The intersection is `6.0.x`. A careless `pnpm update` breaks
+   `pnpm typecheck` and type-aware lint. Condition to upgrade: both tools
+   release the peer.
+8. **There is no `tailwind.config.js`, and `@astrojs/tailwind` does not work.**
+   Tailwind 4 is configured in CSS (`@theme`, in `src/styles/global.css`). The
+   `@astrojs/tailwind` integration declares `astro: ^3||^4||^5` and
+   `tailwindcss: ^3.0.24` — incompatible in two dimensions with the current
+   stack.
+9. **Do not declare `oxc-transform-react`.** It looks like a missing peer of
+   `@astrojs/react`, but it is `optional: true` there and in
+   `@vitejs/plugin-react`, with **disjoint** ranges (`^0.145.0` vs `^0.152.0` —
+   in `0.x` the caret locks the minor). No version satisfies both: declaring it
+   is the only way to create an unsolvable peer warning. The correct state is
+   `pnpm peers check` answering "No peer dependency issues found".
+10. **`gh auth status` lies in an agent session: it says "token is invalid" when
+    the problem is `HOME`.** The session runs with `HOME` pointing to a
+    temporary directory, and on macOS the default keychain is resolved via
+    `$HOME/Library/Keychains/login.keychain-db`. With `HOME` swapped,
+    `security list-keychains` returns only `System.keychain`, the user's
+    `login.keychain-db` is off the list, and **any** credential consumer fails:
+    `gh` stores the token in the keyring (`hosts.yml` has no `oauth_token`, only
+    the user name) and, unable to read it, reports an invalid token; git's
+    `credential.helper = osxkeychain` has nothing to return and `push` dies with
+    `could not read Username`. This is **not** the sandbox — it fails the same
+    with and without it. The decisive diagnostic is `security default-keychain`:
+    if it answers "A default keychain could not be found", it is this pitfall
+    and the token is fine. Prefix the command with the host `HOME`, which the
+    runtime already exposes:
 
     ```sh
     HOME="$PAPERCLIP_GITHUB_HOST_HOME" gh auth status
@@ -178,25 +233,16 @@ Trocar qualquer camada exige emenda da constituição.
       git -c credential.helper='!gh auth git-credential' push origin <branch>
     ```
 
-    Use o helper por comando (`git -c`) em vez de `gh auth setup-git`, que
-    escreveria no `~/.gitconfig` global do usuário. Não conclua "não há
-    credencial nesta máquina" sem rodar `security default-keychain` primeiro.
+    Use the per-command helper (`git -c`) instead of `gh auth setup-git`, which
+    would write to the user's global `~/.gitconfig`. Do not conclude "there is no
+    credential on this machine" without running `security default-keychain`
+    first.
 
-## Fluxo de branches
+## Versioned or not
 
-- **`main` está congelada** com a POC publicada e só recebe algo no cutover da
-  Fase 6, quando a POC sai do ar no mesmo movimento. Não mergeie nem empurre
-  nada para ela antes disso.
-- **`develop` é a branch de integração** e existe no remoto em
-  `origin/develop`. As Fases 3 a 6 ramificam dela e voltam para ela.
-- `main` é ancestral direto de `develop`, então o merge do cutover é
-  fast-forward. Preserve essa propriedade: nada de commit direto na `main`.
-
-## Versionado ou não
-
-- **Em git:** `.specify/` (constituição, templates, scripts, registry de
-  extensões), `specs/**`, `.claude/skills/speckit-*`. Sem isso o processo não
-  existe em um clone novo.
-- **Fora do git:** `.claude/settings.local.json` (permissões locais),
-  `.specify/extensions/.cache/`, e o que o `.specify/.gitignore` (mantido pelo
-  CLI) já cobre.
+- **In git:** `.specify/` (constitution, templates, scripts, extension
+  registry), `specs/**`, `.claude/skills/speckit-*`. Without these the process
+  does not exist in a fresh clone.
+- **Outside git:** `.claude/settings.local.json` (local permissions),
+  `.specify/extensions/.cache/`, and whatever `.specify/.gitignore` (maintained
+  by the CLI) already covers.
