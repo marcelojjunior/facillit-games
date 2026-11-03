@@ -74,7 +74,7 @@ function guard(
 }
 
 /** FR-022 / research D9. Returns the name to store, or an error code. */
-function checkName(
+export function checkName(
   raw: string,
   players: readonly Player[],
   exceptId?: string,

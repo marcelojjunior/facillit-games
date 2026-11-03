@@ -36,10 +36,11 @@ const shellFiles = walk(srcDir).filter(
 // `from '...'`, `import '...'`, `import('...')`, `export ... from '...'`
 const IMPORT_SPECIFIER = /(?:from\s+|import\s*\(?\s*)['"]([^'"]+)['"]/g;
 
+// `typeof x.gameId !== 'string'` checks a type, not a game's identity.
+const NOT_TYPEOF = String.raw`(?<!typeof\s+[\w.]*)`;
 const ID_COMPARISONS = [
-  /\bgameId\s*[!=]==/,
+  new RegExp(String.raw`${NOT_TYPEOF}\bgameId\s*[!=]==`),
   /[!=]==\s*gameId\b/,
-  /\.gameId\s*[!=]==/,
   /[!=]==\s*[\w.]*\.gameId\b/,
   /\bgame\.id\s*[!=]==/,
   /[!=]==\s*game\.id\b/,
@@ -80,6 +81,15 @@ function violations(file: string): string[] {
 }
 
 describe('shell/game boundary', () => {
+  it('flags id comparisons but not type checks', () => {
+    const flagged = (line: string) => ID_COMPARISONS.some((pattern) => pattern.test(line));
+
+    expect(flagged("if (match.gameId === 'x') {}")).toBe(true);
+    expect(flagged("if ('x' !== game.id) {}")).toBe(true);
+    expect(flagged('switch (match.gameId) {')).toBe(true);
+    expect(flagged("typeof value.gameId !== 'string'")).toBe(false);
+  });
+
   it('scans at least one shell file, so it cannot pass vacuously', () => {
     expect(shellFiles.length).toBeGreaterThan(0);
     expect(shellFiles.some((path) => path.includes(`${sep}shell${sep}`))).toBe(true);
