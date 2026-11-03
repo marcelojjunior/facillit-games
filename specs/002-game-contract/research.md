@@ -90,6 +90,13 @@ user-facing text in this phase is the game's `validateRound` reasons, which
 carry a Portuguese `message` because the shell cannot write copy about a game
 it does not know.
 
+One shell-written reason exists: when a round input cannot be stored as JSON
+(e.g. it contains a function or a `BigInt`), `confirmRound`/`replaceRound`
+return `invalid_round` with the reason `{ code: 'not_serializable', message:
+'Rodada em formato inválido.' }` before the game is asked. It is generic — it
+names no game — and keeps what is in memory identical to what is persisted
+(SC-003). Found during implementation.
+
 **Rationale**:
 
 - FR-003 forbids throwing for invalid input; the same reasoning applies to
