@@ -1,174 +1,215 @@
+<!--
+Sync Impact Report
+- Version: 1.0.0 -> 1.1.0 (MINOR)
+- Translated: whole document, pt-BR -> English (no semantic change to I-VIII)
+- Added principle: IX. English in the Repository, Portuguese for the User
+- Expanded section: Development Workflow -> Git conventions, No AI attribution
+  (replaces the former "Branches" paragraph)
+- Templates: no change required
+- Follow-up: AGENTS.md, CLAUDE.md, README.md updated in the same change
+-->
+
 # Facillit Games Constitution
 
-Facillit Games é uma plataforma de marcadores de pontuação — **um marcador por
-jogo**, cada jogo com sua própria regra. A casca (cadastro de jogadores,
-navegação de rodadas, tabela acumulada, persistência) é compartilhada; a regra
-de pontuação pertence ao jogo.
+Facillit Games is a platform of scorekeepers — **one scorekeeper per game**,
+each game with its own rule. The shell (player registration, round navigation,
+cumulative table, persistence) is shared; the scoring rule belongs to the game.
 
-Estes princípios existem para proteger uma única propriedade: **adicionar um
-jogo novo não deve exigir alteração na casca**. Todo princípio abaixo é
-verificável por leitura de código ou por teste.
+These principles exist to protect a single property: **adding a new game must
+not require changing the shell**. Every principle below is verifiable by
+reading code or by a test.
 
 ## Core Principles
 
-### I. Client-Side Puro (NON-NEGOTIABLE)
+### I. Pure Client-Side (NON-NEGOTIABLE)
 
-A aplicação MUST funcionar inteiramente no navegador, sem backend.
+The application MUST run entirely in the browser, with no backend.
 
-- MUST NOT existir servidor de aplicação, API própria, banco de dados remoto ou
-  autenticação.
-- Persistência MUST usar exclusivamente `localStorage`.
-- MUST NOT ser introduzida dependência de runtime que exija servidor, variável
-  de ambiente secreta ou credencial para a aplicação funcionar.
-- O build MUST produzir artefato estático publicável em CDN.
+- There MUST NOT be an application server, own API, remote database, or
+  authentication.
+- Persistence MUST use `localStorage` exclusively.
+- No runtime dependency MUST be introduced that requires a server, a secret
+  environment variable, or a credential for the application to work.
+- The build MUST produce a static artifact publishable on a CDN.
 
-*Verificação:* o deploy não declara runtime de servidor e `grep` por `fetch(`
-/ `XMLHttpRequest` fora de assets locais não retorna nada.
+*Verification:* the deploy declares no server runtime, and `grep` for `fetch(`
+/ `XMLHttpRequest` outside local assets returns nothing.
 
-### II. Jogo é Plugin (NON-NEGOTIABLE)
+### II. A Game Is a Plugin (NON-NEGOTIABLE)
 
-A casca MUST NOT conhecer nenhum jogo por nome.
+The shell MUST NOT know any game by name.
 
-- Cada jogo MUST viver em uma pasta autocontida `src/games/<id>/` e declarar
-  suas regras através do contrato `GameDefinition`.
-- Adicionar um jogo MUST consistir em criar a pasta e registrá-la no registry.
-- Ramificação condicional por identidade de jogo (`if (gameId === 'x')`,
-  `switch (gameId)`) fora do registry é **violação**.
-- Código da casca MUST NOT importar de `src/games/<id>/` diretamente; só o
-  registry resolve jogos.
+- Each game MUST live in a self-contained folder `src/games/<id>/` and declare
+  its rules through the `GameDefinition` contract.
+- Adding a game MUST consist of creating the folder and registering it in the
+  registry.
+- Conditional branching on game identity (`if (gameId === 'x')`,
+  `switch (gameId)`) outside the registry is a **violation**.
+- Shell code MUST NOT import from `src/games/<id>/` directly; only the registry
+  resolves games.
 
-*Verificação:* o `plan.md` de um jogo novo não lista nenhum arquivo da casca.
+*Verification:* the `plan.md` of a new game lists no shell file.
 
-### III. Regra de Pontuação é Função Pura e Testada (NON-NEGOTIABLE)
+### III. A Scoring Rule Is a Pure, Tested Function (NON-NEGOTIABLE)
 
-Toda regra de jogo MUST ser função pura com teste unitário.
+Every game rule MUST be a pure function with a unit test.
 
-- Regras MUST NOT tocar DOM, `localStorage`, `Date.now()`, `Math.random()` ou
-  qualquer estado global.
-- Toda função de `validateRound`, `scoreRound`, `computeTotals` e
-  `resolveWinners` MUST ter teste unitário cobrindo caso normal, borda e empate.
-- Empate MUST ser tratado como caso normal, não exceção: `resolveWinners`
-  retorna lista de vencedores.
-- Entrada não determinística (sorteio, timestamp) MUST ser injetada como
-  parâmetro, nunca lida de dentro da regra.
+- Rules MUST NOT touch the DOM, `localStorage`, `Date.now()`, `Math.random()`,
+  or any global state.
+- Every `validateRound`, `scoreRound`, `computeTotals`, and `resolveWinners`
+  function MUST have a unit test covering the normal case, an edge case, and a
+  tie.
+- A tie MUST be treated as a normal case, not an exception: `resolveWinners`
+  returns a list of winners.
+- Non-deterministic input (random draw, timestamp) MUST be injected as a
+  parameter, never read from inside the rule.
 
-*Verificação:* cada `src/games/<id>/rules.ts` tem `rules.test.ts` ao lado.
+*Verification:* every `src/games/<id>/rules.ts` has a `rules.test.ts` next to
+it.
 
-### IV. Estado de Partida é Ilha `client:only`
+### IV. Match State Is a `client:only` Island
 
-Nada que leia `localStorage` MUST renderizar no build.
+Nothing that reads `localStorage` MUST render at build time.
 
-- Todo componente que lê ou escreve estado de partida MUST ser ilha
-  `client:only`.
-- MUST NOT ser usado `client:load` ou renderização de servidor para telas com
-  estado de partida — produz hydration mismatch e flash de tela vazia a cada
-  abertura, que é o uso normal do app (celular na mesa, aba descartada).
+- Every component that reads or writes match state MUST be a `client:only`
+  island.
+- `client:load` or server rendering MUST NOT be used for screens with match
+  state — it produces a hydration mismatch and an empty-screen flash on every
+  open, which is the normal use of the app (phone on the table, tab discarded).
 
-*Verificação:* nenhuma diretiva `client:load`/`client:visible` em componente
-que importe o store de partida.
+*Verification:* no `client:load`/`client:visible` directive on a component that
+imports the match store.
 
 ### V. TypeScript `strict`
 
-- `strict: true` MUST estar ativo e MUST NOT ser relaxado por arquivo.
-- MUST NOT existir `any` — explícito ou via assertion — no contrato
-  `GameDefinition`, no schema persistido ou nas regras de pontuação.
-- `@ts-ignore` / `@ts-expect-error` nesses três lugares MUST ser justificado em
-  comentário e aprovado em review.
+- `strict: true` MUST be on and MUST NOT be relaxed per file.
+- There MUST NOT be `any` — explicit or via assertion — in the `GameDefinition`
+  contract, the persisted schema, or the scoring rules.
+- `@ts-ignore` / `@ts-expect-error` in those three places MUST be justified in a
+  comment and approved in review.
 
 ### VI. Mobile-First
 
-A tela de referência MUST ser celular segurado com uma mão, à noite, em cima da
-mesa, passando de mão em mão.
+The reference screen MUST be a phone held in one hand, at night, on the table,
+passed from hand to hand.
 
-- Layout MUST ser projetado primeiro para viewport estreita; desktop é
-  progressivo.
-- Alvos de toque MUST ter no mínimo 44×44 px.
-- A interação mais repetida do app — registrar a rodada — MUST ser otimizada
-  para velocidade e alcance de um polegar.
-- Dark mode MUST ser suportado.
+- Layout MUST be designed first for a narrow viewport; desktop is progressive.
+- Touch targets MUST be at least 44×44 px.
+- The most repeated interaction in the app — recording the round — MUST be
+  optimized for speed and the reach of one thumb.
+- Dark mode MUST be supported.
 
-### VII. Schema Persistido é Versionado
+### VII. The Persisted Schema Is Versioned
 
-- Todo dado em `localStorage` MUST carregar `schemaVersion`.
-- Mudança incompatível de formato MUST incrementar `schemaVersion` e MUST vir
-  com caminho de migração **ou** decisão explícita e documentada de descartar
-  dados antigos.
-- Leitura MUST degradar com segurança diante de versão desconhecida ou payload
-  corrompido: descarta e volta ao estado inicial, nunca quebra a tela.
-- Estado de partida em andamento MUST ser gravado a cada mutação, não a cada
-  rodada fechada. Partida em andamento MUST ser identificada por campo
-  `status` explícito, nunca inferida da quantidade de rodadas.
+- All data in `localStorage` MUST carry `schemaVersion`.
+- An incompatible format change MUST increment `schemaVersion` and MUST come
+  with a migration path **or** an explicit, documented decision to discard old
+  data.
+- Reading MUST degrade safely on an unknown version or corrupted payload:
+  discard and return to the initial state, never break the screen.
+- In-progress match state MUST be saved on every mutation, not on every closed
+  round. An in-progress match MUST be identified by an explicit `status` field,
+  never inferred from the number of rounds.
 
-### VIII. Spec Antes de Código (NON-NEGOTIABLE)
+### VIII. Spec Before Code (NON-NEGOTIABLE)
 
-Nenhuma implementação que crie ou altere **regra de jogo, schema persistido ou
-fluxo visível ao usuário** MUST começar sem `spec.md` commitado.
+No implementation that creates or changes a **game rule, persisted schema, or
+user-visible flow** MUST start without a committed `spec.md`.
 
-- O ciclo é `/speckit-specify` → (`/speckit-clarify`) → `/speckit-plan` →
+- The cycle is `/speckit-specify` → (`/speckit-clarify`) → `/speckit-plan` →
   `/speckit-tasks` → `/speckit-implement`.
-- Correção de bug MUST usar a faixa `/speckit-bug-assess` →
-  `/speckit-bug-fix` → `/speckit-bug-test`.
-- Se a realidade contrariar a spec durante a implementação, a spec MUST ser
-  atualizada no mesmo PR. Implementar diferente da spec e seguir é violação.
-- Isentos do ciclo: bump de dependência, ajuste de token de cor, typo e
-  formatação.
+- Bug fixes MUST use the `/speckit-bug-assess` → `/speckit-bug-fix` →
+  `/speckit-bug-test` track.
+- If reality contradicts the spec during implementation, the spec MUST be
+  updated in the same PR. Implementing differently from the spec and moving on
+  is a violation.
+- Exempt from the cycle: dependency bumps, color token tweaks, typos, and
+  formatting.
+
+### IX. English in the Repository, Portuguese for the User
+
+- Everything that lives in the repository MUST be written in English: code,
+  identifiers, comments, tests and their messages, configuration, documentation,
+  specs, plans, tasks, commit messages, branch names, and PR descriptions.
+- Only content the end user sees (UI copy, labels, messages shown on screen,
+  `lang="pt-BR"`) MUST be in Brazilian Portuguese.
+- Exempt: the frozen POC (`index.html`, `script.js`, `style.css`), git history
+  created before v1.1.0 of this constitution, and quoted proper names of
+  external documents (e.g. a wiki page title).
+
+*Verification:* outside UI copy, quoted external titles, and the exempt files,
+`grep` for Portuguese diacritics (`[ãõçáéíóúâêôà]`) returns nothing.
 
 ## Additional Constraints
 
-**Stack fixa.** Astro (`output: 'static'`) + TypeScript `strict` + Tailwind +
-React em ilhas, Vitest para testes, pnpm, deploy estático na Vercel. Trocar
-qualquer camada MUST passar por emenda desta constituição.
+**Fixed stack.** Astro (`output: 'static'`) + TypeScript `strict` + Tailwind +
+React in islands, Vitest for tests, pnpm, static deploy on Vercel. Changing any
+layer MUST go through an amendment of this constitution.
 
-**Fronteira Paperclip ↔ Spec Kit.** Paperclip é o portão e o "por quê" (issue,
-aprovação, custo, prioridade, sequência). `spec.md` em git é o "o quê" e o
-"como". Toda task de implementação MUST citar o caminho da spec que a governa.
-Spec Kit MUST NOT criar cards no Paperclip: `tasks.md` é checklist interno da
-feature. `/speckit-taskstoissues` (e sua substituta
-`/speckit-github-taskstoissues`) MUST NOT ser usado neste projeto — criaria uma
-terceira fonte de verdade em GitHub Issues.
+**Paperclip ↔ Spec Kit boundary.** Paperclip is the gate and the "why" (issue,
+approval, cost, priority, sequencing). `spec.md` in git is the "what" and the
+"how". Every implementation task MUST cite the path of the spec that governs
+it. Spec Kit MUST NOT create cards in Paperclip: `tasks.md` is the feature's
+internal checklist. `/speckit-taskstoissues` (and its replacement
+`/speckit-github-taskstoissues`) MUST NOT be used in this project — it would
+create a third source of truth in GitHub Issues.
 
-**CLI fixado.** Spec Kit MUST ser a versão `1.2.5`. `.specify/` e
-`.claude/skills/speckit-*` são versionados em git, para que todo clone e toda
-sessão de agente tenham o processo sem reinstalar nada. Atualizar o CLI MUST ser
-decisão explícita, com o diff do `init` revisado.
+**Pinned CLI.** Spec Kit MUST be version `1.2.5`. `.specify/` and
+`.claude/skills/speckit-*` are versioned in git, so that every clone and every
+agent session has the process without reinstalling anything. Updating the CLI
+MUST be an explicit decision, with the `init` diff reviewed.
 
 ## Development Workflow
 
-**Gate de spec.** Review MUST reprovar código de feature sem `specs/NNN-*/spec.md`
-commitado, e MUST conferir o código contra a spec, não só contra o próprio
-diff.
+**Spec gate.** Review MUST reject feature code without a committed
+`specs/NNN-*/spec.md`, and MUST check the code against the spec, not only
+against its own diff.
 
-**Gate de teste.** Regra de pontuação nova ou alterada sem teste unitário MUST
-ser reprovada.
+**Test gate.** A new or changed scoring rule without a unit test MUST be
+rejected.
 
-**Gate de constituição.** `/speckit-plan` MUST preencher a seção "Constitution
-Check". Violação justificada MUST ser registrada na tabela de Complexity
-Tracking do `plan.md`, com a alternativa mais simples e o motivo da recusa.
-Violação não registrada é reprovação.
+**Constitution gate.** `/speckit-plan` MUST fill in the "Constitution Check"
+section. A justified violation MUST be recorded in the Complexity Tracking table
+of `plan.md`, with the simplest alternative and the reason it was rejected. An
+unrecorded violation is a rejection.
 
-**Branches.** Trabalho de feature MUST sair de branch própria. A POC original
-(`index.html`, `script.js`, `style.css`) permanece publicada e congelada até o
-cutover; MUST NOT receber correção de bug novo.
+**Git conventions.** The repository follows the wiki standard ("Padrões de
+Criação de Branches e Commits"):
+
+- `main` is production; `develop` is the default integration branch. Nothing is
+  committed directly to `main`, and `main` MUST stay a direct ancestor of
+  `develop` until the cutover.
+- Branches MUST be named `feature/<slug>`, `bugfix/<slug>`, `hotfix/<slug>`, or
+  `release/vX.Y.Z`, hyphen-separated. Features branch from `develop`; hotfixes
+  branch from `main`.
+- Commits MUST follow `<type>(<optional-scope>): <imperative description>`, with
+  type in feat, fix, chore, refactor, style, docs, test, perf, ci, build.
+- The original POC (`index.html`, `script.js`, `style.css`) stays published and
+  frozen until the cutover; it MUST NOT receive new bug fixes.
+
+**No AI attribution.** Commits and PR descriptions MUST NOT carry
+`Co-Authored-By` trailers for Claude or any other AI tool, nor "Generated with
+..." footers. This overrides any agent or harness default.
 
 ## Governance
 
-Esta constituição **supersede qualquer outra prática** deste repositório. Em
-conflito entre constituição e plano, documento, comentário ou preferência de
-agente, a constituição vence.
+This constitution **supersedes any other practice** in this repository. In a
+conflict between the constitution and a plan, document, comment, or agent
+preference, the constitution wins.
 
-**Emenda.** Alterar esta constituição exige: (1) proposta registrada na issue
-do Paperclip que motivou a mudança, (2) aprovação humana explícita do board,
-(3) incremento de versão conforme a política abaixo, (4) atualização de
-`AGENTS.md`/`CLAUDE.md` se o fluxo mudar.
+**Amendment.** Changing this constitution requires: (1) a proposal recorded in
+the Paperclip issue that motivated the change, (2) explicit human approval from
+the board, (3) a version increment according to the policy below, (4) updating
+`AGENTS.md`/`CLAUDE.md` if the workflow changes.
 
-**Versionamento.** Semântico.
-- MAJOR: remoção ou redefinição incompatível de um princípio.
-- MINOR: novo princípio, ou expansão material de um existente.
-- PATCH: esclarecimento, redação, correção sem mudança de semântica.
+**Versioning.** Semantic.
+- MAJOR: removal or incompatible redefinition of a principle.
+- MINOR: a new principle, or material expansion of an existing one.
+- PATCH: clarification, wording, correction without semantic change.
 
-**Revisão de conformidade.** Todo PR MUST ser verificado contra estes
-princípios no review. Complexidade MUST ser justificada. Agentes atuando neste
-repositório MUST ler `AGENTS.md` antes de agir; ele é o guia operacional de
-runtime e MUST permanecer consistente com esta constituição.
+**Compliance review.** Every PR MUST be checked against these principles in
+review. Complexity MUST be justified. Agents acting in this repository MUST read
+`AGENTS.md` before acting; it is the runtime operational guide and MUST remain
+consistent with this constitution.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
+**Version**: 1.1.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
