@@ -243,3 +243,63 @@ describe('match store — tabs stay in sync (FR-021a)', () => {
     expect(listeners.size).toBe(0);
   });
 });
+
+describe('match store — scores are always right (US3)', () => {
+  it('a tie for the best total makes every tied player a winner', () => {
+    const store = createStore(fakeStorage().storage);
+    playing(store);
+    store.confirmRound({ ranks: { p1: 1, p2: 2 } });
+    store.confirmRound({ ranks: { p1: 2, p2: 1 } });
+    store.finish();
+
+    expect(store.getState()?.evaluation).toMatchObject({
+      totals: { p1: 30, p2: 30 },
+      winners: ['p1', 'p2'],
+    });
+  });
+
+  it('finishing with zero rounds makes every player a winner (FR-004)', () => {
+    const store = createStore(fakeStorage().storage);
+    playing(store);
+    store.finish();
+
+    expect(store.getState()?.evaluation.winners).toEqual(['p1', 'p2']);
+  });
+
+  it("an invalid round returns the game's reasons unchanged (US3 acceptance 1)", () => {
+    const store = createStore(fakeStorage().storage);
+    playing(store);
+
+    expect(store.confirmRound({ ranks: { p1: 1, p2: 9 } })).toEqual({
+      ok: false,
+      error: {
+        code: 'invalid_round',
+        reasons: [
+          {
+            code: 'rank_out_of_range',
+            message: 'A colocação de Bia precisa estar entre 1 e 2.',
+          },
+        ],
+      },
+    });
+  });
+});
+
+describe('match store — fixing a wrong round (US4)', () => {
+  it('totals follow a replaced and a removed round, and both survive a reload', () => {
+    const { storage } = fakeStorage();
+    const store = createStore(storage);
+    playing(store);
+    store.confirmRound({ ranks: { p1: 1, p2: 2 } }); // 20 / 10
+    store.confirmRound({ ranks: { p1: 1, p2: 2 } }); // 20 / 10
+    store.confirmRound({ ranks: { p1: 2, p2: 1 } }); // 10 / 20
+
+    store.replaceRound(1, { ranks: { p1: 2, p2: 1 } });
+    expect(store.getState()?.evaluation.totals).toEqual({ p1: 40, p2: 50 });
+    expect(createStore(storage).getState()?.match.rounds).toEqual(store.getState()?.match.rounds);
+
+    store.removeLastRound();
+    expect(store.getState()?.evaluation.totals).toEqual({ p1: 30, p2: 30 });
+    expect(createStore(storage).getState()?.match.rounds).toHaveLength(2);
+  });
+});

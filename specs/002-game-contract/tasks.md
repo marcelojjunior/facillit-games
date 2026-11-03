@@ -135,12 +135,12 @@ long-match test against independently computed totals.
 
 ### Tests for User Story 3
 
-- [ ] T020 [P] [US3] Add to `tests/two-games.test.ts` a 20-round, 7-player match on a store with in-memory storage, using a third game defined in the test with `defineGame({ id: 'lowest-wins-seven', name: 'Menor Vence (7)', minPlayers: 2, maxPlayers: 7, ...lowest-wins rule functions })` (the fixtures' limits stop below 7) and a store whose registry is `createRegistry([lowestWinsSeven])`: after every confirmed round, compare `getState().evaluation.totals` with totals computed independently in the test by summing the raw inputs (SC-007); also assert that the persisted JSON contains no `totals` or `winners` field (FR-016)
-- [ ] T021 [P] [US3] Add to `src/shell/match/store.test.ts`: a finished match with two players tied for the best total exposes both in `evaluation.winners` (US3 acceptance 3); finishing with zero rounds makes every player a winner (spec Edge Cases, FR-004); an `invalid_round` result carries the game's `reasons` array unchanged, code and Portuguese message included (US3 acceptance 1)
+- [X] T020 [P] [US3] Add to `tests/two-games.test.ts` a 20-round, 7-player match on a store with in-memory storage, using a third game defined in the test with `defineGame({ id: 'lowest-wins-seven', name: 'Menor Vence (7)', minPlayers: 2, maxPlayers: 7, ...lowest-wins rule functions })` (the fixtures' limits stop below 7) and a store whose registry is `createRegistry([lowestWinsSeven])`: after every confirmed round, compare `getState().evaluation.totals` with totals computed independently in the test by summing the raw inputs (SC-007); also assert that the persisted JSON contains no `totals` or `winners` field (FR-016)
+- [X] T021 [P] [US3] Add to `src/shell/match/store.test.ts`: a finished match with two players tied for the best total exposes both in `evaluation.winners` (US3 acceptance 3); finishing with zero rounds makes every player a winner (spec Edge Cases, FR-004); an `invalid_round` result carries the game's `reasons` array unchanged, code and Portuguese message included (US3 acceptance 1)
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Fix whatever T020–T021 expose in `src/shell/match/store.ts` or `src/shell/game/contract.ts`; if both pass on first run, record that in the PR description instead of changing code. Do not add any stored total or cached winner (FR-016)
+- [X] T022 [US3] Fix whatever T020–T021 expose in `src/shell/match/store.ts` or `src/shell/game/contract.ts`; if both pass on first run, record that in the PR description instead of changing code. Do not add any stored total or cached winner (FR-016)
 
 **Checkpoint**: US3 delivered — totals cannot drift; ties are normal.
 
@@ -156,12 +156,12 @@ check totals and persisted state after each step.
 
 ### Tests for User Story 4
 
-- [ ] T023 [P] [US4] Add to `src/shell/match/match.test.ts`: `replaceRound(match, index, input)` with a zero-based `index` replaces only that round (US4 acceptance 1); an invalid replacement returns `invalid_round` with the game's reasons and leaves the original (acceptance 2); an index `< 0`, `>= rounds.length`, or non-integer fails with `round_not_found`; `removeLastRound` drops only the last round (acceptance 3) and fails with `round_not_found` when there are no rounds; both leave `draft` untouched (FR-015a); both fail with `invalid_status` outside `in_progress`
-- [ ] T024 [P] [US4] Add to `src/shell/match/store.test.ts`: after `replaceRound` and after `removeLastRound`, `evaluation.totals` reflects the change and a store re-created from the same storage returns the same rounds (SC-003)
+- [X] T023 [P] [US4] Add to `src/shell/match/match.test.ts`: `replaceRound(match, index, input)` with a zero-based `index` replaces only that round (US4 acceptance 1); an invalid replacement returns `invalid_round` with the game's reasons and leaves the original (acceptance 2); an index `< 0`, `>= rounds.length`, or non-integer fails with `round_not_found`; `removeLastRound` drops only the last round (acceptance 3) and fails with `round_not_found` when there are no rounds; both leave `draft` untouched (FR-015a); both fail with `invalid_status` outside `in_progress`
+- [X] T024 [P] [US4] Add to `src/shell/match/store.test.ts`: after `replaceRound` and after `removeLastRound`, `evaluation.totals` reflects the change and a store re-created from the same storage returns the same rounds (SC-003)
 
 ### Implementation for User Story 4
 
-- [ ] T025 [US4] Implement `replaceRound` and `removeLastRound` in `src/shell/match/match.ts` (validation through `game.validateRound` against the current roster, as in T013) and expose them as store methods in `src/shell/match/store.ts`. Make T023 and T024 pass
+- [X] T025 [US4] Implement `replaceRound` and `removeLastRound` in `src/shell/match/match.ts` (validation through `game.validateRound` against the current roster, as in T013) and expose them as store methods in `src/shell/match/store.ts`. Make T023 and T024 pass
 
 **Checkpoint**: US4 delivered.
 

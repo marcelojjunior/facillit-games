@@ -7,8 +7,10 @@ import {
   createMatch,
   createRematch,
   finish,
+  removeLastRound,
   removePlayer,
   renamePlayer,
+  replaceRound,
   start,
   type MatchContext,
 } from './match';
@@ -289,5 +291,66 @@ describe('state guards', () => {
         start(playing, ctx),
       ].map(errorCode),
     ).toEqual(['invalid_status', 'invalid_status', 'invalid_status', 'invalid_status']);
+  });
+});
+
+describe('fixing a wrong round (US4, FR-015a)', () => {
+  function threeRounds(ctx = context()) {
+    let match = inProgress(['Ana', 'Bia'], ctx);
+    for (const ranks of [
+      { p1: 1, p2: 2 },
+      { p1: 2, p2: 1 },
+      { p1: 1, p2: 1 },
+    ]) {
+      match = ok(confirmRound(match, { ranks }, ctx));
+    }
+    return { ...match, draft: { pending: true } };
+  }
+
+  it('replaces only the round at the zero-based index', () => {
+    const match = threeRounds();
+
+    const next = ok(replaceRound(match, 1, { ranks: { p1: 1, p2: 2 } }, context()));
+
+    expect(next.rounds).toEqual([
+      { ranks: { p1: 1, p2: 2 } },
+      { ranks: { p1: 1, p2: 2 } },
+      { ranks: { p1: 1, p2: 1 } },
+    ]);
+    expect(next.draft).toEqual({ pending: true });
+  });
+
+  it('keeps the original round when the replacement is invalid', () => {
+    const match = threeRounds();
+
+    const result = replaceRound(match, 1, { ranks: { p1: 1 } }, context());
+
+    expect(errorCode(result)).toBe('invalid_round');
+    expect(match.rounds[1]).toEqual({ ranks: { p1: 2, p2: 1 } });
+  });
+
+  it.each([-1, 3, 1.5])('rejects index %s with round_not_found', (index) => {
+    expect(
+      errorCode(replaceRound(threeRounds(), index, { ranks: { p1: 1, p2: 2 } }, context())),
+    ).toBe('round_not_found');
+  });
+
+  it('removes only the last round and keeps the draft', () => {
+    const next = ok(removeLastRound(threeRounds(), context()));
+
+    expect(next.rounds).toHaveLength(2);
+    expect(next.draft).toEqual({ pending: true });
+  });
+
+  it('rejects removing when there are no rounds', () => {
+    expect(errorCode(removeLastRound(inProgress(), context()))).toBe('round_not_found');
+  });
+
+  it('both are only allowed while in progress', () => {
+    const ctx = context();
+    const finished = ok(finish(threeRounds(ctx), ctx));
+
+    expect(errorCode(replaceRound(finished, 0, {}, ctx))).toBe('invalid_status');
+    expect(errorCode(removeLastRound(finished, ctx))).toBe('invalid_status');
   });
 });
