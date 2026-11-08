@@ -49,7 +49,7 @@ entry), US3 (no POC bug returns).
 
 ## Phase 1: Setup
 
-- [ ] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `feature/meche-meche` and confirm all pass before any change (baseline); record the island JS gzipped size (sum of `gzip -9` of `dist/_astro/*.js`)
+- [X] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `feature/meche-meche` and confirm all pass before any change (baseline); record the island JS gzipped size (sum of `gzip -9` of `dist/_astro/*.js`)
 
 ---
 
@@ -58,11 +58,11 @@ entry), US3 (no POC bug returns).
 **Purpose**: guards that must hold once a real game is in the production
 registry.
 
-- [ ] T002 [P] Extend the literal-color scan in `src/styles/tokens.test.ts` to also cover `src/games` (`.tsx` and `.ts`, excluding tests), keeping the other folders (FR-002, research D6)
-- [ ] T003 [P] Add to `tests/static-build.test.ts` (expected to fail first): some file under `dist/` contains `MECHE-MECHE` (FR-017, SC-005); keep the fixture-marker check and the island budget test unchanged
-- [ ] T004 Update `src/games/registry.test.ts` (expected to fail first): the production registry lists exactly one game, with id `meche-meche`, name `MECHE-MECHE`, `minPlayers` 2, and `maxPlayers` 7 (FR-001, FR-003; replaces "is empty until the first real game")
+- [X] T002 [P] Extend the literal-color scan in `src/styles/tokens.test.ts` to also cover `src/games` (`.tsx` and `.ts`, excluding tests), keeping the other folders (FR-002, research D6)
+- [X] T003 [P] Add to `tests/static-build.test.ts` (expected to fail first): some file under `dist/` contains `MECHE-MECHE` (FR-017, SC-005); keep the fixture-marker check and the island budget test unchanged
+- [X] T004 Update `src/games/registry.test.ts` (expected to fail first): the production registry lists exactly one game, with id `meche-meche`, name `MECHE-MECHE`, `minPlayers` 2, and `maxPlayers` 7 (FR-001, FR-003; replaces "is empty until the first real game")
 
-- [ ] T005 Before the game lands, apply spec 004 research D11's fallback in its own commit (`perf(ui): move the mascot drawing out of the island`): draw the die (and crown) once as an SVG sprite (`<symbol>`) in `src/layouts/BaseLayout.astro`, and make `src/shell/ui/parts/Mascot.tsx` render `<svg><use href="#…"/></svg>` with the same props, test hooks, and token fills; record the island size before and after in `specs/004-game-style-ui/research.md` D12; all spec 003/004 tests stay green. This shell change belongs to spec 004, not to this spec (SC-002)
+- [X] T005 Before the game lands, apply spec 004 research D11's fallback in its own commit (`perf(ui): move the mascot drawing out of the island`): draw the die (and crown) once as an SVG sprite (`<symbol>`) in `src/layouts/BaseLayout.astro`, and make `src/shell/ui/parts/Mascot.tsx` render `<svg><use href="#…"/></svg>` with the same props, test hooks, and token fills; record the island size before and after in `specs/004-game-style-ui/research.md` D12; all spec 003/004 tests stay green. This shell change belongs to spec 004, not to this spec (SC-002)
 
 **Checkpoint**: guards written; T003 and T004 fail until US1 registers the game; the island has headroom for the game.
 
@@ -77,13 +77,13 @@ winners as the rules computed by hand.
 
 ### Tests first
 
-- [ ] T006 [US1] Create `src/games/meche-meche/rules.test.ts` (expected to fail first) per `specs/005-meche-meche/data-model.md` and research D2: `scoresOnOffer` for 2, 3, 5, 7 players; `validateRound` normal (accepts a full round), edge (accepts `{}`, leftover scores, bonus for a player with no score), tie (accepts two players with no score and both with the bonus, i.e. equal round values), and rejects every row of the validation table with its code (`invalid_shape`, `unknown_player`, `score_not_on_offer`, `score_taken_twice`, `bonus_twice`) and a Portuguese message naming the score or player; `scoreRound` normal (score + bonus), edge (no score + bonus = 10; empty round = all 0), tie (two players same value); `computeTotals` normal, edge (no rounds = all 0), tie; `resolveWinners` normal (highest), edge (single player in list), tie (all tied players returned)
+- [X] T006 [US1] Create `src/games/meche-meche/rules.test.ts` (expected to fail first) per `specs/005-meche-meche/data-model.md` and research D2: `scoresOnOffer` for 2, 3, 5, 7 players; `validateRound` normal (accepts a full round), edge (accepts `{}`, leftover scores, bonus for a player with no score), tie (accepts two players with no score and both with the bonus, i.e. equal round values), and rejects every row of the validation table with its code (`invalid_shape`, `unknown_player`, `score_not_on_offer`, `score_taken_twice`, `bonus_twice`) and a Portuguese message naming the score or player; `scoreRound` normal (score + bonus), edge (no score + bonus = 10; empty round = all 0), tie (two players same value); `computeTotals` normal, edge (no rounds = all 0), tie; `resolveWinners` normal (highest), edge (single player in list), tie (all tied players returned)
 
 ### Implementation
 
-- [ ] T007 [US1] Create `src/games/meche-meche/rules.ts` per `contracts/meche-meche-round.md` (`MecheRound { scores; bonus }`, `scoresOnOffer`, `validateRound`, `scoreRound`, `computeTotals`, `resolveWinners`; pure, no casts); make T006 pass
-- [ ] T008 [US1] (Do not commit between T008 and T011: a registered game with a stub entry is unusable; commit Phases 3 and 4 together.) Create a minimal `src/games/meche-meche/RoundEntry.tsx` stub that renders nothing interactive yet (so `defineGame` accepts the game), and `src/games/meche-meche/index.ts` with `defineGame<MecheRound>({ id: 'meche-meche', name: 'MECHE-MECHE', minPlayers: 2, maxPlayers: 7, … })`
-- [ ] T009 [US1] Register the game in `src/games/registry.ts` (one import, one array entry; drop the "empty on purpose" comment); run `pnpm build` and make T003 and T004 pass; confirm `tests/shell-boundary.test.ts` passes unchanged
+- [X] T007 [US1] Create `src/games/meche-meche/rules.ts` per `contracts/meche-meche-round.md` (`MecheRound { scores; bonus }`, `scoresOnOffer`, `validateRound`, `scoreRound`, `computeTotals`, `resolveWinners`; pure, no casts); make T006 pass
+- [X] T008 [US1] (Do not commit between T008 and T011: a registered game with a stub entry is unusable; commit Phases 3 and 4 together.) Create a minimal `src/games/meche-meche/RoundEntry.tsx` stub that renders nothing interactive yet (so `defineGame` accepts the game), and `src/games/meche-meche/index.ts` with `defineGame<MecheRound>({ id: 'meche-meche', name: 'MECHE-MECHE', minPlayers: 2, maxPlayers: 7, … })`
+- [X] T009 [US1] Register the game in `src/games/registry.ts` (one import, one array entry; drop the "empty on purpose" comment); run `pnpm build` and make T003 and T004 pass; confirm `tests/shell-boundary.test.ts` passes unchanged
 
 **Checkpoint**: MECHE-MECHE shows on `/`; rules tested.
 
@@ -98,12 +98,12 @@ scroll, 44 px targets.
 
 ### Tests first
 
-- [ ] T010 [US2] Create `src/games/meche-meche/RoundEntry.browser.test.tsx` (expected to fail first) using `tests/fixtures/games/round-entry-harness.tsx`: renders `undefined`, a valid value (chosen score `aria-pressed`, bonus `aria-pressed`), and garbage (`42`, `null`, `{scores: 'x'}`, `{bonus: 5}`, `[]`) as empty without throwing; no `<form>` or submit; after tapping a score for two players and a bonus, the last emitted value passes `mecheMeche.validateRound`; a score taken by player A is `disabled` for player B with a label naming A; re-tapping A's own score clears it; the "—" button marks no score; every visible button ≥ 44×44 px with 7 players at 360 px and `document.documentElement.scrollWidth <= 360` (FR-012, FR-014, research D4)
+- [X] T010 [US2] Create `src/games/meche-meche/RoundEntry.browser.test.tsx` (expected to fail first) using `tests/fixtures/games/round-entry-harness.tsx`: renders `undefined`, a valid value (chosen score `aria-pressed`, bonus `aria-pressed`), and garbage (`42`, `null`, `{scores: 'x'}`, `{bonus: 5}`, `[]`) as empty without throwing; no `<form>` or submit; after tapping a score for two players and a bonus, the last emitted value passes `mecheMeche.validateRound`; a score taken by player A is `disabled` for player B with a label naming A; re-tapping A's own score clears it; the "—" button marks no score; every visible button ≥ 44×44 px with 7 players at 360 px and `document.documentElement.scrollWidth <= 360` (FR-012, FR-014, research D4)
 
 ### Implementation
 
-- [ ] T011 [US2] Implement `src/games/meche-meche/RoundEntry.tsx` per research D4 and the contract (one `card-3d` per player; name + `+10` toggle; 4-column grid of score buttons largest first plus "—"; `btn-blue`/`btn-plain`/`btn-yellow`; taken scores disabled and struck through; pt-BR labels); make T010 pass
-- [ ] T012 [US2] Measure the island JS (gzip -9 of `dist/_astro/*.js`) after `pnpm build`; record it in `specs/005-meche-meche/research.md` D5; `tests/static-build.test.ts` "keeps the island script within 80 kB gzipped" must pass without raising the budget (T005 already moved the mascot out of the island); if it still fails, stop and record it as a budget decision for the owner instead of changing the shell
+- [X] T011 [US2] Implement `src/games/meche-meche/RoundEntry.tsx` per research D4 and the contract (one `card-3d` per player; name + `+10` toggle; 4-column grid of score buttons largest first plus "—"; `btn-blue`/`btn-plain`/`btn-yellow`; taken scores disabled and struck through; pt-BR labels); make T010 pass
+- [X] T012 [US2] Measure the island JS (gzip -9 of `dist/_astro/*.js`) after `pnpm build`; record it in `specs/005-meche-meche/research.md` D5; `tests/static-build.test.ts` "keeps the island script within 80 kB gzipped" must pass without raising the budget (T005 already moved the mascot out of the island); if it still fails, stop and record it as a budget decision for the owner instead of changing the shell
 
 **Checkpoint**: one-thumb entry done; budget met.
 

@@ -83,6 +83,11 @@ inside `src/games/` (SC-002). Write the game lean (no helpers beyond
 after the entry exists (T012). If the budget still fails, stop and bring the
 decision to the owner; raising the budget means amending spec 003's plan.
 
+**Measured** (T012): 79 162 bytes before (spec 004), 78 741 after T005 moved
+the mascot out of the island, **80 436 with MECHE-MECHE** (budget 81 920,
+~1.5 KB left). The next game will need a budget decision or a lighter
+island.
+
 ## D6 — Ending "no real game before Phase 5"
 
 **Decision**: update `src/games/registry.test.ts` ("empty until Phase 5" →
