@@ -61,10 +61,10 @@ P2: US3, US4, US5.
 
 **Purpose**: baseline and test infrastructure for the browser project.
 
-- [ ] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `feature/shell-screens` and confirm all pass before any change (baseline)
-- [ ] T002 Add dev dependencies pinned to exact versions in `package.json`: `@vitest/browser-playwright` at the same version as `vitest` (5.0.5), `playwright` (latest stable, exact), `vitest-browser-react` (latest version whose peers accept Vitest 5 and React 19, exact); run `pnpm install` and `pnpm peers check` (must report no peer issues, AGENTS.md pitfall 9)
-- [ ] T003 Split `vitest.config.ts` into two projects (research D13): `unit` keeps `environment: 'node'` and the existing `include` (`tests/**/*.test.ts`, `src/**/*.test.ts`); `browser` uses `@vitest/browser-playwright` with Chromium, headless, viewport 360×640, `include: ['src/**/*.browser.test.tsx', 'tests/**/*.browser.test.tsx']`; keep the comment explaining why `unit` is `node`
-- [ ] T004 Add `src/shell/ui/smoke.browser.test.tsx` rendering a `<button>` with `vitest-browser-react` and asserting it is visible, to prove the browser project runs; run `pnpm exec playwright install chromium` if needed (documented in T048)
+- [X] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `feature/shell-screens` and confirm all pass before any change (baseline)
+- [X] T002 Add dev dependencies pinned to exact versions in `package.json`: `@vitest/browser-playwright` at the same version as `vitest` (5.0.5), `playwright` (latest stable, exact), `vitest-browser-react` (latest version whose peers accept Vitest 5 and React 19, exact); run `pnpm install` and `pnpm peers check` (must report no peer issues, AGENTS.md pitfall 9)
+- [X] T003 Split `vitest.config.ts` into two projects (research D13): `unit` keeps `environment: 'node'` and the existing `include` (`tests/**/*.test.ts`, `src/**/*.test.ts`); `browser` uses `@vitest/browser-playwright` with Chromium, headless, viewport 360×640, `include: ['src/**/*.browser.test.tsx', 'tests/**/*.browser.test.tsx']`; keep the comment explaining why `unit` is `node`
+- [X] T004 Add `src/shell/ui/smoke.browser.test.tsx` rendering a `<button>` with `vitest-browser-react` and asserting it is visible, to prove the browser project runs; run `pnpm exec playwright install chromium` if needed (documented in T048)
 
 **Checkpoint**: `pnpm test` runs both projects green.
 
