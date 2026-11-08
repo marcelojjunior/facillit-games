@@ -69,6 +69,7 @@ export const headings = {
   history: 'Histórico',
   removeLastRound: 'Remover a última rodada?',
   renamePlayer: 'Quem vai trocar de nome?',
+  abandon: 'Abandonar a partida?',
 } as const;
 
 export const labels = {
@@ -100,6 +101,9 @@ export const labels = {
   save: 'Salvar',
   cancel: 'Cancelar',
   close: 'Fechar',
+  abandon: 'Abandonar partida',
+  abandonWarning: 'Os jogadores e as rodadas desta partida serão apagados.',
+  abandonConfirm: 'Abandonar',
   notSaved:
     'Não foi possível salvar neste aparelho. Se o app for fechado, a partida pode se perder.',
 } as const;

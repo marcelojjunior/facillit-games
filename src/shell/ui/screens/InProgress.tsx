@@ -5,7 +5,7 @@
  * The round entry comes from the match's game, through the registry; the
  * shell never knows which game it is (Principle II).
  *
- * Rare actions (rename, remove the last round) sit behind the "more" button;
+ * Rare actions (rename, remove the last round, abandon) sit behind the "more" button;
  * the full history opens from the standings (FR-004a, FR-005, FR-008).
  */
 import { useState } from 'react';
@@ -14,6 +14,7 @@ import type { RoundRejection } from '../../game/contract';
 import type { MatchStore, MatchView } from '../../match/store';
 import { headings, labels, roundCopy } from '../copy';
 import type { Act } from '../MatchApp';
+import { AbandonDialog } from '../parts/AbandonDialog';
 import { ConfirmBar } from '../parts/ConfirmBar';
 import { Dialog } from '../parts/Dialog';
 import { FixSheet } from '../parts/FixSheet';
@@ -23,7 +24,8 @@ import { ScoreTable } from '../parts/ScoreTable';
 import { Standings } from '../parts/Standings';
 import { iconButton, primaryButton, secondaryButton } from '../parts/styles';
 
-type Overlay = 'none' | 'finish' | 'history' | 'menu' | 'rename' | 'remove-last' | 'fix';
+type Overlay =
+  'none' | 'finish' | 'history' | 'menu' | 'rename' | 'remove-last' | 'fix' | 'abandon';
 
 interface InProgressProps {
   readonly view: MatchView;
@@ -158,8 +160,21 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
           >
             {labels.removeLastRound}
           </button>
+          <button
+            type="button"
+            onClick={() => setOverlay('abandon')}
+            className={`${secondaryButton} justify-start text-danger`}
+          >
+            {labels.abandon}
+          </button>
         </div>
       </Dialog>
+
+      <AbandonDialog
+        open={overlay === 'abandon'}
+        onClose={close}
+        onConfirm={() => act(() => store.discardMatch())}
+      />
 
       {overlay === 'rename' && <RenameDialog view={view} store={store} act={act} onClose={close} />}
 
