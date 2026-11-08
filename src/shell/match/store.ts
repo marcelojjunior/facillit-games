@@ -46,6 +46,8 @@ export interface MatchView {
     readonly totals: Scores;
     /** Meaningful once the match is finished. */
     readonly winners: readonly string[];
+    /** Position of each player, 1 = best (spec 003 research D2). */
+    readonly positions: Scores;
   };
 }
 
@@ -102,8 +104,8 @@ export function createMatchStore(options: MatchStoreOptions): MatchStore {
       // Unreachable: every stored or mutated match went through the game.
       throw new Error(`Match for "${next.gameId}" cannot be evaluated.`);
     }
-    const { roundScores, totals, winners } = evaluation;
-    return { match: next, game, evaluation: { roundScores, totals, winners } };
+    const { roundScores, totals, winners, positions } = evaluation;
+    return { match: next, game, evaluation: { roundScores, totals, winners, positions } };
   }
 
   function commit(next: Match | null): void {

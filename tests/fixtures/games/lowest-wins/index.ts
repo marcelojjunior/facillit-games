@@ -6,6 +6,7 @@ import {
   validateRound,
   type PointsRound,
 } from './rules';
+import RoundEntry from './RoundEntry';
 
 export default defineGame<PointsRound>({
   id: 'lowest-wins',
@@ -16,4 +17,5 @@ export default defineGame<PointsRound>({
   scoreRound,
   computeTotals,
   resolveWinners,
+  RoundEntry,
 });

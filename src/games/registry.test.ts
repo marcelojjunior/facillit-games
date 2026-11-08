@@ -13,6 +13,7 @@ function stubGame(id: string): Game {
     scoreRound: (_round, players) => Object.fromEntries(players.map((p) => [p.id, 0])),
     computeTotals: (_scores, players) => Object.fromEntries(players.map((p) => [p.id, 0])),
     resolveWinners: (_totals, players) => players.map((p) => p.id),
+    RoundEntry: () => null,
   });
 }
 
