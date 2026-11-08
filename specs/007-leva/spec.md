@@ -31,8 +31,10 @@ contract, not in the shell, and in a way that leaves MECHE-MECHE untouched.
 - Q: Can the tricks taken in a round add up to more or less than the number of
   cards? → A: never more. Each trick is taken by the highest card; equal cards
   cancel each other and the highest of the rest takes it; if all the cards of a
-  trick cancel, nobody takes it. So the total is at most the number of cards,
-  and may be less.
+  trick cancel, nobody takes it. So the total may be less than the number of
+  cards. Revised after testing (2026-11-08): the app MUST NOT block a total
+  above the number of cards either; whatever is entered is scored, and each
+  player loses the difference as usual (owner's decision).
 - Q: Is there a ceiling on the number of cards? → A: no. Cards go 1, 2, 3, …
   and go back to 1 whenever a player is eliminated.
 - Q: What if everybody guesses 0 and someone takes a trick? → A: no special
@@ -119,8 +121,7 @@ see the guesses still there, then enter the results and confirm.
    shows again, **Then** the guesses (and any results already entered) are
    still there.
 5. **Given** results whose total is more than the number of cards, **When** the
-   round is confirmed, **Then** it is rejected with a Portuguese message and
-   nothing changes.
+   round is confirmed, **Then** it is accepted and scored like any other.
 6. **Given** results whose total is less than the number of cards (cards
    cancelled), **When** the round is confirmed, **Then** it is accepted.
 7. **Given** a player whose guess or result is missing, **When** the round is
@@ -213,8 +214,8 @@ players, the most of any game so far.
   scored from its own record, without the rounds before it.
 - **FR-007**: A round MUST be rejected, with Portuguese messages, when it has
   no players, names a player not in the match, misses a guess or a result,
-  has a guess or result outside 0 to the number of cards, or has results
-  whose total is more than the number of cards.
+  or has a guess or result outside 0 to the number of cards. The total of the
+  results is not limited (Clarifications).
 - **FR-008**: In a round, a player MUST lose lives equal to the difference
   between guess and tricks taken; players who did not play it lose none.
 - **FR-009**: A player's lives MUST be 5 minus all the lives lost so far, and

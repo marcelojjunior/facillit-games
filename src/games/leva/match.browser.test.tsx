@@ -144,7 +144,7 @@ describe('a full LEVA match (SC-001, SC-004)', () => {
     await expect.element(screen.getByTestId('podium')).toMatchTextContent('3 vidas');
   });
 
-  it('rejects results adding up to more than the cards', async () => {
+  it('accepts results adding up to more than the cards (owner, after testing)', async () => {
     const screen = await open();
     await screen.getByTestId('game-option').filter({ hasText: 'LEVA' }).click();
     for (const name of ['Ana', 'Bia']) {
@@ -153,13 +153,9 @@ describe('a full LEVA match (SC-001, SC-004)', () => {
       await expect.element(screen.getByTestId('player-name-input')).toHaveValue('');
     }
     await screen.getByTestId('start-match').click();
-    await guess(screen, 1, { Ana: 1, Bia: 1 });
-    await screen.getByTestId('leva-step').click();
-    await tap(screen, 'Ana: levou Levou');
-    await tap(screen, 'Bia: levou Levou');
-    await screen.getByTestId('confirm-round').click();
-    await expect
-      .element(screen.getByText('Foram levadas 2 voltas, mas a rodada tem 1 carta.'))
-      .toBeVisible();
+    // Both took the single card: 2 of 1. Scored as entered → Ana 1/1, Bia 0/1 −1.
+    await guess(screen, 1, { Ana: 1, Bia: 0 });
+    await result(screen, 2, 1, { Ana: 1, Bia: 1 });
+    await expectLives(screen, { Ana: 5, Bia: 4 });
   });
 });

@@ -20,7 +20,6 @@ Validation (`validateRound`, Portuguese messages):
 | `unknown_player` | an id not in the match |
 | `missing_guess` / `missing_taken` | a participant without guess or result (message names the player) |
 | `value_out_of_range` | a guess or result outside 0..cards |
-| `too_many_taken` | Σ taken > cards |
 
 Participants = keys of `guesses`; `taken` must have exactly the same keys.
 

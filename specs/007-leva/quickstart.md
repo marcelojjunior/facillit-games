@@ -16,7 +16,7 @@ under 92 160 bytes gzip -9; the registry lists `meche-meche` and `leva`.
    "Leva"/"Não leva"; every badge reads "5 vidas".
 3. Enter guesses, reload: guesses still there. Move to results, enter them,
    confirm; lives drop by |guess − taken|.
-4. Round 2 shows "2 cartas". A result total above the cards is rejected.
+4. Round 2 shows "2 cartas". A result total above the cards is accepted.
 5. Bring a player to 0: they disappear from the entry, round goes back to
    "1 carta".
 6. Play until one is left: the entry says who won; confirm is disabled; finish
