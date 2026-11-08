@@ -239,19 +239,32 @@ Changing any layer requires a constitution amendment.
     first.
 
 11. **Adding a game touches only its folder and the registry.** Create
-    `src/games/<id>/` with `index.ts` (calling `defineGame`), `rules.ts`, and
+    `src/games/<id>/` with `index.ts` (calling `defineGame`), `rules.ts`,
     `rules.test.ts` (normal, edge, and tie case for each of the four rule
-    functions), then add one import and one array entry in
+    functions), `RoundEntry.tsx` (the game's own controlled editor of one
+    round: no submit button, tolerant of any stored value, token classes and
+    44 px targets), and `RoundEntry.browser.test.tsx` (empty, valid, and
+    garbage values render; a normal interaction emits a value `validateRound`
+    accepts). Then add one import and one array entry in
     `src/games/registry.ts`. Nothing else. `tests/shell-boundary.test.ts` fails
     if any file under `src/` outside `src/games/` imports a game folder or
     compares or switches on a game id, and checks that each game's `id` equals
-    its folder name. Contract:
-    [`specs/002-game-contract/contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
-12. **Create the match store only inside a `client:only` island.**
-    `createMatchStore` reads storage once, at creation, and listens to the
-    browser's `storage` event to follow other tabs. Call `dispose()` when the
-    island unmounts. It never throws on bad stored data: it starts empty and
-    exposes `getDiscardNotice()` for the screen to show once. Contract:
+    its folder name. Contracts:
+    [`specs/002-game-contract/contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md)
+    and
+    [`specs/003-shell-screens/contracts/round-entry.md`](specs/003-shell-screens/contracts/round-entry.md).
+    The fixture games' entries and `tests/fixtures/games/round-entry-harness.tsx`
+    are working examples.
+12. **The match store lives in `MatchApp`, the only island.**
+    `src/shell/ui/MatchApp.tsx` creates it once per mount (lazy `useState`),
+    reads it with `useSyncExternalStore`, and calls `dispose()` on unmount; it
+    is rendered with `client:only="react"` from `src/components/MatchIsland.tsx`
+    (production) and `tests/fixtures/dev/DevMatchIsland.tsx` (`/dev/test-games`,
+    `pnpm dev` only). Do not create a second store or island.
+    `createMatchStore` reads storage once, at creation, and follows other tabs
+    through the `storage` event. It never throws on bad stored data: it starts
+    empty and exposes `getDiscardNotice()`, which `MatchApp` shows once.
+    Contract:
     [`specs/002-game-contract/contracts/match-store.md`](specs/002-game-contract/contracts/match-store.md).
 
 ## Versioned or not
