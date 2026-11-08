@@ -46,3 +46,9 @@ pnpm-lock.yaml
 # What is lost: markdown is not covered by `pnpm format:check`. Accepted --
 # line wrapping in prose is the writer's decision, not a tool's.
 *.md
+
+# === Design references ===
+#
+# Frozen visual prototypes approved by the owner (e.g. specs/004-*/prototype.html).
+# They are reference snapshots, not app code; reformatting them is noise.
+specs/**/prototype.html
