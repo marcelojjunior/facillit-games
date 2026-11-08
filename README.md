@@ -17,7 +17,7 @@ The rewrite is in progress. Two sets of files coexist at the root:
 | | What it is |
 |---|---|
 | `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
-| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered; **no real game until Phase 5**, so the shipped page says no game is available yet. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered, plus **MECHE-MECHE**, the first game ([`specs/005-meche-meche/`](specs/005-meche-meche/)), playable on `/`. |
 
 The foundation is specified in
 [`specs/001-astro-foundation/`](specs/001-astro-foundation/), the game

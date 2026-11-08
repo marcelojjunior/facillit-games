@@ -256,8 +256,9 @@ Changing any layer requires a constitution amendment.
     [`specs/002-game-contract/contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md)
     and
     [`specs/003-shell-screens/contracts/round-entry.md`](specs/003-shell-screens/contracts/round-entry.md).
-    The fixture games' entries and `tests/fixtures/games/round-entry-harness.tsx`
-    are working examples.
+    `src/games/meche-meche/` is the reference game (rules, entry, and an
+    end-to-end test inside its own folder); the fixture games' entries and
+    `tests/fixtures/games/round-entry-harness.tsx` are smaller examples.
 12. **The match store lives in `MatchApp`, the only island.**
     `src/shell/ui/MatchApp.tsx` creates it once per mount (lazy `useState`),
     reads it with `useSyncExternalStore`, and calls `dispose()` on unmount; it

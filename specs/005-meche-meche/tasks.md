@@ -115,8 +115,8 @@ scroll, 44 px targets.
 
 **Independent Test**: SC-004.
 
-- [ ] T013 [US3] Create `src/games/meche-meche/match.browser.test.tsx` rendering `MatchApp` with `createRegistry([mecheMeche])` (research D3): SC-001 with hand-computed constants (not recomputed by the rules) — 5 players A–E, scores on offer 50…10: R1 A50 B40 C30, D and E none, bonus E; R2 B50 A40 D30 C20 E10; R3 C50 E40 A10, bonus B and D; R4 E50 D40 B30 A20 C10, bonus A → totals A 130, B 130, C 110, D 80, E 110, positions 1, 1, 3, 5, 3, winners A and B as a shared win; renaming C during the match keeps C's total (FR-011); a rematch with 3 players offers 30, 20, 10; US3 — a player named `<b>Ana</b>` shows as text (no `b` element created), "José da Silva" shows unchanged in standings and on the winner screen, a match started with zero rounds remounts on `in-progress`, a half-entered round with a bonus remounts intact, the winner screen still offers the history-backed standings and podium with every total, and a confirmed round can be fixed from the history (change a score, totals update)
-- [ ] T014 [US3] Fix whatever T013 exposes inside `src/games/meche-meche/` only; if a failure needs a shell change, stop and record it in `specs/005-meche-meche/research.md` as a contract gap before changing the shell (plan, Summary)
+- [X] T013 [US3] Create `src/games/meche-meche/match.browser.test.tsx` rendering `MatchApp` with `createRegistry([mecheMeche])` (research D3): SC-001 with hand-computed constants (not recomputed by the rules) — 5 players A–E, scores on offer 50…10: R1 A50 B40 C30, D and E none, bonus E; R2 B50 A40 D30 C20 E10; R3 C50 E40 A10, bonus B and D; R4 E50 D40 B30 A20 C10, bonus A → totals A 130, B 130, C 110, D 80, E 110, positions 1, 1, 3, 5, 3, winners A and B as a shared win; renaming C during the match keeps C's total (FR-011); a rematch with 3 players offers 30, 20, 10; US3 — a player named `<b>Ana</b>` shows as text (no `b` element created), "José da Silva" shows unchanged in standings and on the winner screen, a match started with zero rounds remounts on `in-progress`, a half-entered round with a bonus remounts intact, the winner screen still offers the history-backed standings and podium with every total, and a confirmed round can be fixed from the history (change a score, totals update)
+- [X] T014 [US3] Fix whatever T013 exposes inside `src/games/meche-meche/` only; if a failure needs a shell change, stop and record it in `specs/005-meche-meche/research.md` as a contract gap before changing the shell (plan, Summary)
 
 **Checkpoint**: acceptance criteria of the rewrite hold for MECHE-MECHE.
 
@@ -124,9 +124,9 @@ scroll, 44 px targets.
 
 ## Phase 6: Polish & cross-cutting
 
-- [ ] T015 [P] Add a note under spec 003 FR-029 in `specs/003-shell-screens/spec.md` that spec 005 (MECHE-MECHE) ends the "no real game before Phase 5" clause; update `README.md` "Current state" (MECHE-MECHE playable on `/`) and the `AGENTS.md` pitfall 11 examples (MECHE-MECHE as the reference game)
-- [ ] T016 Run the quickstart by hand on `pnpm dev` at `/` (real page) at 360×640 in light and dark, with screenshots for the owner; and `pnpm build && pnpm preview` showing MECHE-MECHE on `/`
-- [ ] T017 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git diff <T005 commit> --stat -- src` lists only `src/games/` (T005's mascot move is spec 004's); island JS and font sizes recorded
+- [X] T015 [P] Add a note under spec 003 FR-029 in `specs/003-shell-screens/spec.md` that spec 005 (MECHE-MECHE) ends the "no real game before Phase 5" clause; update `README.md` "Current state" (MECHE-MECHE playable on `/`) and the `AGENTS.md` pitfall 11 examples (MECHE-MECHE as the reference game)
+- [X] T016 Run the quickstart by hand on `pnpm dev` at `/` (real page) at 360×640 in light and dark, with screenshots for the owner; and `pnpm build && pnpm preview` showing MECHE-MECHE on `/`
+- [X] T017 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git diff <T005 commit> --stat -- src` lists only `src/games/` (T005's mascot move is spec 004's); island JS and font sizes recorded
 
 ---
 
