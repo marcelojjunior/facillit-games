@@ -25,6 +25,15 @@ operations and error codes, `status`, `schemaVersion`, the discard notice
 reasons) are used here as given: see
 [`specs/002-game-contract/contracts/`](../002-game-contract/contracts/).
 
+## Clarifications
+
+### Session 2026-11-08
+
+- Q: Until MECHE-MECHE arrives, should the screens be playable by hand with the
+  test-only games? → A: only in development mode (`pnpm dev`) the test-only
+  games appear in the game list; the shipped build stays empty and shows the
+  "no game available" message.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Play a full match on one phone (Priority: P1)
@@ -338,6 +347,10 @@ finds no game name or id comparison in the shell.
   this phase by spec 002, research D7).
 - **FR-029**: The shipped artifact MUST NOT contain the test-only games
   (existing guard), and MUST NOT name any real game until Phase 5.
+- **FR-029a**: In development mode only, the game list MUST also offer the
+  test-only games, so every screen can be played by hand on a phone before
+  Phase 5. The mechanism MUST keep the shell free of game names and ids
+  (Principle II) and MUST NOT change what the production build contains.
 - **FR-030**: Before the first match state is shown, the app MUST show a
   neutral loading frame that does not look like the initial screen, so a
   reopened match never appears to have been lost.
@@ -394,8 +407,8 @@ finds no game name or id comparison in the shell.
 - **Fixture games prove the screens**: with an empty production registry, the
   screens are verified by automated tests that use the test-only games, and a
   browser-level test is justified now that there is a real screen (deferred to
-  this phase by spec 001's plan). A non-shipped way to play the test-only games
-  manually is allowed if the artifact guard keeps them out of the build.
+  this phase by spec 001's plan). For manual checks, the test-only games are
+  playable in development mode only (FR-029a).
 - **Fonts and icons are self-hosted or system**: no third-party CDN at runtime
   (Principle I, pure client-side), unlike the POC.
 - **The POC stays untouched** and live; this phase does not cut over (Phase 6).
