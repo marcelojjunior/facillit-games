@@ -176,6 +176,35 @@ with `<use href="#...">`, so it leaves the island bundle; record the new
 measurement here. Raising the budget is not an option without amending the
 plan of spec 003.
 
+## D12 — Found during implementation
+
+- **Measurements** (`pnpm build`, gzip -9): island JS 77 593 bytes after
+  Phase 2, 77 895 after US1, **79 254 after US5** (budget 81 920, i.e. 80 KiB);
+  the D11 fallback was not needed, but only ~2.6 KiB of headroom remain. The
+  font ships as one 33 188-byte file.
+- **Contrast on the sky**: small or muted text on the scene failed or was
+  fragile, so only headings sit on the sky (pairs `ink` on `sky-top` and
+  `sky-bottom` added to `textPairs`); everything smaller is on a raised card
+  (setup, standings, the round entry).
+- **Finish as an icon**: the round ribbon, a labelled "Finalizar", and the
+  more button did not fit 360 px; finish is a red square icon button whose
+  accessible name is still "Finalizar".
+- **Game cards show only the name**: the player-count line was dropped (setup
+  shows it) because a spec 003 test reads the option's exact text.
+- **Flat-button guard**: `look.browser.test.tsx` fails on any visible button
+  that is neither `btn-3d` nor `card-3d`; inline text actions opt out with
+  `data-inline-action` (only "tap a name to rename" in setup today).
+- **Podium**: steps stretch to the tallest and drop from the top, so first
+  place stays highest when a tied step lists more names; confetti sits behind
+  the content (`-z-5`, above the scene).
+- **`podiumSteps.ts`**: named so because `podium.ts` collides with
+  `Podium.tsx` on case-insensitive file systems (macOS), which broke module
+  resolution.
+- **Tests reading totals** anchor on `"<n> pts"` now, the one adjustment SC-002
+  allows; no expected number changed.
+- **External URL check** ignores comments: Tailwind's license banner cites its
+  site but fetches nothing.
+
 ## D9 — No external URL in the artifact
 
 **Decision**: covered by the static-build check in D8. It replaces the manual
