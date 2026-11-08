@@ -6,18 +6,29 @@
 import { useEffect, useRef } from 'react';
 
 import type { MatchView } from '../../match/store';
-import { labels } from '../copy';
+import { fixRoundCopy, labels } from '../copy';
 
-export function ScoreTable({ view }: { readonly view: MatchView }) {
+interface ScoreTableProps {
+  readonly view: MatchView;
+  /** When set, each round header is a button that opens that round for fixing. */
+  readonly onPickRound?: (index: number) => void;
+}
+
+export function ScoreTable({ view, onPickRound }: ScoreTableProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const { players } = view.match;
   const { roundScores, totals } = view.evaluation;
 
   useEffect(() => {
-    const box = scroller.current;
-    if (box !== null) {
-      box.scrollLeft = box.scrollWidth;
-    }
+    // Next frame: this effect runs before the parent Dialog's showModal(),
+    // while the box still has no layout to scroll.
+    const frame = requestAnimationFrame(() => {
+      const box = scroller.current;
+      if (box !== null) {
+        box.scrollLeft = box.scrollWidth;
+      }
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const cell = 'min-w-11 px-3 py-2 text-right tabular-nums';
@@ -32,8 +43,20 @@ export function ScoreTable({ view }: { readonly view: MatchView }) {
               {labels.player}
             </th>
             {roundScores.map((_, index) => (
-              <th key={index} scope="col" className={cell}>
-                {index + 1}
+              <th key={index} scope="col" className={onPickRound ? 'p-0' : cell}>
+                {onPickRound ? (
+                  <button
+                    type="button"
+                    data-testid="history-round"
+                    aria-label={fixRoundCopy(index + 1)}
+                    onClick={() => onPickRound(index)}
+                    className="min-h-11 min-w-11 rounded-control px-3 text-accent underline underline-offset-4 tabular-nums"
+                  >
+                    {index + 1}
+                  </button>
+                ) : (
+                  index + 1
+                )}
               </th>
             ))}
             <th scope="col" className={`${cell} font-semibold text-ink`}>

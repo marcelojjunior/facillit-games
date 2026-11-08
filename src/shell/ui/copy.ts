@@ -51,6 +51,10 @@ export function roundCopy(round: number): string {
   return `Rodada ${round}`;
 }
 
+export function fixRoundCopy(round: number): string {
+  return `Corrigir rodada ${round}`;
+}
+
 export function positionCopy(position: number): string {
   return `${position}º`;
 }
@@ -62,6 +66,9 @@ export const headings = {
   winner: 'Fim de partida',
   finish: 'Finalizar a partida?',
   tie: 'Empate!',
+  history: 'Histórico',
+  removeLastRound: 'Remover a última rodada?',
+  renamePlayer: 'Quem vai trocar de nome?',
 } as const;
 
 export const labels = {
@@ -85,6 +92,14 @@ export const labels = {
   newMatch: 'Nova partida',
   roundProblems: 'Corrija antes de confirmar:',
   dismiss: 'Entendi',
+  openHistory: 'Ver histórico',
+  moreActions: 'Mais opções',
+  renamePlayer: 'Renomear jogador',
+  removeLastRound: 'Remover última rodada',
+  newName: 'Novo nome',
+  save: 'Salvar',
+  cancel: 'Cancelar',
+  close: 'Fechar',
   notSaved:
     'Não foi possível salvar neste aparelho. Se o app for fechado, a partida pode se perder.',
 } as const;

@@ -205,6 +205,11 @@ the bar, above the button. Also, Astro's dev toolbar floats over the same
 bottom-center spot and swallowed taps on the confirm button under `pnpm dev`;
 it is disabled in `astro.config.mjs` (`devToolbar.enabled: false`).
 
+The full history is not in the overflow menu: a visible "Ver histórico"
+button sits on the standings header, and a tap anywhere on the standings
+opens it too (FR-004a asks for one tap). The menu keeps rename and remove last
+round (and abandon, US4).
+
 ## D11 — Double-submit guard
 
 **Decision**: the confirm handler holds a ref lock set on press and released on
@@ -242,6 +247,12 @@ overflow cannot be measured there. Browser mode needs no dev server.
 
 **Cost recorded**: a Chromium download for local runs (`playwright install
 chromium`), and a few seconds per run.
+
+**Found during implementation**: Vitest skips CSS by default and the
+stylesheet is imported only by `BaseLayout.astro`, so browser tests rendered
+unstyled markup and size checks measured nothing real. The browser project
+now sets `css: true` and loads `src/styles/global.css` from
+`tests/browser-setup.ts`.
 
 **Alternatives rejected**: Playwright Test against `astro dev` (needs a server
 and the dev-only page; slower, two runners); jsdom + Testing Library (cannot
