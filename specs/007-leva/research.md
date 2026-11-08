@@ -47,9 +47,13 @@
   `cards` from `nextRound` (or, when fixing, from the round's own value) and
   keeps only living players' values. If a stored draft's `cards` differ from
   the derived ones (a past round was fixed meanwhile), the entry shows the
-  derived cards, drops out-of-range values, and writes the corrected draft on
-  the next edit. Confirming with results missing is rejected by
-  `validateRound` ("Falta quantas levou: Ana").
+  derived cards, drops out-of-range values, and writes the corrected draft at
+  once (an effect calling `onChange`), so a confirm right away never stores a
+  stale card count. Confirming with results missing is rejected by
+  `validateRound` ("Falta quantas levou: Ana"). `validateRound` returns only
+  `{ cards, guesses, taken }` (the store saves its output, `match.ts`), so a
+  stored round has no `step`: a value without `step` whose `taken` is complete
+  opens on the results step (the fix sheet).
 - **Rationale**: the shell persists drafts as they are (FR-016 of this spec);
   no shell change needed for steps.
 
@@ -77,6 +81,8 @@
   `PointsBadge` shows `unit.one` when the value is 1 or −1, else `unit.other`;
   default "pts".
 - **Rationale**: "5 pts" for lives misleads; the shell stays game-agnostic.
+  The history table keeps plain numbers (round values such as −2), with no
+  unit.
 
 ## D9 — Budget
 
