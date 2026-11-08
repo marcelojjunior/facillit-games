@@ -371,9 +371,9 @@ finds no game name or id comparison in the shell.
   this phase by spec 002, research D7).
 - **FR-029**: The shipped artifact MUST NOT contain the test-only games
   (existing guard), and MUST NOT name any real game until Phase 5.
-- **FR-029a**: In development mode only, the game list MUST also offer the
-  test-only games, so every screen can be played by hand on a phone before
-  Phase 5. The mechanism MUST keep the shell free of game names and ids
+- **FR-029a**: In development mode only, a development-only page MUST offer
+  the test-only games in its game list, so every screen can be played by hand
+  on a phone before Phase 5; the production build MUST NOT contain that page. The mechanism MUST keep the shell free of game names and ids
   (Principle II) and MUST NOT change what the production build contains.
 - **FR-030**: Before the first match state is shown, the app MUST show a
   neutral loading frame that does not look like the initial screen, so a
@@ -405,8 +405,10 @@ finds no game name or id comparison in the shell.
   viewport.
 - **SC-003**: Reloading the page at any point of a match restores the same
   screen and data, including a half-entered round, in 100% of the tested
-  states (each of the four screens, plus a draft and a round being fixed), with
-  no frame of the initial screen shown first.
+  states (each of the four screens, plus a half-entered draft), with no frame
+  of the initial screen shown first. A reload while a confirmed round is being
+  fixed keeps every round and the draft; the unsaved fix itself is not
+  restored.
 - **SC-004**: 100% of tappable elements measure at least 44×44 px, and 100% of
   text meets AA contrast, in both themes on every screen.
 - **SC-005**: 100% of store error codes and discard reasons have Portuguese
