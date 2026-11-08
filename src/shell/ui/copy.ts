@@ -61,8 +61,8 @@ export function positionCopy(position: number): string {
 
 /** Link previews and the browser's description (BaseLayout). */
 export const share = {
-  description: 'O placar dos jogos de mesa, direto no celular. Comece com o MECHE-MECHE.',
-  imageAlt: 'O mascote Dado ao lado do título Facillit Games e do jogo MECHE-MECHE.',
+  description: 'O placar dos jogos de mesa, direto no celular. Jogue MECHE-MECHE e LEVA.',
+  imageAlt: 'O mascote Dado ao lado do título Facillit Games e dos jogos MECHE-MECHE e LEVA.',
 } as const;
 
 /** Screen headings. The static-build guard checks none reaches the built HTML. */

@@ -55,6 +55,12 @@ function dieSvg(size) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 150" width="${size}" height="${Math.round((size * 150) / 140)}">${colored}</svg>`;
 }
 
+// One badge per shipped game, in the game list's badge colors (tokens.ts).
+const GAMES = [
+  ['MECHE-MECHE', '#ff9d2e', '#c8650f', '#3d2304'],
+  ['LEVA', '#7e44d8', '#55279e', '#ffffff'],
+];
+
 const fontUrl = pathToFileURL(join(root, 'src/assets/fonts/baloo-2-latin-wght-normal.woff2')).href;
 
 const page = (width, height, body) => `<!doctype html>
@@ -92,8 +98,10 @@ const og = page(
           5px 5px 0 #155ab0, -5px 5px 0 #155ab0, 0 10px 0 #155ab0;">Facillit Games</div>
       <div style="font-size:46px; font-weight:800; line-height:1.15; color:#23264f;">
         O placar dos jogos de mesa,<br>direto no celular.</div>
-      <div style="align-self:flex-start; margin-top:8px; font-size:36px; font-weight:800; color:#fff;
-        background:#7e44d8; padding:6px 26px; border-radius:22px; box-shadow:0 8px 0 #55279e;">MECHE-MECHE</div>
+      <div style="display:flex; gap:20px; margin-top:8px;">${GAMES.map(
+        ([name, color, edge, ink]) => `<div style="font-size:36px; font-weight:800; color:${ink};
+        background:${color}; padding:6px 26px; border-radius:22px; box-shadow:0 8px 0 ${edge};">${name}</div>`,
+      ).join('')}</div>
     </div>
   </div>`,
 );
