@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The mascot die (spec 004 FR-009), simplified to read at 16 px. -->
+  <rect x="5" y="9" width="54" height="52" rx="15" fill="#d9e1ec" stroke="#23264f" stroke-width="3"/>
+  <rect x="5" y="4" width="54" height="51" rx="15" fill="#ffffff" stroke="#23264f" stroke-width="3"/>
+  <g fill="#e0393f">
+    <circle cx="16" cy="15" r="4.5"/>
+    <circle cx="48" cy="15" r="4.5"/>
+    <circle cx="16" cy="44" r="4.5"/>
+    <circle cx="48" cy="44" r="4.5"/>
+  </g>
+  <ellipse cx="26" cy="27" rx="3.6" ry="4.6" fill="#23264f"/>
+  <ellipse cx="38" cy="27" rx="3.6" ry="4.6" fill="#23264f"/>
+  <path d="M25 36 Q32 43 39 36" fill="none" stroke="#23264f" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

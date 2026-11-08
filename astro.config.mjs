@@ -9,6 +9,13 @@ export default defineConfig({
   // requires a runtime and would violate the principle.
   output: 'static',
 
+  // The public address, for absolute share URLs (Open Graph needs them).
+  // Vercel provides it at build time; without it (local builds) the share
+  // tags use relative URLs and nothing else changes. Not required to run.
+  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? { site: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` }
+    : {}),
+
   // The dev toolbar floats over the bottom center of the page: exactly where
   // the confirm-round button lives (FR-024), so it swallows taps in dev.
   devToolbar: { enabled: false },

@@ -161,6 +161,20 @@ review.
 Code, comments, docs, specs, commits, and PRs are in English. Only what the end
 user sees is in Brazilian Portuguese. See constitution Principle IX.
 
+## Favicon and link previews
+
+The favicon is the mascot die (`public/favicon.svg`). The link-preview image
+(`public/og.png`, 1200×630) and the iOS home-screen icon
+(`public/apple-touch-icon.png`) are rendered from the mascot sprite with the
+project's Chromium; regenerate them after changing the mascot or the palette:
+
+```sh
+node scripts/render-share-images.mjs
+```
+
+On Vercel, `VERCEL_PROJECT_PRODUCTION_URL` (set by Vercel at build time)
+makes the share URLs absolute; local builds use relative URLs.
+
 ## Deploy
 
 Vercel, static. Astro with `output: 'static'` is detected automatically:
