@@ -6,6 +6,7 @@ import MascotSprite from '../components/MascotSprite.astro';
 // The hashed URL of the self-hosted font, so the preload hits the same file
 // global.css loads (spec 004 research D1).
 import fontUrl from '../assets/fonts/baloo-2-latin-wght-normal.woff2?url';
+import Analytics from '@vercel/analytics/astro';
 import { share } from '../shell/ui/copy';
 import { themed } from '../styles/tokens';
 
@@ -76,5 +77,11 @@ const pageUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : unde
     <Scene />
     <MascotSprite />
     <slot />
+    <!--
+      Vercel Web Analytics: page views only, no cookies, sent to this site's own
+      origin (/_vercel/insights). Optional: off the Vercel platform the script
+      is simply missing and the app works the same (Principle I).
+    -->
+    <Analytics />
   </body>
 </html>
