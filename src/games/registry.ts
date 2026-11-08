@@ -5,9 +5,11 @@
  * Adding a game: create `src/games/<id>/` with `index.ts`, `rules.ts`,
  * `rules.test.ts`, `RoundEntry.tsx`, and its browser test (MECHE-MECHE is the
  * reference), then add one import and one entry to the array below. Nothing
- * else changes (spec 002 SC-001).
+ * else changes (spec 002 SC-001). A round entry gets the earlier rounds
+ * (`rounds`) and a game may name its unit (`unit`); LEVA uses both (spec 007).
  */
 import type { Game, Registry } from '../shell/game/contract';
+import leva from './leva';
 import mecheMeche from './meche-meche';
 
 export function createRegistry(games: readonly Game[]): Registry {
@@ -28,4 +30,4 @@ export function createRegistry(games: readonly Game[]): Registry {
   };
 }
 
-export const registry: Registry = createRegistry([mecheMeche]);
+export const registry: Registry = createRegistry([mecheMeche, leva]);
