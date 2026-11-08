@@ -48,6 +48,18 @@ export interface RoundEntryProps {
   readonly onChange: (value: unknown) => void;
   /** Reasons from the last rejected confirm or save; may be empty. */
   readonly reasons: readonly RoundRejection[];
+  /**
+   * The stored rounds confirmed before the one being edited: all of them for
+   * the next round, those before it when fixing one (spec 007 FR-002). As
+   * stored: parse tolerantly, never throw. Games may ignore it.
+   */
+  readonly rounds: readonly unknown[];
+}
+
+/** Portuguese label of a total: `one` for ±1, `other` otherwise (spec 007 FR-003). */
+export interface TotalUnit {
+  readonly one: string;
+  readonly other: string;
 }
 
 export type RoundEntryComponent = ComponentType<RoundEntryProps>;
@@ -77,6 +89,8 @@ export interface GameDefinition<R> {
   readonly RoundEntry: RoundEntryComponent;
   /** Decorative picture for the game list badge; the shell's trophy when absent (spec 006). */
   readonly Icon?: ComponentType;
+  /** Unit of the totals; the shell's "pts" when absent (spec 007). */
+  readonly unit?: TotalUnit;
 }
 
 export type RoundVerdict =
@@ -111,6 +125,7 @@ export interface Game {
   readonly evaluate: (rounds: readonly unknown[], players: readonly PlayerRef[]) => Evaluation;
   readonly RoundEntry: RoundEntryComponent;
   readonly Icon?: ComponentType;
+  readonly unit?: TotalUnit;
 }
 
 /** Implemented in src/games/registry.ts; typed here so the shell never imports from src/games/. */
@@ -170,6 +185,17 @@ export function defineGame<R>(definition: GameDefinition<R>): Game {
   }
   if (definition.Icon !== undefined && typeof definition.Icon !== 'function') {
     throw contractError(id, 'Icon, when present, must be a component.');
+  }
+  const { unit } = definition;
+  if (
+    unit !== undefined &&
+    (typeof unit !== 'object' ||
+      typeof unit.one !== 'string' ||
+      typeof unit.other !== 'string' ||
+      unit.one === '' ||
+      unit.other === '')
+  ) {
+    throw contractError(id, 'unit, when present, must have non-empty one and other.');
   }
 
   /**
@@ -258,5 +284,6 @@ export function defineGame<R>(definition: GameDefinition<R>): Game {
 
     RoundEntry: definition.RoundEntry,
     ...(definition.Icon === undefined ? {} : { Icon: definition.Icon }),
+    ...(unit === undefined ? {} : { unit }),
   };
 }

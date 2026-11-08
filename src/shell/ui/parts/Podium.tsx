@@ -34,7 +34,7 @@ export function Podium({ view }: { readonly view: MatchView }) {
               <b className="max-w-full truncate text-base font-extrabold" title={player.name}>
                 {player.name}
               </b>
-              <PointsBadge points={view.evaluation.totals[player.id] ?? 0} />
+              <PointsBadge points={view.evaluation.totals[player.id] ?? 0} unit={view.game.unit} />
             </div>
           ))}
         </div>

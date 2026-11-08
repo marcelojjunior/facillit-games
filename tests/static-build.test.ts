@@ -209,14 +209,15 @@ describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
     expect(external).toEqual([]);
   });
 
-  it('keeps the island script within 80 kB gzipped (SC-005)', () => {
+  // 90 KiB since spec 007 FR-020 (amendment to spec 003's 80 KiB).
+  it('keeps the island script within 90 KiB gzipped (SC-005, spec 007 FR-020)', () => {
     const scripts = distFiles(/_astro[\\/][^\\/]+\.js$/);
     expect(scripts.length).toBeGreaterThan(0);
     const gzipped = scripts.reduce(
       (sum, path) => sum + gzipSync(readFileSync(path), { level: 9 }).length,
       0,
     );
-    expect(gzipped).toBeLessThanOrEqual(80 * KB);
+    expect(gzipped).toBeLessThanOrEqual(90 * KB);
   });
 
   it('ships MECHE-MECHE, the first real game (spec 005 FR-017, SC-005)', () => {

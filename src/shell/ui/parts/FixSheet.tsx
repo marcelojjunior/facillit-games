@@ -42,6 +42,7 @@ export function FixSheet({ view, store, act, index, onClose }: FixSheetProps) {
     <Dialog open title={fixRoundCopy(index + 1)} onClose={onClose}>
       <RoundEntry
         players={view.match.players}
+        rounds={view.match.rounds.slice(0, index)}
         value={value}
         onChange={(next) => {
           setValue(next);

@@ -16,14 +16,14 @@ attribution.
 
 ## Phase 1: Setup
 
-- [ ] T001 Raise the island budget to 90 KiB: limit `90 * KB` (92 160 bytes) in `tests/static-build.test.ts`, and an "Amendment (spec 007)" note under the budget line of `specs/003-shell-screens/plan.md` (80 KiB → 90 KiB, reason: MECHE-MECHE left < 1 KB; lazy-loading deferred to 4–5 games) (FR-020)
+- [X] T001 Raise the island budget to 90 KiB: limit `90 * KB` (92 160 bytes) in `tests/static-build.test.ts`, and an "Amendment (spec 007)" note under the budget line of `specs/003-shell-screens/plan.md` (80 KiB → 90 KiB, reason: MECHE-MECHE left < 1 KB; lazy-loading deferred to 4–5 games) (FR-020)
 
 ## Phase 2: Foundational — contract revision 4 (blocks all stories)
 
-- [ ] T002 [P] Extend `src/shell/game/contract.test.ts` (expected to fail first): `defineGame` passes `unit` `{ one, other }` through, leaves it `undefined` when absent, and throws a contract error when present with a missing or empty `one`/`other` (contracts/game-contract-rev4.md)
-- [ ] T003 [P] Create `src/shell/ui/contract-rev4.browser.test.tsx` (expected to fail first), with inline test games: the in-progress entry receives `rounds` equal to the confirmed rounds; the fix sheet for round index 1 of 3 receives only round 0; a game with `unit: { one: 'vida', other: 'vidas' }` shows "5 vidas" and "1 vida" in the standings badge; a game without `unit` shows "pts"
-- [ ] T004 Add `rounds: readonly unknown[]` to `RoundEntryProps` and optional `unit` to `GameDefinition` and `Game` in `src/shell/game/contract.ts`, with the pass-through and check; make T002 pass
-- [ ] T005 Pass `rounds={match.rounds}` in `src/shell/ui/screens/InProgress.tsx` and `rounds={view.match.rounds.slice(0, index)}` in `src/shell/ui/parts/FixSheet.tsx`; give `PointsBadge` (`src/shell/ui/parts/PointsBadge.tsx`) an optional `unit` (one for ±1, other otherwise, default `labels.points`) passed from `view.game.unit` in `src/shell/ui/parts/Standings.tsx` and `src/shell/ui/parts/Podium.tsx`; make T003 pass and keep every existing test green (MECHE-MECHE and fixtures untouched)
+- [X] T002 [P] Extend `src/shell/game/contract.test.ts` (expected to fail first): `defineGame` passes `unit` `{ one, other }` through, leaves it `undefined` when absent, and throws a contract error when present with a missing or empty `one`/`other` (contracts/game-contract-rev4.md)
+- [X] T003 [P] Create `src/shell/ui/contract-rev4.browser.test.tsx` (expected to fail first), with inline test games: the in-progress entry receives `rounds` equal to the confirmed rounds; the fix sheet for round index 1 of 3 receives only round 0; a game with `unit: { one: 'vida', other: 'vidas' }` shows "5 vidas" and "1 vida" in the standings badge; a game without `unit` shows "pts"
+- [X] T004 Add `rounds: readonly unknown[]` to `RoundEntryProps` and optional `unit` to `GameDefinition` and `Game` in `src/shell/game/contract.ts`, with the pass-through and check; make T002 pass
+- [X] T005 Pass `rounds={match.rounds}` in `src/shell/ui/screens/InProgress.tsx` and `rounds={view.match.rounds.slice(0, index)}` in `src/shell/ui/parts/FixSheet.tsx`; give `PointsBadge` (`src/shell/ui/parts/PointsBadge.tsx`) an optional `unit` (one for ±1, other otherwise, default `labels.points`) passed from `view.game.unit` in `src/shell/ui/parts/Standings.tsx` and `src/shell/ui/parts/Podium.tsx`; make T003 pass and keep every existing test green (MECHE-MECHE and fixtures untouched)
 
 **Checkpoint**: gate green; commit `feat(game): add rounds and unit to the game contract`.
 
