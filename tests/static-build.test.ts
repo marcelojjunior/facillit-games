@@ -172,6 +172,13 @@ describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
     expect(gzipped).toBeLessThanOrEqual(80 * KB);
   });
 
+  it('ships MECHE-MECHE, the first real game (spec 005 FR-017, SC-005)', () => {
+    const shipped = distFiles(/\.(html|js)$/).some((path) =>
+      readFileSync(path, 'utf8').includes('MECHE-MECHE'),
+    );
+    expect(shipped).toBe(true);
+  });
+
   it('draws the scene in the static page, before the island, so it shows from the first frame', () => {
     // If the scene ever moved into the island it would paint late, after the
     // loading frame (spec 004 FR-017, research D4).

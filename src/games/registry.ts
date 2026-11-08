@@ -2,11 +2,13 @@
  * The game registry — the only file allowed to name or compare games
  * (constitution Principle II, research D8).
  *
- * Adding a game: create `src/games/<id>/` with `index.ts`, `rules.ts`, and
- * `rules.test.ts`, then add one import and one entry to the array below.
- * Nothing else changes (SC-001).
+ * Adding a game: create `src/games/<id>/` with `index.ts`, `rules.ts`,
+ * `rules.test.ts`, `RoundEntry.tsx`, and its browser test (MECHE-MECHE is the
+ * reference), then add one import and one entry to the array below. Nothing
+ * else changes (spec 002 SC-001).
  */
 import type { Game, Registry } from '../shell/game/contract';
+import mecheMeche from './meche-meche';
 
 export function createRegistry(games: readonly Game[]): Registry {
   const byId = new Map<string, Game>();
@@ -26,5 +28,4 @@ export function createRegistry(games: readonly Game[]): Registry {
   };
 }
 
-// ponytail: empty on purpose; MECHE-MECHE arrives in Phase 5 (specs/002, research D8).
-export const registry: Registry = createRegistry([]);
+export const registry: Registry = createRegistry([mecheMeche]);

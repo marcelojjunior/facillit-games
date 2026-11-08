@@ -156,7 +156,7 @@ describe('no literal colors in components (FR-018)', () => {
     });
   }
 
-  const files = ['src/shell/ui', 'src/components', 'tests/fixtures/games']
+  const files = ['src/shell/ui', 'src/components', 'src/games', 'tests/fixtures/games']
     .flatMap((dir) => walk(join(repoRoot, dir)))
     .filter((path) => /\.(tsx?|astro)$/.test(path) && !/\.test\.tsx?$/.test(path));
 

@@ -40,7 +40,9 @@ describe('createRegistry', () => {
 });
 
 describe('production registry', () => {
-  it('is empty until the first real game (Phase 5)', () => {
-    expect(registry.list()).toEqual([]);
+  it('lists MECHE-MECHE, the first real game (spec 005 FR-001, FR-003, FR-017)', () => {
+    const games = registry.list();
+    expect(games.map((game) => game.id)).toEqual(['meche-meche']);
+    expect(games[0]).toMatchObject({ name: 'MECHE-MECHE', minPlayers: 2, maxPlayers: 7 });
   });
 });
