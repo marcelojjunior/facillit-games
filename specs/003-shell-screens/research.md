@@ -133,7 +133,9 @@ keeps every round and the draft; the unsaved fix is not restored.
 
 - Tokens live in `src/styles/global.css` under Tailwind 4 `@theme` as CSS
   variables (`--color-surface`, `--color-ink`, `--color-accent`, …, spacing,
-  radius, type scale). Dark values override the same variables under
+  radius, type scale). Color token names carry no numeric suffix
+  (`surface-raised`, not `surface-100`), so the literal-color check can
+  recognise Tailwind's default palette classes without false positives. Dark values override the same variables under
   `[data-theme='dark']`. A custom variant
   `@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *))`
   keeps `dark:` available for rare cases. Components use token utilities only;
@@ -176,10 +178,12 @@ dialogs); hand-rolled overlays (focus management bugs on mobile).
 
 ## D10 — Layout of the in-progress screen
 
-**Decision**: a header (round number, finish, overflow menu), the compact
-standings, the game's round entry, and a bottom action bar fixed to the
-viewport bottom with the confirm button (FR-024). The overflow menu holds:
-full history, rename player, remove last round, abandon match, theme. Finishing
+**Decision**: a header (round number, finish, theme control, overflow menu),
+the compact standings, the game's round entry, and a bottom action bar fixed to
+the viewport bottom with the confirm button (FR-024). The overflow menu holds:
+full history, rename player, remove last round, abandon match. The theme
+control sits in the shared app header, so it is reachable from every screen
+(FR-020), not only from the in-progress menu. Finishing
 with zero rounds is allowed (spec 002 permits it; everyone ties, edge case).
 
 **Rationale**: the confirm action is the most repeated tap (Principle VI); a

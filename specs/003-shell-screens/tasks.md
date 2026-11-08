@@ -18,6 +18,8 @@ description: "Task list for 003-shell-screens"
 requires automated checks for every success criterion (SC-001 to SC-008), and
 Principle IV requires the static-build guard to be repointed, not removed.
 
+**Branch**: `feature/shell-screens`, branched from `develop`.
+
 **Organization**: grouped by user story in priority order — P1: US1, US2, US6;
 P2: US3, US4, US5.
 
@@ -59,10 +61,10 @@ P2: US3, US4, US5.
 
 **Purpose**: baseline and test infrastructure for the browser project.
 
-- [ ] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `develop` and confirm all pass before any change (baseline)
+- [ ] T001 Run `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` on `feature/shell-screens` and confirm all pass before any change (baseline)
 - [ ] T002 Add dev dependencies pinned to exact versions in `package.json`: `@vitest/browser-playwright` at the same version as `vitest` (5.0.5), `playwright` (latest stable, exact), `vitest-browser-react` (latest version whose peers accept Vitest 5 and React 19, exact); run `pnpm install` and `pnpm peers check` (must report no peer issues, AGENTS.md pitfall 9)
 - [ ] T003 Split `vitest.config.ts` into two projects (research D13): `unit` keeps `environment: 'node'` and the existing `include` (`tests/**/*.test.ts`, `src/**/*.test.ts`); `browser` uses `@vitest/browser-playwright` with Chromium, headless, viewport 360×640, `include: ['src/**/*.browser.test.tsx', 'tests/**/*.browser.test.tsx']`; keep the comment explaining why `unit` is `node`
-- [ ] T004 Add `src/shell/ui/smoke.browser.test.tsx` rendering a `<button>` with `vitest-browser-react` and asserting it is visible, to prove the browser project runs; run `pnpm exec playwright install chromium` if needed and record that command in `README.md` under testing prerequisites
+- [ ] T004 Add `src/shell/ui/smoke.browser.test.tsx` rendering a `<button>` with `vitest-browser-react` and asserting it is visible, to prove the browser project runs; run `pnpm exec playwright install chromium` if needed (documented in T048)
 
 **Checkpoint**: `pnpm test` runs both projects green.
 
@@ -77,7 +79,7 @@ the guards. Every story depends on this phase.
 
 - [ ] T005 [P] Extend `src/shell/game/contract.test.ts` (expected to fail first): `defineGame` passes `RoundEntry` through unchanged and throws a contract error when it is not a function; `Game.rank` returns positions keyed by player id via peeling `resolveWinners` — normal case (1,2,3), tie (1,1,3), all tied / zero rounds (all 1), lowest-wins game (lowest total gets 1), and throws a contract error if `resolveWinners` returns an empty list or an unknown id during peeling (contracts/round-entry.md)
 - [ ] T006 [P] Create `src/shell/ui/copy.test.ts` (expected to fail first): every key of `errorCopy` and `discardCopy` is a non-empty string; `rosterLimitCopy(min, max)` interpolates the numbers; the set of `errorCopy` keys equals every `MatchError['code']` and of `discardCopy` every `DiscardNotice['reason']` (SC-005, research D12)
-- [ ] T007 [P] Create `src/styles/tokens.test.ts` (expected to fail first): every color token in `src/styles/tokens.ts` has a light and a dark value; each CSS variable in `src/styles/global.css` matches `tokens.ts`; WCAG contrast ≥ 4.5:1 for every text-on-surface pair and ≥ 3:1 for every boundary pair listed in `tokens.ts`, in both themes (FR-021, research D15); no file under `src/shell/ui/` or `tests/fixtures/games/` contains a literal color (`#[0-9a-f]{3,8}\b`, `rgb(`, `hsl(`, or a Tailwind palette class like `-(red|blue|gray|slate|zinc|neutral|…)-\d{2,3}`) (FR-019)
+- [ ] T007 [P] Create `src/styles/tokens.test.ts` (expected to fail first): every color token in `src/styles/tokens.ts` has a light and a dark value; each CSS variable in `src/styles/global.css` matches `tokens.ts`; WCAG contrast ≥ 4.5:1 for every text-on-surface pair and ≥ 3:1 for every boundary pair listed in `tokens.ts`, in both themes (FR-021, research D15); no file under `src/shell/ui/` or `tests/fixtures/games/` contains a literal color (`#[0-9a-f]{3,8}\b`, `rgb(`, `hsl(`, or a class of Tailwind's default palette: `-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b`) (FR-019); color token names have no numeric suffix (research D7)
 - [ ] T008 [P] Create `tests/island-directives.test.ts` (expected to pass now and keep passing): scans every `.astro` file under `src/` and fails on `client:load`, `client:idle`, `client:visible`, `client:media`, `server:defer`, or a `client:only` whose value is not `"react"` (FR-028, research D14)
 - [ ] T009 Repoint `tests/static-build.test.ts` (expected to fail first): replace the probe marker with assertions that `dist/index.html` contains `data-testid="loading-frame"`, does not contain `data-testid="match-app"` nor any value of `errorCopy`/screen headings, contains `lang="pt-BR"`, and that no file in `dist/` contains `highest-wins`, `lowest-wins`, `Maior Vence`, or `Menor Vence` (FR-026, FR-029, FR-030, research D4); keep the header comment, updated to say it now guards the real island
 
@@ -106,7 +108,7 @@ the real island ships with its fallback, all guards green.
 
 ### Tests first
 
-- [ ] T019 [US1] Create `src/shell/ui/flow.browser.test.tsx` (expected to fail first), rendering `MatchApp` with `testRegistry` and a fresh `localStorage`: game list lists both fixture games in registry order; empty registry shows the "nenhum jogo disponível" state; setup rejects a duplicate name (case-insensitive) with `errorCopy.duplicate_name`; start disabled below `minPlayers` with the missing count shown and add disabled at `maxPlayers` with `roster_full` copy; a full match of 4 players × 5 rounds for each fixture game ends on the winner screen with totals and winners equal to `game.evaluate(...)`; an invalid confirm shows every game reason and keeps the draft; a tied match names every tied player as a shared win (SC-001, US1 scenarios 1–9)
+- [ ] T019 [US1] Create `src/shell/ui/flow.browser.test.tsx` (expected to fail first), rendering `MatchApp` with `testRegistry` and a fresh `localStorage`: game list lists both fixture games in registry order; empty registry shows the "nenhum jogo disponível" state; setup rejects a duplicate name (case-insensitive) with `errorCopy.duplicate_name`; start disabled below `minPlayers` with the missing count shown and add disabled at `maxPlayers` with `roster_full` copy; a full match of 4 players × 5 rounds for each fixture game ends on the winner screen with totals and winners equal to `game.evaluate(...)`; an invalid confirm shows every game reason and keeps the draft; a tied match names every tied player as a shared win; the in-progress screen offers no `add-player` and no remove-player control (FR-005); a `lowest-wins` match with negative points shows the negative total with its sign; a 30-character name renders without horizontal overflow and its full text is reachable via `title` (SC-001, US1 scenarios 1–9, Edge Cases)
 - [ ] T020 [P] [US1] Create `src/shell/ui/parts/ConfirmBar.browser.test.tsx` (expected to fail first): two clicks dispatched back to back add exactly one round; the button is disabled with no draft (FR-017, research D11)
 
 ### Implementation
@@ -134,7 +136,7 @@ state.
 
 ### Tests first
 
-- [ ] T029 [US2] Create `src/shell/ui/persistence.browser.test.tsx` (expected to fail first): for each of setup, in progress with a half-entered draft, and winner, unmount and remount `MatchApp` over the same `localStorage` and assert the first rendered `data-screen` is the same screen (never `game-list` first) with the same players, rounds, and draft; a corrupted stored value shows `data-testid="discard-notice"` once and not again after dismiss and remount; a storage whose `setItem` throws shows `data-testid="not-saved-warning"` after an operation and it disappears after a persisted one; a `storage` event with a new confirmed round from "another tab" updates the standings without reload (SC-003, US2 scenarios 1–6)
+- [ ] T029 [US2] Create `src/shell/ui/persistence.browser.test.tsx` (expected to fail first): for each of setup, in progress with a half-entered draft, and winner, unmount and remount `MatchApp` over the same `localStorage` and assert the first rendered `data-screen` is the same screen (never `game-list` first) with the same players, rounds, and draft; a stored match of `highest-wins` remounted with a registry that lacks it shows `discard-notice` with `discardCopy.unknown_game` once and then the game list (Edge Cases); a corrupted stored value shows `data-testid="discard-notice"` once and not again after dismiss and remount; a storage whose `setItem` throws shows `data-testid="not-saved-warning"` after an operation and it disappears after a persisted one; a `storage` event with a new confirmed round from "another tab" updates the standings without reload (SC-003, US2 scenarios 1–6)
 
 ### Implementation
 
@@ -169,7 +171,7 @@ draft.
 
 ### Tests first
 
-- [ ] T035 [US3] Create `src/shell/ui/fix.browser.test.tsx` (expected to fail first): open history (`open-history`), tap round 1 (`history-round`), change it, save (`save-fix`): only round 1 and totals change; an invalid fix shows reasons and changes nothing; cancel changes nothing; the draft typed before opening is intact after save and after cancel; "Remover última rodada" asks for confirmation, cancel keeps it, confirm removes it; the history table opens scrolled to the latest round and keeps names visible while scrolling (US3 scenarios 1–4, FR-004a)
+- [ ] T035 [US3] Create `src/shell/ui/fix.browser.test.tsx` (expected to fail first): open history (`open-history`), tap round 1 (`history-round`), change it, save (`save-fix`): only round 1 and totals change; an invalid fix shows reasons and changes nothing; cancel changes nothing; the draft typed before opening is intact after save and after cancel; "Remover última rodada" asks for confirmation, cancel keeps it, confirm removes it; the history table opens scrolled to the latest round and keeps names visible while scrolling; renaming a player during the match (overflow menu → "Renomear jogador") updates the name in the standings, the history, and later the winner screen, and a duplicate name (case-insensitive) shows `errorCopy.duplicate_name` and changes nothing (US3 scenarios 1–4, FR-004a, FR-005, Edge Cases — rename during the match)
 
 ### Implementation
 
@@ -205,13 +207,13 @@ measured.
 
 - [ ] T041 [P] [US5] Create `src/shell/theme/preference.test.ts` (expected to fail first) covering every row of the reading table in `contracts/theme-preference.md` (missing, not JSON, wrong `schemaVersion`, unknown `theme`, throwing storage → `auto`; valid → stored value), `writeThemeChoice` returning `{ persisted: false }` on a throwing `setItem`, and `resolveTheme` for all 6 combinations
 - [ ] T042 [P] [US5] Create `src/shell/theme/boot.test.ts` (expected to fail first): evaluates the generated boot script against a fake `document`/`localStorage`/`matchMedia` and asserts it sets `data-theme` and `colorScheme` exactly as `resolveTheme(readThemeChoice(...))` for the same inputs, and never throws on a throwing storage
-- [ ] T043 [US5] Create `src/shell/ui/layout.browser.test.tsx` (expected to fail first), at 360×640, on every screen and overlay with 7 players (using a test game with `maxPlayers` ≥ 7 defined inline) and 30 rounds: every visible `button, a, input, select, [role=button]` has a bounding box ≥ 44×44 (SC-004); `document.documentElement.scrollWidth <= 360` (SC-007); `confirm-round` is fully inside the viewport without scrolling (SC-002); standings have exactly one row per player (SC-007); theme control switches `data-theme` live, persists across remount, and in `auto` follows an emulated `prefers-color-scheme` change (SC-008)
+- [ ] T043 [US5] Create `src/shell/ui/layout.browser.test.tsx` (expected to fail first), at 360×640, on every screen and overlay with 7 players (using a test game with `maxPlayers` ≥ 7 defined inline) and 30 rounds: every visible `button, a, input, select, [role=button]` has a bounding box ≥ 44×44 (SC-004); `document.documentElement.scrollWidth <= 360` (SC-007); `confirm-round` is fully inside the viewport without scrolling (SC-002); standings have exactly one row per player (SC-007); theme control is present on every screen, switches `data-theme` live, persists across remount, still switches when `setItem` throws (FR-020a), and in `auto` follows an emulated `prefers-color-scheme` change (SC-008)
 
 ### Implementation
 
 - [ ] T044 [US5] Create `src/shell/theme/preference.ts` exactly per `contracts/theme-preference.md` (key `facillit-games:theme`, envelope `{ "schemaVersion": 1, "theme": "auto" | "light" | "dark" }`, reuse `safeStorage` from `src/shell/match/persistence.ts`); make T041 pass
 - [ ] T045 [US5] Create `src/shell/theme/boot.ts` exporting `bootScript(): string` built from the same parsing logic, and add it to `src/layouts/BaseLayout.astro` as `<script is:inline set:html={bootScript()} />` at the top of `<head>`; keep `<meta name="color-scheme" content="light dark">`; make T042 pass (FR-020, research D7)
-- [ ] T046 [US5] Create `src/shell/ui/parts/ThemeControl.tsx` (`data-testid="theme-control"`, three options "Automático" / "Claro" / "Escuro", writes via `writeThemeChoice`, applies `data-theme` immediately, listens to `matchMedia` changes in `auto`), reachable from every screen header in `MatchApp` (FR-020, FR-020a)
+- [ ] T046 [US5] Create `src/shell/ui/parts/ThemeControl.tsx` (`data-testid="theme-control"`, three options "Automático" / "Claro" / "Escuro", writes via `writeThemeChoice`, applies `data-theme` immediately, listens to `matchMedia` changes in `auto`), placed in the shared app header rendered by `MatchApp`, so it is on every screen (FR-020, FR-020a, research D10)
 - [ ] T047 [US5] Fix any layout failures from T043 across `src/shell/ui/` (sizes, overflow, bottom bar safe-area), then make T043 pass
 
 **Checkpoint**: Principle VI is measured, not claimed.
@@ -224,7 +226,7 @@ measured.
 - [ ] T049 [P] Record in `specs/003-shell-screens/research.md` any decision changed during implementation, and update `specs/003-shell-screens/spec.md` in the same change wherever reality contradicted it (Principle VIII)
 - [ ] T050 Check the island bundle size from `pnpm build` output: island JS ≤ 80 kB gzipped (plan, Performance Goals); record the measured value in `specs/003-shell-screens/research.md` D13 or justify the excess there
 - [ ] T051 Run the full quickstart (`specs/003-shell-screens/quickstart.md`): automated checks, the manual phone checklist on `/dev/test-games`, and `pnpm build && pnpm preview` showing the empty state on `/` and 404 on `/dev/test-games`
-- [ ] T052 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE '[ãõçáéíóúâêôà]' -- src tests ':!src/shell/ui/copy.ts' ':!tests/fixtures/games'` lists only user-visible copy (Principle IX)
+- [ ] T052 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE '[ãõçáéíóúâêôà]' -- src tests ':!src/shell/ui/copy.ts' ':!tests/fixtures/games'` lists only user-visible copy (Principle IX); `git grep -nE 'fetch\(|XMLHttpRequest' -- src` returns nothing (Principle I)
 
 ---
 
@@ -262,5 +264,5 @@ Setup ─► Foundational ─► US1 ─┬─► US2 ─┐
 2. Add US2 (reload safety) before showing anyone: it is the normal use.
 3. Add US6 to lock the plugin seam before Phase 5 builds MECHE-MECHE on it.
 4. US3, US4, then US5 to measure Principle VI.
-5. Commit per task group with `<type>(<scope>): <imperative>` (e.g.
+5. Work on `feature/shell-screens`; commit per task group with `<type>(<scope>): <imperative>` (e.g.
    `feat(shell): add game list and setup screens`), no AI attribution.

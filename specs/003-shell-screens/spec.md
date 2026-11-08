@@ -1,6 +1,6 @@
 # Feature Specification: Design system and shell screens
 
-**Feature Branch**: `develop` (see Assumptions — Branch)
+**Feature Branch**: `feature/shell-screens`
 
 **Created**: 2026-11-08
 
@@ -46,8 +46,7 @@ reasons) are used here as given: see
 ### User Story 1 - Play a full match on one phone (Priority: P1)
 
 A player opens the app, picks a game, registers the players at the table,
-starts the match, records one round after another, watches the cumulative
-table, finishes the match, and sees who won.
+starts the match, records one round after another, watches the standings, finishes the match, and sees who won.
 
 **Why this priority**: this is the whole product. Without it, nothing built in
 Phases 2 and 3 reaches a player.
@@ -424,9 +423,9 @@ finds no game name or id comparison in the shell.
 
 ## Assumptions
 
-- **Branch**: this session works on `develop` as instructed for the session; the
-  repository convention (`feature/<slug>` from `develop`) can be applied by
-  moving the commits before implementation if preferred.
+- **Branch**: the spec, plan, and tasks were committed on `develop`; the
+  implementation happens on `feature/shell-screens`, branched from `develop`
+  (constitution, Git conventions).
 - **No history, no other settings, no multiple matches**: decided in spec 002
   (single current match, no history). The only persisted data this phase adds
   is the theme preference (FR-020a), under its own key; the match schema does

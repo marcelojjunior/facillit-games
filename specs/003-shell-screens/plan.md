@@ -1,13 +1,12 @@
 # Implementation Plan: Design system and shell screens
 
-**Branch**: `develop` | **Date**: 2026-11-08 | **Spec**: [spec.md](./spec.md)
+**Branch**: `feature/shell-screens` | **Date**: 2026-11-08 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `specs/003-shell-screens/spec.md`
 
 **Note on the branch name**: `setup-plan.sh` reports `003-shell-screens`
-because Spec Kit derives it from the feature directory. This session works on
-`develop` (spec, Assumptions — Branch); the repository convention is
-`feature/<slug>`.
+because Spec Kit derives it from the feature directory. The real git branch
+follows the repository convention (`feature/<slug>`, AGENTS.md § Git).
 
 ## Summary
 
