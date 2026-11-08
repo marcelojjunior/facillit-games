@@ -94,13 +94,7 @@ export const validateRound: GameDefinition<LevaRound>['validateRound'] = (input,
     return rejectAll(reasons);
   }
 
-  const total = Object.values(outTaken).reduce((sum, value) => sum + value, 0);
-  if (total > cards) {
-    return reject(
-      'too_many_taken',
-      `Foram levadas ${total} voltas, mas a rodada tem ${cardsLabel(cards)}.`,
-    );
-  }
+  // ponytail: no limit on the total taken; the owner wants any entry scored (spec 007 FR-007).
   return { ok: true, round: { cards, guesses: outGuesses, taken: outTaken } };
 };
 

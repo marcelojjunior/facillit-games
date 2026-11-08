@@ -98,10 +98,10 @@ describe('validateRound (FR-006, FR-007)', () => {
     expect(codes(input)).toEqual(['value_out_of_range']);
   });
 
-  it('rejects results adding up to more than the cards', () => {
-    const input = round(2, { [ana]: 1, [bia]: 1, [caio]: 0 }, { [ana]: 1, [bia]: 1, [caio]: 1 });
-    expect(codes(input)).toEqual(['too_many_taken']);
-    expect(messages(input)).toEqual(['Foram levadas 3 voltas, mas a rodada tem 2 cartas.']);
+  it('accepts results adding up to more than the cards (owner, after testing)', () => {
+    expect(
+      codes(round(2, { [ana]: 1, [bia]: 1, [caio]: 0 }, { [ana]: 1, [bia]: 1, [caio]: 1 })),
+    ).toEqual([]);
   });
 });
 
