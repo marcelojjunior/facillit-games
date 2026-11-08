@@ -17,12 +17,13 @@ The rewrite is in progress. Two sets of files coexist at the root:
 | | What it is |
 |---|---|
 | `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
-| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, registry, and persisted match store delivered; no game screens yet. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, design system, and game screens delivered; **no real game until Phase 5**, so the shipped page says no game is available yet. |
 
 The foundation is specified in
-[`specs/001-astro-foundation/`](specs/001-astro-foundation/), and the game
+[`specs/001-astro-foundation/`](specs/001-astro-foundation/), the game
 contract and match store in
-[`specs/002-game-contract/`](specs/002-game-contract/). To add a game, read
+[`specs/002-game-contract/`](specs/002-game-contract/), and the design system
+and screens in [`specs/003-shell-screens/`](specs/003-shell-screens/). To add a game, read
 [`contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
 
 ## Requirements
@@ -34,6 +35,33 @@ contract and match store in
 No environment variable, `.env` file, or credential is needed — by principle,
 not by accident.
 
+### Browser tests need Chromium, once per machine
+
+`pnpm test` runs two Vitest projects: `unit` (Node) and `browser` (a real
+headless Chromium at 360×640, for the `*.browser.test.tsx` files, because
+44 px targets and horizontal scroll can only be measured with a layout
+engine). `playwright` is pinned at **1.63.0**; install its browser once:
+
+```sh
+pnpm exec playwright install chromium
+```
+
+Without it, the `browser` project fails with "Executable doesn't exist".
+
+## Playing the screens before a real game exists
+
+The shipped registry is empty until Phase 5. Under `pnpm dev` only, a
+development page offers the two test-only games:
+
+```text
+http://localhost:4321/dev/test-games
+```
+
+Use `pnpm dev --host` and the machine's IP to open it on a phone. The page is
+injected by `astro.config.mjs` only for `astro dev`; `pnpm build` never
+contains it. Both pages share `localStorage`, so opening `/` discards a test
+match with a "game no longer available" notice — expected.
+
 ## Commands
 
 | Command | What it does |
@@ -41,7 +69,7 @@ not by accident.
 | `pnpm dev` | Development server with HMR |
 | `pnpm build` | Generates the static artifact in `dist/` |
 | `pnpm preview` | Serves `dist/` as static files |
-| `pnpm test` | Unit suite, single run |
+| `pnpm test` | Unit and browser suites, single run |
 | `pnpm test:watch` | Suite in watch mode |
 | `pnpm typecheck` | Strict-mode type check |
 | `pnpm lint` | ESLint |
@@ -106,10 +134,9 @@ every open — which is the normal use of the app: phone on the table, tab
 discarded by the browser. This is Principle IV of the constitution.
 
 This does not depend on you remembering: `tests/static-build.test.ts` runs
-against the built HTML and fails if the island renders at build time.
-`src/components/ClientOnlyProbe.tsx` is the living proof, and it is disposable
-— **the test is not**. When the first real match screen exists, repoint the test
-to it instead of removing it.
+against the built HTML and fails if the island (`MatchApp`, the only one)
+renders at build time, and `tests/island-directives.test.ts` fails on any
+directive other than `client:only="react"`.
 
 ## Prettier formats code, not prose
 

@@ -222,11 +222,11 @@ measured.
 
 ## Phase 9: Polish & cross-cutting
 
-- [ ] T048 [P] Update `README.md` status row ("game screens delivered; no real game until Phase 5"), the testing prerequisites, and the dev-only page `/dev/test-games`
-- [ ] T049 [P] Record in `specs/003-shell-screens/research.md` any decision changed during implementation, and update `specs/003-shell-screens/spec.md` in the same change wherever reality contradicted it (Principle VIII)
-- [ ] T050 Check the island bundle size from `pnpm build` output: island JS ≤ 80 kB gzipped (plan, Performance Goals); record the measured value in `specs/003-shell-screens/research.md` D13 or justify the excess there
-- [ ] T051 Run the full quickstart (`specs/003-shell-screens/quickstart.md`): automated checks, the manual phone checklist on `/dev/test-games`, and `pnpm build && pnpm preview` showing the empty state on `/` and 404 on `/dev/test-games`
-- [ ] T052 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE '[ãõçáéíóúâêôà]' -- src tests ':!src/shell/ui/copy.ts' ':!tests/fixtures/games'` lists only user-visible copy (Principle IX); `git grep -nE 'fetch\(|XMLHttpRequest' -- src` returns nothing (Principle I)
+- [X] T048 [P] Update `README.md` status row ("game screens delivered; no real game until Phase 5"), the testing prerequisites, and the dev-only page `/dev/test-games`
+- [X] T049 [P] Record in `specs/003-shell-screens/research.md` any decision changed during implementation, and update `specs/003-shell-screens/spec.md` in the same change wherever reality contradicted it (Principle VIII)
+- [X] T050 Check the island bundle size from `pnpm build` output: island JS ≤ 80 kB gzipped (plan, Performance Goals); record the measured value in `specs/003-shell-screens/research.md` D13 or justify the excess there
+- [X] T051 Run the full quickstart (`specs/003-shell-screens/quickstart.md`): automated checks, the manual phone checklist on `/dev/test-games`, and `pnpm build && pnpm preview` showing the empty state on `/` and 404 on `/dev/test-games`
+- [X] T052 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE '[ãõçáéíóúâêôà]' -- src tests ':!src/shell/ui/copy.ts' ':!tests/fixtures/games'` lists only user-visible copy (Principle IX); `git grep -nE 'fetch\(|XMLHttpRequest' -- src` returns nothing (Principle I)
 
 ---
 
