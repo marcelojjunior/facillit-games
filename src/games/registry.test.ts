@@ -40,11 +40,19 @@ describe('createRegistry', () => {
 });
 
 describe('production registry', () => {
-  it('lists MECHE-MECHE, the first real game (spec 005 FR-001, FR-003, FR-017)', () => {
+  it('lists MECHE-MECHE and LEVA (spec 005 FR-017, spec 007 FR-021)', () => {
     const games = registry.list();
-    expect(games.map((game) => game.id)).toEqual(['meche-meche']);
+    expect(games.map((game) => game.id)).toEqual(['meche-meche', 'leva']);
     expect(games[0]).toMatchObject({ name: 'MECHE-MECHE', minPlayers: 2, maxPlayers: 7 });
     // A card game shows its own picture on the game list (spec 006 FR-006).
     expect(games[0]?.Icon).toBeTypeOf('function');
+    expect(games[0]?.unit).toBeUndefined();
+    expect(games[1]).toMatchObject({
+      name: 'LEVA',
+      minPlayers: 2,
+      maxPlayers: 10,
+      unit: { one: 'vida', other: 'vidas' },
+    });
+    expect(games[1]?.Icon).toBeTypeOf('function');
   });
 });
