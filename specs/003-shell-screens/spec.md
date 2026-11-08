@@ -33,6 +33,10 @@ reasons) are used here as given: see
   test-only games? → A: only in development mode (`pnpm dev`) the test-only
   games appear in the game list; the shipped build stays empty and shows the
   "no game available" message.
+- Q: How should the score table be laid out on a 360 px screen? → A: a compact
+  standings view by default (one line per player: name, total, position); one
+  tap opens the full history (players × rounds, names pinned on the left,
+  horizontal scroll that opens at the latest round).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -67,7 +71,7 @@ ones the game's rules compute.
 5. **Given** a valid roster, **When** the player starts the match, **Then** the
    round-entry screen of the chosen game appears for round 1.
 6. **Given** a round is being entered, **When** the player confirms a valid
-   round, **Then** the cumulative table shows the new round and updated totals,
+   round, **Then** the standings show the updated totals and positions,
    and the entry is ready for the next round.
 7. **Given** a round is being entered, **When** the player confirms an invalid
    round, **Then** every reason the game gave is shown in Portuguese next to
@@ -130,7 +134,7 @@ last round and check it disappears.
 **Acceptance Scenarios**:
 
 1. **Given** confirmed rounds, **When** the player selects a round in the
-   table, **Then** it opens in the game's round entry, filled with its values.
+   full history, **Then** it opens in the game's round entry, filled with its values.
 2. **Given** an opened round, **When** the player saves a valid change,
    **Then** that round and the totals update and every other round is
    unchanged; an invalid change shows the game's reasons and changes nothing.
@@ -186,7 +190,7 @@ bottom part of the screen.
 1. **Given** the device is in dark mode, **When** any screen is shown, **Then**
    it uses the dark theme; in light mode, the light theme.
 2. **Given** a 360 px wide viewport, **When** any screen is shown, **Then**
-   nothing scrolls horizontally except the score table, which scrolls inside
+   nothing scrolls horizontally except the full history, which scrolls inside
    itself while keeping player names visible.
 3. **Given** the round-entry screen, **When** the phone is held in one hand,
    **Then** the confirm-round action stays in the lower part of the screen and
@@ -238,8 +242,8 @@ finds no game name or id comparison in the shell.
   winner screen names every player as tied winners.
 - **Long names** (up to 30 characters, spec 002 FR-022): never break the layout;
   they wrap or truncate with the full name still reachable.
-- **Many rounds**: the table stays usable after 30+ rounds; the latest round
-  and the totals are visible without scrolling the whole page.
+- **Many rounds**: after 30+ rounds the compact standings are unchanged (one
+  line per player), and the full history opens scrolled to the latest round.
 - **Negative or large totals**: shown as the game computes them, with sign,
   never clipped.
 - **Game chosen, then removed from the registry** (a stored match of a game
@@ -267,8 +271,14 @@ finds no game name or id comparison in the shell.
   show the game's minimum and maximum player count and the current count.
   Start MUST be unavailable outside those limits, with the reason shown.
 - **FR-004**: The in-progress screen MUST show the current round number, the
-  game's round entry, and the cumulative table (per-round scores and totals
-  per player, as computed by the game).
+  game's round entry, and the compact standings: one line per player with
+  name, total, and position, as computed by the game. The standings MUST NOT
+  grow with the number of rounds.
+- **FR-004a**: One tap on the standings MUST open the full history: one row
+  per player, one column per round plus a total column, player names pinned
+  on the left, scrolled on open so the latest round is visible. Selecting a
+  round there opens it for fixing (FR-005). Closing it returns to the round
+  entry with the draft intact.
 - **FR-005**: The in-progress screen MUST allow renaming a player, fixing any
   confirmed round, removing the last round, finishing, and abandoning the
   match. Adding or removing players after start MUST NOT be offered.
@@ -326,8 +336,8 @@ finds no game name or id comparison in the shell.
 - **FR-022**: Every tappable element MUST have a touch area of at least
   44×44 px (Principle VI).
 - **FR-023**: Layout MUST be designed for a 360 px wide viewport first and MUST
-  NOT scroll horizontally, except the score table, which scrolls inside its
-  own area with player names kept visible.
+  NOT scroll horizontally, except the full history (FR-004a), which scrolls
+  inside its own area with player names kept visible.
 - **FR-024**: On the in-progress screen, the confirm-round action MUST stay in
   the lower part of the viewport, reachable without scrolling, on a 360×640
   viewport.
@@ -388,7 +398,8 @@ finds no game name or id comparison in the shell.
 - **SC-006**: Adding a third test-only game with a different round entry
   changes no file outside its folder and the registry.
 - **SC-007**: No screen scrolls horizontally at 360 px wide, except inside the
-  score table.
+  full history. With 7 players and 30 rounds, the compact standings still take
+  exactly one line per player.
 - **SC-008**: Changing the device theme switches the app between light and dark
   without reload, and the first paint already uses the device's theme.
 
