@@ -36,7 +36,7 @@ export default function RoundEntry({ players, value, onChange }: RoundEntryProps
           <div key={player.id} className="flex items-center gap-3">
             <label
               htmlFor={inputId}
-              className="min-w-0 flex-1 truncate text-ink"
+              className="min-w-0 flex-1 truncate text-lg font-bold text-ink"
               title={player.name}
             >
               {player.name}
@@ -57,7 +57,7 @@ export default function RoundEntry({ players, value, onChange }: RoundEntryProps
                 }
                 onChange({ points: next });
               }}
-              className="min-h-11 w-24 rounded-control border border-line bg-surface-sunken px-3 text-right text-lg text-ink"
+              className="min-h-12 w-24 rounded-control border-2 border-line bg-surface-raised px-3 text-right text-xl font-bold text-ink"
             />
           </div>
         );

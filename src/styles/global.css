@@ -229,6 +229,36 @@
     font-weight: 700;
   }
 
+  /* The app title: white letters with a thick blue outline, like a game logo. */
+  .logo-title {
+    color: var(--color-on-color);
+    font-weight: 800;
+    font-size: 1.375rem;
+    letter-spacing: 0.01em;
+    text-shadow:
+      0 2px 0 var(--color-blue-edge),
+      2px 0 0 var(--color-blue-edge),
+      -2px 0 0 var(--color-blue-edge),
+      0 -2px 0 var(--color-blue-edge),
+      2px 2px 0 var(--color-blue-edge),
+      -2px 2px 0 var(--color-blue-edge),
+      0 4px 0 var(--color-blue-edge);
+  }
+
+  /* A screen title on a ribbon (the round number). Large text: 3:1 applies. */
+  .ribbon {
+    display: inline-block;
+    padding: 0.125rem 1rem;
+    border-radius: var(--radius-control);
+    background: linear-gradient(180deg, var(--color-purple-hi) 0%, var(--color-purple) 50%);
+    box-shadow: 0 0.3rem 0 var(--color-purple-edge);
+    color: var(--color-on-color);
+    text-shadow: 0 2px 0 var(--color-purple-edge);
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+    font-weight: 800;
+  }
+
   /* A raised card: the same edge language as the buttons, without the press. */
   .card-3d {
     background-color: var(--color-surface-raised);

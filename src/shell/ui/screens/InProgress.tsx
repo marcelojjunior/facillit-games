@@ -49,16 +49,17 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
     // Room for the fixed bar, which grows when it lists problems.
     <section className={`flex flex-col gap-5 ${problems ? 'pb-72' : 'pb-28'}`}>
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-display font-semibold">{roundCopy(match.rounds.length + 1)}</h1>
-        <div className="flex items-center gap-1">
+        <h1 className="ribbon min-w-0 truncate">{roundCopy(match.rounds.length + 1)}</h1>
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             data-testid="finish-match"
+            aria-label={labels.finish}
+            title={labels.finish}
             onClick={() => setOverlay('finish')}
-            className={secondaryButton}
+            className={`${dangerButton} size-12 px-0`}
           >
             <FlagIcon />
-            {labels.finish}
           </button>
           <button
             type="button"
@@ -71,22 +72,23 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm text-ink-muted">{labels.standings}</h2>
+      <Standings
+        view={view}
+        onOpen={() => setOverlay('history')}
+        action={
           <button
             type="button"
             data-testid="open-history"
             onClick={() => setOverlay('history')}
-            className="min-h-11 px-2 text-sm font-semibold text-accent"
+            className="btn-3d btn-blue min-h-11 px-3"
           >
             {labels.openHistory}
           </button>
-        </div>
-        <Standings view={view} onOpen={() => setOverlay('history')} />
-      </div>
+        }
+      />
 
-      <div data-testid="round-entry">
+      {/* A card, so the entry's small labels never sit on the sky. */}
+      <div data-testid="round-entry" className="card-3d p-4">
         <RoundEntry
           players={match.players}
           value={match.draft}
@@ -102,11 +104,11 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
         {problems && (
           <div
             role="alert"
-            className="mb-3 max-h-40 overflow-y-auto rounded-card border border-danger bg-surface-raised p-3 text-sm text-danger"
+            className="mb-3 max-h-40 overflow-y-auto rounded-card bg-surface-raised p-3 text-sm font-semibold text-danger shadow-[0_0.3rem_0_var(--color-red-edge)]"
           >
             {reasons.length > 0 && (
               <>
-                <p className="font-medium">{labels.roundProblems}</p>
+                <p className="font-extrabold">{labels.roundProblems}</p>
                 <ul className="mt-1 list-disc pl-5">
                   {reasons.map((reason) => (
                     <li key={`${reason.code}:${reason.message}`}>{reason.message}</li>

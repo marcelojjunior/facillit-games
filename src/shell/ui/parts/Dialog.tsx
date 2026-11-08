@@ -46,11 +46,11 @@ export function Dialog({ open, title, onClose, children }: DialogProps) {
           onClose();
         }
       }}
-      className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md rounded-card bg-surface-raised p-0 text-ink"
+      className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md rounded-card bg-surface-raised p-0 text-ink shadow-[0_0.4rem_0_var(--color-line)]"
     >
       {open && (
         <div className="flex flex-col gap-4 p-5">
-          <h2 id={titleId} className="text-xl font-semibold">
+          <h2 id={titleId} className="text-2xl font-extrabold">
             {title}
           </h2>
           {children}

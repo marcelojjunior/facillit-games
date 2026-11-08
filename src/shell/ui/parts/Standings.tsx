@@ -3,6 +3,8 @@
  * position, name, and total, sorted by position then roster order. It never
  * grows with the number of rounds.
  */
+import type { ReactNode } from 'react';
+
 import type { MatchView } from '../../match/store';
 import { labels, positionCopy } from '../copy';
 
@@ -10,9 +12,11 @@ interface StandingsProps {
   readonly view: MatchView;
   /** One tap anywhere on the standings opens the full history (FR-004a). */
   readonly onOpen?: () => void;
+  /** Shown in the card's title row, beside "Classificação". */
+  readonly action?: ReactNode;
 }
 
-export function Standings({ view, onOpen }: StandingsProps) {
+export function Standings({ view, onOpen, action }: StandingsProps) {
   const { players } = view.match;
   const { totals, positions } = view.evaluation;
   const rows = players
@@ -20,27 +24,37 @@ export function Standings({ view, onOpen }: StandingsProps) {
     .sort((a, b) => a.position - b.position || a.order - b.order);
 
   return (
-    <ol
-      data-testid="standings"
-      aria-label={labels.standings}
-      onClick={onOpen}
-      className="flex flex-col divide-y divide-line/40 rounded-card bg-surface-raised"
-    >
-      {rows.map(({ player, position }) => (
-        <li
-          key={player.id}
-          data-testid="standing-row"
-          className="flex min-h-11 items-center gap-3 px-4 py-2"
-        >
-          <span className="w-8 shrink-0 text-ink-muted tabular-nums">{positionCopy(position)}</span>
-          <span className="min-w-0 flex-1 truncate font-medium" title={player.name}>
-            {player.name}
-          </span>
-          <span className="shrink-0 text-lg font-semibold tabular-nums">
-            {totals[player.id] ?? 0}
-          </span>
-        </li>
-      ))}
-    </ol>
+    <div className="card-3d flex flex-col gap-1 p-2">
+      {action !== undefined && (
+        <div className="flex items-center justify-between gap-2 pl-2">
+          <h2 className="text-sm font-bold text-ink-muted">{labels.standings}</h2>
+          {action}
+        </div>
+      )}
+      <ol
+        data-testid="standings"
+        aria-label={labels.standings}
+        onClick={onOpen}
+        className="flex flex-col divide-y divide-line/30"
+      >
+        {rows.map(({ player, position }) => (
+          <li
+            key={player.id}
+            data-testid="standing-row"
+            className="flex min-h-11 items-center gap-3 px-2 py-1.5"
+          >
+            <span className="w-8 shrink-0 font-bold text-ink-muted tabular-nums">
+              {positionCopy(position)}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-lg font-bold" title={player.name}>
+              {player.name}
+            </span>
+            <span className="shrink-0 text-xl font-extrabold tabular-nums">
+              {totals[player.id] ?? 0}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

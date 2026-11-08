@@ -82,6 +82,9 @@ export const textPairs: readonly Pair[] = [
     ['accent', bg],
     ['danger', bg],
   ]),
+  // Headings sit directly on the scene; everything smaller goes on a card.
+  ['ink', 'sky-top'],
+  ['ink', 'sky-bottom'],
   ['on-color', 'purple'], // the small "pts" of the points badge
   ['on-warm', 'gold'],
   ['on-warm', 'silver'],
