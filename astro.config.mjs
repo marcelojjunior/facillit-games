@@ -9,6 +9,10 @@ export default defineConfig({
   // requires a runtime and would violate the principle.
   output: 'static',
 
+  // The dev toolbar floats over the bottom center of the page: exactly where
+  // the confirm-round button lives (FR-024), so it swallows taps in dev.
+  devToolbar: { enabled: false },
+
   integrations: [
     react(),
     {

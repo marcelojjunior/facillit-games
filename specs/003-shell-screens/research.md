@@ -198,6 +198,13 @@ with zero rounds is allowed (spec 002 permits it; everyone ties, edge case).
 fixed bottom bar keeps it in thumb reach whatever the entry's height. Rare
 actions move to the menu to keep the screen short.
 
+**Found during implementation**: a rejection listed in the page flow, under
+the round entry, ended up behind the fixed bar with three or more players, so
+an invalid tap looked like it did nothing. The rejection list now sits inside
+the bar, above the button. Also, Astro's dev toolbar floats over the same
+bottom-center spot and swallowed taps on the confirm button under `pnpm dev`;
+it is disabled in `astro.config.mjs` (`devToolbar.enabled: false`).
+
 ## D11 — Double-submit guard
 
 **Decision**: the confirm handler holds a ref lock set on press and released on
