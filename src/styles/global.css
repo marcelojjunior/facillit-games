@@ -109,8 +109,12 @@
 
 @layer base {
   body {
-    /* The scene (src/components/Scene.astro) paints over this. */
-    background-color: var(--color-sky-bottom);
+    /*
+     * The scene (src/components/Scene.astro) paints over this. What shows
+     * around it (wide screens, the phone's bottom bar, overscroll) is the
+     * sky's top color, the darker one, as the owner asked.
+     */
+    background-color: var(--color-sky-top);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
