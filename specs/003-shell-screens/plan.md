@@ -65,8 +65,8 @@ entries, ~12 test files.
 | Principle | Verdict | How this plan complies |
 |---|---|---|
 | **I — Pure Client-Side** *(NON-NEGOTIABLE)* | **PASS** | Static output unchanged. Fonts and icons are local (D8); no `fetch`. The dev-only route exists only under `astro dev` (D5). |
-| **II — A Game Is a Plugin** *(NON-NEGOTIABLE)* | **PASS** | The shell gets `RoundEntry` and `rank` from the `Game` returned by the registry (D1, D2); it never imports a game folder or compares ids. `tests/shell-boundary.test.ts` stays and still covers every new file under `src/`. Adding a game = folder + registry line (SC-006). |
-| **III — Pure, Tested Rules** *(NON-NEGOTIABLE)* | **PASS** | No rule function added or changed. `rank` is derived from `resolveWinners` in `defineGame` and unit-tested (normal, edge, tie). Round entries are UI, not rules; they never compute scores. |
+| **II — A Game Is a Plugin** *(NON-NEGOTIABLE)* | **PASS** | The shell gets `RoundEntry` and `positions` from the `Game` returned by the registry (D1, D2); it never imports a game folder or compares ids. `tests/shell-boundary.test.ts` stays and still covers every new file under `src/`. Adding a game = folder + registry line (SC-006). |
+| **III — Pure, Tested Rules** *(NON-NEGOTIABLE)* | **PASS** | No rule function added or changed. `positions` are derived from `resolveWinners` in `defineGame` and unit-tested (normal, edge, tie). Round entries are UI, not rules; they never compute scores. |
 | **IV — `client:only` Island** | **PASS** | One island, `client:only="react"`, with a static fallback (D3, D4). `static-build.test.ts` is repointed, not removed (FR-026). The deferred directive rule lands as `tests/island-directives.test.ts` (D14). The inline theme script reads only the theme key, not match state. |
 | **V — TypeScript `strict`** | **PASS** | `RoundEntryProps.value` is `unknown`; no `any` or casts in the contract. React types imported as types only in the contract. |
 | **VI — Mobile-First** | **PASS** — first phase that claims it | 360 px first; 44 px targets, no horizontal scroll, and confirm-in-reach are measured by browser tests (D13); fixed bottom confirm bar (D10); dark mode with persisted choice (D7). |
@@ -97,7 +97,7 @@ specs/003-shell-screens/
 ├── data-model.md
 ├── quickstart.md
 ├── contracts/
-│   ├── round-entry.md       # game contract revision 2: RoundEntry + rank
+│   ├── round-entry.md       # game contract revision 2: RoundEntry + positions
 │   ├── screens.md           # screen selection, actions, copy, test ids
 │   └── theme-preference.md  # facillit-games:theme
 ├── checklists/requirements.md
@@ -120,7 +120,7 @@ src/
 ├── components/                  # ClientOnlyProbe.tsx removed
 │   └── MatchIsland.tsx          # binds MatchApp to src/games/registry (production)
 ├── shell/
-│   ├── game/contract.ts         # + RoundEntryProps, RoundEntry, rank
+│   ├── game/contract.ts         # + RoundEntryProps, RoundEntry, Evaluation.positions
 │   ├── match/…                  # unchanged
 │   ├── theme/
 │   │   ├── preference.ts        # read/write/resolve (contract)

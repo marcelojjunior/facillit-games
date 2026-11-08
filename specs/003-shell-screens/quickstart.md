@@ -24,7 +24,7 @@ pnpm test           # node project + browser project
 | `tests/static-build.test.ts` (repointed) | FR-026, FR-030: fallback frame in HTML, no app markup; FR-029: no fixture or game name in `dist/` |
 | `tests/island-directives.test.ts` | FR-028, research D14 |
 | `tests/shell-boundary.test.ts` (unchanged) | FR-009, FR-013 |
-| `src/shell/game/contract.test.ts` | `RoundEntry` pass-through, `rank` peeling and ties |
+| `src/shell/game/contract.test.ts` | `RoundEntry` pass-through, `positions` peeling and ties |
 | `src/shell/ui/copy.test.ts` | SC-005 |
 | `src/shell/theme/*.test.ts` | FR-020a table, boot script parity |
 | `src/styles/tokens.test.ts` | FR-019 (no literal colors), FR-021 / SC-004 contrast |
