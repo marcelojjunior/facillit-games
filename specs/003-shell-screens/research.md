@@ -43,11 +43,19 @@ through to `Game` unchanged. The contract imports React **as a type only**
 
 ## D2 — The shell ranks players by repeated `resolveWinners`
 
-**Decision**: `Game` gains `rank(totals, players)`, returning each player's
-position keyed by player id, computed in `defineGame` by peeling winners: position 1 is
+**Decision** (revised during implementation): `Evaluation` (the result of
+`Game.evaluate`) gains `positions`, each player's position keyed by player id,
+and the store's `MatchView.evaluation` passes it through. It is computed in
+`defineGame` by peeling winners: position 1 is
 `resolveWinners(totals, all)`, position 2 is `resolveWinners(totals,
 remaining)`, and so on. Players tied in a peel share the position (standard
 competition ranking: 1, 1, 3).
+
+**Why `evaluate` and not a separate `Game.rank`** (the first version of this
+decision): `evaluate` already special-cases zero rounds (everyone wins); a
+separate `rank(totals)` could not see the round count and would have
+duplicated that rule in the shell. The first peel reuses the winners
+`evaluate` already resolved.
 
 **Rationale**: the compact standings (FR-004) show a position, but only the
 game knows whether highest or lowest wins (spec 002 FR-006). Peeling reuses the
