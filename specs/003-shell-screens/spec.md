@@ -37,6 +37,9 @@ reasons) are used here as given: see
   standings view by default (one line per player: name, total, position); one
   tap opens the full history (players × rounds, names pinned on the left,
   horizontal scroll that opens at the latest round).
+- Q: Should the theme only follow the device, or also have a switch? → A: it
+  follows the device by default, and a switch (automatic / light / dark) lets
+  the player override it; the choice is saved on the device.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -329,8 +332,19 @@ finds no game name or id comparison in the shell.
 - **FR-019**: The app MUST have a single set of named design tokens (color,
   spacing, type scale, radius) with a light and a dark value for every color.
   Components MUST use the tokens, not literal colors.
-- **FR-020**: The theme MUST follow the device's light/dark preference and
-  switch when it changes, with no flash of the wrong theme on load.
+- **FR-020**: The app MUST offer a theme choice with three values —
+  automatic, light, dark — reachable from every screen. Automatic (the
+  default) follows the device preference and switches when it changes. The
+  page MUST paint with the effective theme from the first frame, with no flash
+  of the other theme, including when a stored choice overrides the device.
+- **FR-020a**: The theme choice MUST be saved in browser storage under its own
+  key in the app's namespace, separate from the match, carrying a
+  `schemaVersion` (Principle VII). A missing, unreadable, or unknown stored
+  value MUST fall back to automatic without any notice. Discarding,
+  abandoning, or finishing a match MUST NOT change the theme choice, and a
+  failure to save the choice MUST NOT block play (the choice still applies
+  until the page is closed). Other open tabs pick up the choice on their next
+  load; live sync between tabs is not required.
 - **FR-021**: Text and essential UI MUST meet WCAG 2.2 AA contrast in both
   themes.
 - **FR-022**: Every tappable element MUST have a touch area of at least
@@ -373,6 +387,8 @@ finds no game name or id comparison in the shell.
   players and a draft or stored round, reports draft changes and submissions.
 - **Design token**: a named value (color, spacing, type, radius) with light and
   dark variants for colors; the only source of visual values in components.
+- **Theme preference**: automatic, light, or dark; persisted per device,
+  versioned, independent of the match.
 - **Transient message**: a notice shown to the player that is not part of the
   match — discard notice, not-saved warning, operation error — never persisted
   by the shell.
@@ -400,19 +416,19 @@ finds no game name or id comparison in the shell.
 - **SC-007**: No screen scrolls horizontally at 360 px wide, except inside the
   full history. With 7 players and 30 rounds, the compact standings still take
   exactly one line per player.
-- **SC-008**: Changing the device theme switches the app between light and dark
-  without reload, and the first paint already uses the device's theme.
+- **SC-008**: In automatic, changing the device theme switches the app without
+  reload; choosing light or dark overrides the device and survives a reload;
+  in every case the first paint already uses the effective theme.
 
 ## Assumptions
 
 - **Branch**: this session works on `develop` as instructed for the session; the
   repository convention (`feature/<slug>` from `develop`) can be applied by
   moving the commits before implementation if preferred.
-- **No theme toggle**: the theme follows the device setting only; a manual
-  switch is out of scope (no persisted preference, so no new storage key).
-- **No history, no settings, no multiple matches**: decided in spec 002 (single
-  current match, no history); this phase adds no persisted data beyond what
-  spec 002 already stores, so the persisted schema does not change.
+- **No history, no other settings, no multiple matches**: decided in spec 002
+  (single current match, no history). The only persisted data this phase adds
+  is the theme preference (FR-020a), under its own key; the match schema does
+  not change.
 - **No celebration effects are required**: the winner screen must announce the
   winner clearly; animation is optional and MUST respect reduced-motion.
 - **Fixture games prove the screens**: with an empty production registry, the
