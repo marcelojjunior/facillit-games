@@ -9,10 +9,11 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import type { Registry, RoundRejection } from '../game/contract';
-import type { StorageLike } from '../match/persistence';
+import { safeStorage, type StorageLike } from '../match/persistence';
 import { createMatchStore, type MatchView, type OperationResult } from '../match/store';
 import { errorCopy, labels } from './copy';
 import { Notices } from './parts/Notices';
+import { ThemeControl } from './parts/ThemeControl';
 import { GameList } from './screens/GameList';
 import { InProgress } from './screens/InProgress';
 import { Setup } from './screens/Setup';
@@ -54,10 +55,11 @@ const NO_REASONS: readonly RoundRejection[] = [];
 export default function MatchApp({ registry, storage }: MatchAppProps) {
   // ponytail: created once per mount; under StrictMode's double effect the
   // cross-tab listener would be gone. Astro does not use StrictMode.
-  const [{ store, subscribe, getSnapshot, getNotice }] = useState(() => {
+  const [{ store, subscribe, getSnapshot, getNotice, themeStorage }] = useState(() => {
     const created = createMatchStore(storage === undefined ? { registry } : { registry, storage });
     return {
       store: created,
+      themeStorage: storage === undefined ? safeStorage() : storage,
       subscribe: (listener: () => void) => created.subscribe(listener),
       getSnapshot: () => created.getState(),
       getNotice: () => created.getDiscardNotice(),
@@ -99,8 +101,9 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
 
   return (
     <div data-testid="match-app" data-screen={screen} className="min-h-dvh">
-      <header className="flex min-h-14 items-center px-4">
+      <header className="mx-auto flex min-h-14 max-w-md items-center justify-between gap-3 px-4">
         <span className="font-semibold">{labels.appTitle}</span>
+        <ThemeControl storage={themeStorage} />
       </header>
       <Notices
         discard={discardNotice}
