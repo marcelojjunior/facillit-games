@@ -84,4 +84,7 @@ export const labels = {
   rematch: 'Revanche',
   newMatch: 'Nova partida',
   roundProblems: 'Corrija antes de confirmar:',
+  dismiss: 'Entendi',
+  notSaved:
+    'Não foi possível salvar neste aparelho. Se o app for fechado, a partida pode se perder.',
 } as const;

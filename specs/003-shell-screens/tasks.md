@@ -136,12 +136,12 @@ state.
 
 ### Tests first
 
-- [ ] T029 [US2] Create `src/shell/ui/persistence.browser.test.tsx` (expected to fail first): for each of setup, in progress with a half-entered draft, and winner, unmount and remount `MatchApp` over the same `localStorage` and assert the first rendered `data-screen` is the same screen (never `game-list` first) with the same players, rounds, and draft; a stored match of `highest-wins` remounted with a registry that lacks it shows `discard-notice` with `discardCopy.unknown_game` once and then the game list (Edge Cases); a corrupted stored value shows `data-testid="discard-notice"` once and not again after dismiss and remount; a storage whose `setItem` throws shows `data-testid="not-saved-warning"` after an operation and it disappears after a persisted one; a `storage` event with a new confirmed round from "another tab" updates the standings without reload (SC-003, US2 scenarios 1–6)
+- [X] T029 [US2] Create `src/shell/ui/persistence.browser.test.tsx` (expected to fail first): for each of setup, in progress with a half-entered draft, and winner, unmount and remount `MatchApp` over the same `localStorage` and assert the first rendered `data-screen` is the same screen (never `game-list` first) with the same players, rounds, and draft; a stored match of `highest-wins` remounted with a registry that lacks it shows `discard-notice` with `discardCopy.unknown_game` once and then the game list (Edge Cases); a corrupted stored value shows `data-testid="discard-notice"` once and not again after dismiss and remount; a storage whose `setItem` throws shows `data-testid="not-saved-warning"` after an operation and it disappears after a persisted one; a `storage` event with a new confirmed round from "another tab" updates the standings without reload (SC-003, US2 scenarios 1–6)
 
 ### Implementation
 
-- [ ] T030 [P] [US2] Create `src/shell/ui/parts/Notices.tsx`: discard notice (from `getDiscardNotice()`, text `discardCopy[reason]`, dismiss calls `acknowledgeDiscardNotice()`), and the not-saved warning (non-blocking, `role="status"`) (FR-015, FR-016)
-- [ ] T031 [US2] Wire `Notices` in `src/shell/ui/MatchApp.tsx`: not-saved state set on `persisted: false`, cleared on `persisted: true`; overlays whose target vanished after a cross-tab update close without writing (data-model, Cross-tab); make T029 pass
+- [X] T030 [P] [US2] Create `src/shell/ui/parts/Notices.tsx`: discard notice (from `getDiscardNotice()`, text `discardCopy[reason]`, dismiss calls `acknowledgeDiscardNotice()`), and the not-saved warning (non-blocking, `role="status"`) (FR-015, FR-016)
+- [X] T031 [US2] Wire `Notices` in `src/shell/ui/MatchApp.tsx`: not-saved state set on `persisted: false`, cleared on `persisted: true`; overlays whose target vanished after a cross-tab update close without writing (data-model, Cross-tab); make T029 pass
 
 **Checkpoint**: reload-safe in every state.
 
