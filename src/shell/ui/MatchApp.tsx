@@ -102,7 +102,7 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
   return (
     <div data-testid="match-app" data-screen={screen} className="min-h-dvh">
       <header className="mx-auto flex min-h-14 max-w-md items-center justify-between gap-3 px-4">
-        <span className="font-semibold">{labels.appTitle}</span>
+        <span className="logo-title">{labels.appTitle}</span>
         <ThemeControl storage={themeStorage} />
       </header>
       <Notices

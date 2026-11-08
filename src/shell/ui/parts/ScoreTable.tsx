@@ -36,7 +36,7 @@ export function ScoreTable({ view, onPickRound }: ScoreTableProps) {
 
   return (
     <div ref={scroller} className="overflow-x-auto">
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full border-collapse text-base font-semibold">
         <thead>
           <tr className="border-b border-line/60 text-ink-muted">
             <th scope="col" className={pinned}>
@@ -50,7 +50,7 @@ export function ScoreTable({ view, onPickRound }: ScoreTableProps) {
                     data-testid="history-round"
                     aria-label={fixRoundCopy(index + 1)}
                     onClick={() => onPickRound(index)}
-                    className="min-h-11 min-w-11 rounded-control px-3 text-accent underline underline-offset-4 tabular-nums"
+                    className="btn-3d btn-blue my-1 min-h-11 px-2 tabular-nums"
                   >
                     {index + 1}
                   </button>

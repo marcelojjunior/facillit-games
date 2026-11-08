@@ -44,7 +44,7 @@ export function ThemeControl({ storage }: { readonly storage: StorageLike | null
       data-testid="theme-control"
       role="group"
       aria-label={labels.theme}
-      className="flex rounded-control bg-surface-sunken p-0.5"
+      className="card-3d flex gap-0.5 p-1"
     >
       {OPTIONS.map((option) => (
         <button
@@ -57,7 +57,7 @@ export function ThemeControl({ storage }: { readonly storage: StorageLike | null
             setChoice(option.choice);
             writeThemeChoice(storage, option.choice);
           }}
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-control text-ink-muted aria-pressed:bg-surface-raised aria-pressed:text-ink"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-control text-ink-muted aria-pressed:bg-blue aria-pressed:text-on-color aria-pressed:shadow-[inset_0_-3px_0_var(--color-blue-edge)]"
         >
           {option.icon}
         </button>
