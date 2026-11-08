@@ -33,7 +33,13 @@ export function Dialog({ open, title, onClose, children }: DialogProps) {
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      onClose={onClose}
+      // Only a close the user started (Esc): a close caused by `open` turning
+      // false must not report back, or switching overlays would reset them.
+      onClose={() => {
+        if (open) {
+          onClose();
+        }
+      }}
       // A tap on the backdrop targets the dialog itself; content sits in the inner div.
       onClick={(event) => {
         if (event.target === event.currentTarget) {

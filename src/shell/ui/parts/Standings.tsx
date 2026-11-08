@@ -6,7 +6,13 @@
 import type { MatchView } from '../../match/store';
 import { labels, positionCopy } from '../copy';
 
-export function Standings({ view }: { readonly view: MatchView }) {
+interface StandingsProps {
+  readonly view: MatchView;
+  /** One tap anywhere on the standings opens the full history (FR-004a). */
+  readonly onOpen?: () => void;
+}
+
+export function Standings({ view, onOpen }: StandingsProps) {
   const { players } = view.match;
   const { totals, positions } = view.evaluation;
   const rows = players
@@ -17,6 +23,7 @@ export function Standings({ view }: { readonly view: MatchView }) {
     <ol
       data-testid="standings"
       aria-label={labels.standings}
+      onClick={onOpen}
       className="flex flex-col divide-y divide-line/40 rounded-card bg-surface-raised"
     >
       {rows.map(({ player, position }) => (

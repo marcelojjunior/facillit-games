@@ -5,6 +5,8 @@
  * as a string so typing is never lost, and validateRound rejects it with the
  * game's own message (specs/003-shell-screens/contracts/round-entry.md).
  */
+import { useId } from 'react';
+
 import type { RoundEntryProps } from '../../../../src/shell/game/contract';
 
 const WHOLE_NUMBER = /^-?\d+$/;
@@ -23,11 +25,13 @@ function shown(point: unknown): string {
 
 export default function RoundEntry({ players, value, onChange }: RoundEntryProps) {
   const points = readPoints(value);
+  // Unique per instance: the fix sheet and the draft entry can be on screen together.
+  const idPrefix = useId();
 
   return (
     <div className="flex flex-col gap-3">
       {players.map((player) => {
-        const inputId = `lowest-wins-${player.id}`;
+        const inputId = `${idPrefix}-${player.id}`;
         return (
           <div key={player.id} className="flex items-center gap-3">
             <label

@@ -24,8 +24,15 @@ export interface MatchAppProps {
   readonly storage?: StorageLike | null;
 }
 
-/** Runs a store operation through the one result handler; true when it succeeded. */
-export type Act = (operation: () => OperationResult) => boolean;
+/**
+ * Runs a store operation through the one result handler. `local`: the caller
+ * shows failures itself (an overlay with its own entry or input), so they do
+ * not land on the screen behind it; the not-saved warning still applies.
+ */
+export type Act = (
+  operation: () => OperationResult,
+  options?: { readonly local?: boolean },
+) => OperationResult;
 
 type Screen = 'game-list' | 'setup' | 'in-progress' | 'winner';
 
@@ -70,21 +77,24 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
 
   // Result handling (contracts/screens.md): success clears messages; a round
   // rejection goes to the entry with the draft kept; anything else is copy.
-  const act: Act = (operation) => {
+  const act: Act = (operation, options) => {
     const result = operation();
+    if (result.ok) {
+      setNotSaved(!result.persisted);
+    }
+    if (options?.local === true) {
+      return result;
+    }
     if (result.ok) {
       setError(null);
       setReasons(NO_REASONS);
-      setNotSaved(!result.persisted);
-      return true;
-    }
-    if (result.error.code === 'invalid_round') {
+    } else if (result.error.code === 'invalid_round') {
       setError(null);
       setReasons(result.error.reasons);
     } else {
       setError(errorCopy[result.error.code]);
     }
-    return false;
+    return result;
   };
 
   return (

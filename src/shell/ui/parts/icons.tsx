@@ -51,3 +51,9 @@ export const TrophyIcon = () => (
     <path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8" />
   </Icon>
 );
+
+export const MoreIcon = () => (
+  <Icon>
+    <path d="M12 5.5v.01M12 12v.01M12 18.5v.01" strokeWidth="3" />
+  </Icon>
+);

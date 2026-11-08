@@ -39,7 +39,7 @@ export function Setup({ view, store, act, error }: SetupProps) {
         className="flex flex-col gap-2"
         onSubmit={(event) => {
           event.preventDefault();
-          if (act(() => store.addPlayer(name))) {
+          if (act(() => store.addPlayer(name)).ok) {
             setName('');
           }
         }}
@@ -93,7 +93,7 @@ export function Setup({ view, store, act, error }: SetupProps) {
                   className="flex min-w-0 flex-1 gap-2 py-1"
                   onSubmit={(event) => {
                     event.preventDefault();
-                    if (act(() => store.renamePlayer(player.id, editing.name))) {
+                    if (act(() => store.renamePlayer(player.id, editing.name)).ok) {
                       setEditing(null);
                     }
                   }}

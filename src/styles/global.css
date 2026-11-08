@@ -61,6 +61,7 @@
   }
 
   dialog::backdrop {
-    background-color: color-mix(in srgb, var(--color-ink) 45%, transparent);
+    /* A dark scrim in both themes: mixing the ink token would turn pale in dark mode. */
+    background-color: rgb(0 0 0 / 0.55);
   }
 }

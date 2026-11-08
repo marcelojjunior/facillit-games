@@ -171,13 +171,13 @@ draft.
 
 ### Tests first
 
-- [ ] T035 [US3] Create `src/shell/ui/fix.browser.test.tsx` (expected to fail first): open history (`open-history`), tap round 1 (`history-round`), change it, save (`save-fix`): only round 1 and totals change; an invalid fix shows reasons and changes nothing; cancel changes nothing; the draft typed before opening is intact after save and after cancel; "Remover última rodada" asks for confirmation, cancel keeps it, confirm removes it; the history table opens scrolled to the latest round and keeps names visible while scrolling; renaming a player during the match (overflow menu → "Renomear jogador") updates the name in the standings, the history, and later the winner screen, and a duplicate name (case-insensitive) shows `errorCopy.duplicate_name` and changes nothing (US3 scenarios 1–4, FR-004a, FR-005, Edge Cases — rename during the match)
+- [X] T035 [US3] Create `src/shell/ui/fix.browser.test.tsx` (expected to fail first): open history (`open-history`), tap round 1 (`history-round`), change it, save (`save-fix`): only round 1 and totals change; an invalid fix shows reasons and changes nothing; cancel changes nothing; the draft typed before opening is intact after save and after cancel; "Remover última rodada" asks for confirmation, cancel keeps it, confirm removes it; the history table opens scrolled to the latest round and keeps names visible while scrolling; renaming a player during the match (overflow menu → "Renomear jogador") updates the name in the standings, the history, and later the winner screen, and a duplicate name (case-insensitive) shows `errorCopy.duplicate_name` and changes nothing (US3 scenarios 1–4, FR-004a, FR-005, Edge Cases — rename during the match)
 
 ### Implementation
 
-- [ ] T036 [P] [US3] Create `src/shell/ui/parts/History.tsx`: full-screen `Dialog`, one row per player, one column per round plus total, sticky first column with names, horizontal scroll inside its own container, scrolled to the end on open, each round header a ≥ 44 px button (FR-004a, FR-023)
-- [ ] T037 [P] [US3] Create `src/shell/ui/parts/FixSheet.tsx`: copies `match.rounds[index]` into local state, renders the game's `RoundEntry` with it, "Salvar" calls `replaceRound(index, value)`, "Cancelar" drops it, shows reasons on rejection; closes if the round disappears (research D6)
-- [ ] T038 [US3] Add the overflow menu to `src/shell/ui/screens/InProgress.tsx` with "Ver histórico", "Renomear jogador" (`src/shell/ui/parts/RenameDialog.tsx`), and "Remover última rodada" (confirmation `Dialog`); wire `History` → `FixSheet`; make T035 pass (FR-005, FR-008)
+- [X] T036 [P] [US3] Create `src/shell/ui/parts/History.tsx`: full-screen `Dialog`, one row per player, one column per round plus total, sticky first column with names, horizontal scroll inside its own container, scrolled to the end on open, each round header a ≥ 44 px button (FR-004a, FR-023)
+- [X] T037 [P] [US3] Create `src/shell/ui/parts/FixSheet.tsx`: copies `match.rounds[index]` into local state, renders the game's `RoundEntry` with it, "Salvar" calls `replaceRound(index, value)`, "Cancelar" drops it, shows reasons on rejection; closes if the round disappears (research D6)
+- [X] T038 [US3] Add the overflow menu to `src/shell/ui/screens/InProgress.tsx` with "Ver histórico", "Renomear jogador" (`src/shell/ui/parts/RenameDialog.tsx`), and "Remover última rodada" (confirmation `Dialog`); wire `History` → `FixSheet`; make T035 pass (FR-005, FR-008)
 
 **Checkpoint**: mistakes are recoverable.
 
