@@ -242,8 +242,11 @@ Changing any layer requires a constitution amendment.
     `src/games/<id>/` with `index.ts` (calling `defineGame`), `rules.ts`,
     `rules.test.ts` (normal, edge, and tie case for each of the four rule
     functions), `RoundEntry.tsx` (the game's own controlled editor of one
-    round: no submit button, tolerant of any stored value, token classes and
-    44 px targets), and `RoundEntry.browser.test.tsx` (empty, valid, and
+    round: no submit button, tolerant of any stored value, 44 px targets; it
+    uses the shell's look — `btn-3d` plus a color modifier such as `btn-blue`
+    for a selected choice and `btn-plain` otherwise, token utilities, never a
+    literal color; see
+    [`specs/004-game-style-ui/contracts/ui-parts.md`](specs/004-game-style-ui/contracts/ui-parts.md)), and `RoundEntry.browser.test.tsx` (empty, valid, and
     garbage values render; a normal interaction emits a value `validateRound`
     accepts). Then add one import and one array entry in
     `src/games/registry.ts`. Nothing else. `tests/shell-boundary.test.ts` fails

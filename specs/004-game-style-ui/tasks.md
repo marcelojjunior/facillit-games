@@ -188,11 +188,11 @@ motion all render as specified.
 
 ## Phase 8: Polish & cross-cutting
 
-- [ ] T031 [P] Update `AGENTS.md` pitfall 11: a game's `RoundEntry` uses the shell's button classes (`btn-3d` plus a color modifier) and token utilities; link `specs/004-game-style-ui/contracts/ui-parts.md`
-- [ ] T032 [P] Update `README.md` "Current state" (game-style UI, self-hosted Baloo 2 under OFL in `src/assets/fonts/`) and record in `specs/004-game-style-ui/research.md` any decision changed during implementation, updating `spec.md` where reality contradicted it (Principle VIII)
-- [ ] T033 Record in `specs/004-game-style-ui/research.md` D8 the measured island JS (gzipped) and font size from `pnpm build`
-- [ ] T034 Run the quickstart visual check on `/dev/test-games` at 360×640 in light and dark, plus `pnpm build && pnpm preview` on `/`; take screenshots of every screen and overlay in both themes for the owner's approval (SC-001); and with the font request blocked in the browser, check that every screen still lays out with the fallback typeface and nothing overlaps or clips (spec Edge Cases)
-- [ ] T035 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE 'https?://' -- src ':!*.md'` lists only the SVG namespace; `git grep -nE 'fetch\(|XMLHttpRequest' -- src` returns nothing; `git diff develop -- src/shell/game src/shell/match src/shell/theme/preference.ts` is empty (FR-002)
+- [X] T031 [P] Update `AGENTS.md` pitfall 11: a game's `RoundEntry` uses the shell's button classes (`btn-3d` plus a color modifier) and token utilities; link `specs/004-game-style-ui/contracts/ui-parts.md`
+- [X] T032 [P] Update `README.md` "Current state" (game-style UI, self-hosted Baloo 2 under OFL in `src/assets/fonts/`) and record in `specs/004-game-style-ui/research.md` any decision changed during implementation, updating `spec.md` where reality contradicted it (Principle VIII)
+- [X] T033 Record in `specs/004-game-style-ui/research.md` D8 the measured island JS (gzipped) and font size from `pnpm build`
+- [X] T034 Run the quickstart visual check on `/dev/test-games` at 360×640 in light and dark, plus `pnpm build && pnpm preview` on `/`; take screenshots of every screen and overlay in both themes for the owner's approval (SC-001); and with the font request blocked in the browser, check that every screen still lays out with the fallback typeface and nothing overlaps or clips (spec Edge Cases)
+- [X] T035 Final gate: `pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm format:check` all green; `git grep -nE 'https?://' -- src ':!*.md'` lists only the SVG namespace; `git grep -nE 'fetch\(|XMLHttpRequest' -- src` returns nothing; `git diff develop -- src/shell/game src/shell/match src/shell/theme/preference.ts` is empty (FR-002)
 
 ---
 

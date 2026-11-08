@@ -17,12 +17,13 @@ The rewrite is in progress. Two sets of files coexist at the root:
 | | What it is |
 |---|---|
 | `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
-| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, design system, and game screens delivered; **no real game until Phase 5**, so the shipped page says no game is available yet. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered; **no real game until Phase 5**, so the shipped page says no game is available yet. |
 
 The foundation is specified in
 [`specs/001-astro-foundation/`](specs/001-astro-foundation/), the game
 contract and match store in
-[`specs/002-game-contract/`](specs/002-game-contract/), and the design system
+[`specs/002-game-contract/`](specs/002-game-contract/), the game-style look
+in [`specs/004-game-style-ui/`](specs/004-game-style-ui/), and the design system
 and screens in [`specs/003-shell-screens/`](specs/003-shell-screens/). To add a game, read
 [`contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
 
@@ -107,7 +108,16 @@ the TS 7 peer. Until then, a careless `pnpm update` breaks the pipeline.
 ### 2. There is no `tailwind.config.js`. Do not create one.
 
 Tailwind 4 is configured in CSS. Design tokens go in
-[`src/styles/global.css`](src/styles/global.css), with `@theme`.
+[`src/styles/global.css`](src/styles/global.css), with `@theme`, and their
+values in [`src/styles/tokens.ts`](src/styles/tokens.ts) (a test keeps both in
+sync and checks contrast). The 3D buttons are the `btn-3d` classes in the same
+file.
+
+The typeface, Baloo 2, is a single self-hosted file in
+[`src/assets/fonts/`](src/assets/fonts/) under the SIL Open Font License
+(`OFL.txt` beside it). Do not link Google Fonts or any CDN: the app makes no
+request to another host (constitution Principle I), and
+`tests/static-build.test.ts` fails if `dist/` references one.
 
 The `@astrojs/tailwind` integration **does not work** here: its latest version
 declares `astro: ^3||^4||^5` and `tailwindcss: ^3.0.24` — incompatible in two
