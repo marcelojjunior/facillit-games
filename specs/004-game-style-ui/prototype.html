@@ -1,0 +1,619 @@
+<!--
+  Visual reference for specs/004-game-style-ui, approved by the owner on
+  2026-11-08 (Baloo 2, the die mascot, the "pts" badge). A frozen snapshot, NOT
+  app code: it is never built or shipped, and it loads Google Fonts only to
+  preview the typefaces (the app self-hosts its font, Principle I). Open it in
+  a browser; the pickers for font and mascot were used to choose.
+-->
+<title>Visual Facillit Games</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@400;500;600;700&family=Lilita+One&display=swap">
+<style>
+/* Layout: a control strip, then one phone-sized "device" (360 wide) holding a casual-mobile-game UI. */
+:root {
+  --sky-top: #6fd3f2;
+  --sky-bottom: #c8f5e4;
+  --hill-back: #7ccf5a;
+  --hill-front: #4cb847;
+  --cloud: #ffffff;
+  --card: #ffffff;
+  --card-edge: #c9d8e6;
+  --ink: #23264f;
+  --ink-soft: #5b5f8f;
+  --page: #eef4f8;
+  --page-ink: #23264f;
+  --line: #d4dde6;
+  --shadow: rgba(35, 38, 79, 0.18);
+  --green: #3fb43f; --green-hi: #7ee05f; --green-edge: #23812a;
+  --blue: #2f8cf0; --blue-hi: #6fc1ff; --blue-edge: #1b5fb5;
+  --red: #ec4a4a; --red-hi: #ff8a7a; --red-edge: #b0262f;
+  --orange: #ff9d2e; --orange-hi: #ffc46b; --orange-edge: #c8650f;
+  --yellow: #ffd23f; --yellow-hi: #fff08a; --yellow-edge: #d39a0b;
+  --purple: #9b5cf0; --purple-hi: #c79bff; --purple-edge: #6a35b8;
+  --gold: #ffcc33; --silver: #c9d3de; --bronze: #e39b5b;
+  --on-color: #ffffff;
+  --on-warm: #4a2a06;
+  --star: rgba(255, 255, 255, 0);
+  --fd: "Baloo 2", system-ui, sans-serif;
+  --fb: "Baloo 2", system-ui, sans-serif;
+  --die: #ffffff; --die-edge: #d9e1ec; --pip: #ec4a4a; --face: #23264f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sky-top: #141a4a; --sky-bottom: #2b1f6b;
+    --hill-back: #2c4f73; --hill-front: #1f3b5c; --cloud: #3c4590;
+    --card: #2f3478; --card-edge: #1a1d4d; --ink: #ffffff; --ink-soft: #c3c6f5;
+    --page: #10132f; --page-ink: #e9eaff; --line: #2b2f63; --shadow: rgba(0, 0, 0, 0.45);
+    --star: rgba(255, 255, 255, 0.85);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --sky-top: #141a4a; --sky-bottom: #2b1f6b;
+  --hill-back: #2c4f73; --hill-front: #1f3b5c; --cloud: #3c4590;
+  --card: #2f3478; --card-edge: #1a1d4d; --ink: #ffffff; --ink-soft: #c3c6f5;
+  --page: #10132f; --page-ink: #e9eaff; --line: #2b2f63; --shadow: rgba(0, 0, 0, 0.45);
+  --star: rgba(255, 255, 255, 0.85);
+  color-scheme: dark;
+}
+:root[data-font="fredoka"] { --fd: "Fredoka", system-ui, sans-serif; --fb: "Fredoka", system-ui, sans-serif; }
+:root[data-font="lilita"] { --fd: "Lilita One", "Baloo 2", system-ui, sans-serif; --fb: "Baloo 2", system-ui, sans-serif; }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--page); color: var(--page-ink);
+  font-family: var(--fb);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 20px; }
+.intro h1 { font-family: var(--fd); font-size: 1.8rem; margin: 0; text-wrap: balance; }
+.intro p { margin: 6px 0 0; color: var(--ink-soft); max-width: 62ch; line-height: 1.5; }
+
+/* ---------- controls ---------- */
+.controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+.group { display: flex; flex-direction: column; gap: 6px; }
+.group > span { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
+.seg { display: inline-flex; background: var(--card); border-radius: 14px; padding: 4px; box-shadow: 0 3px 0 var(--card-edge); flex-wrap: wrap; }
+.seg button {
+  font: 600 .95rem var(--fb); color: var(--ink); background: transparent; border: 0;
+  min-height: 40px; padding: 0 14px; border-radius: 10px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--blue); color: var(--on-color); box-shadow: inset 0 -3px 0 var(--blue-edge); }
+.seg button:focus-visible, .btn:focus-visible, .place:focus-visible, .tile:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+
+/* ---------- fonts compare ---------- */
+.fonts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fontcard {
+  background: var(--card); border-radius: 18px; padding: 14px; border: 0; cursor: pointer; text-align: left;
+  box-shadow: 0 5px 0 var(--card-edge); color: var(--ink); display: grid; gap: 8px; min-width: 0;
+}
+.fontcard[aria-pressed="true"] { outline: 3px solid var(--blue); }
+.fontcard small { font: 700 .72rem var(--fb); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.fontcard .big { font-size: 1.7rem; line-height: 1; }
+.fontcard .mini { font-size: .95rem; color: var(--ink-soft); }
+@media (max-width: 560px) { .fonts { grid-template-columns: 1fr; } }
+
+/* ---------- device ---------- */
+.stage { display: flex; justify-content: center; }
+.device {
+  width: 360px; max-width: 100%; height: 700px; border-radius: 34px; overflow: hidden; position: relative;
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+  box-shadow: 0 0 0 8px var(--card), 0 0 0 10px var(--card-edge), 0 24px 50px var(--shadow);
+  color: var(--ink); font-family: var(--fb);
+  isolation: isolate;
+}
+.stars { position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 30px 60px, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 120px 30px, var(--star), transparent 60%),
+    radial-gradient(2px 2px at 220px 90px, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 300px 40px, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 80px 180px, var(--star), transparent 60%),
+    radial-gradient(2px 2px at 260px 210px, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 330px 150px, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 170px 140px, var(--star), transparent 60%);
+}
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.screen[hidden] { display: none !important; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 6px; gap: 10px; }
+.logo { font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: var(--on-color);
+  text-shadow: 0 2px 0 var(--blue-edge), 2px 0 0 var(--blue-edge), -2px 0 0 var(--blue-edge), 0 -2px 0 var(--blue-edge), 0 4px 0 var(--blue-edge); letter-spacing: .01em; }
+.pill-icons { display: flex; gap: 8px; }
+
+/* chunky 3D button */
+.btn {
+  --c: var(--green); --h: var(--green-hi); --e: var(--green-edge);
+  font-family: var(--fd); font-weight: 700; color: var(--on-color); cursor: pointer;
+  border: 0; border-radius: 18px; min-height: 48px; padding: 0 18px;
+  background: linear-gradient(180deg, var(--h) 0%, var(--c) 48%);
+  box-shadow: 0 6px 0 var(--e), 0 9px 14px var(--shadow), inset 0 2px 0 rgba(255,255,255,.45);
+  text-shadow: 0 2px 0 var(--e);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .08s ease, box-shadow .08s ease;
+  position: relative;
+}
+.btn::after { /* glossy highlight */
+  content: ""; position: absolute; left: 10px; right: 10px; top: 5px; height: 30%;
+  border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0));
+  pointer-events: none;
+}
+.btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--e), 0 3px 6px var(--shadow), inset 0 2px 0 rgba(255,255,255,.45); }
+.btn.blue { --c: var(--blue); --h: var(--blue-hi); --e: var(--blue-edge); }
+.btn.red { --c: var(--red); --h: var(--red-hi); --e: var(--red-edge); }
+.btn.purple { --c: var(--purple); --h: var(--purple-hi); --e: var(--purple-edge); }
+.btn.orange { --c: var(--orange); --h: var(--orange-hi); --e: var(--orange-edge); color: var(--on-warm); text-shadow: 0 1px 0 var(--orange-hi); }
+.btn.square { width: 46px; min-height: 46px; padding: 0; border-radius: 14px; }
+.btn.xl { min-height: 62px; font-size: 1.35rem; border-radius: 22px; width: 100%; }
+.btn svg { width: 22px; height: 22px; flex: none; }
+
+/* ---------- game list ---------- */
+.hello { display: flex; align-items: flex-end; gap: 6px; padding: 8px 16px 0; }
+.hello .mascot { width: 112px; flex: none; }
+.bubble {
+  background: var(--card); color: var(--ink); border-radius: 18px; padding: 12px 14px; font-weight: 600;
+  box-shadow: 0 4px 0 var(--card-edge); position: relative; margin-bottom: 52px; line-height: 1.3; font-size: 1rem;
+}
+.bubble::after { content: ""; position: absolute; left: -9px; bottom: 16px; border: 10px solid transparent; border-right-color: var(--card); border-left: 0; }
+.bubble b { font-family: var(--fd); font-size: 1.2rem; display: block; }
+.tiles { display: grid; gap: 14px; padding: 0 16px; position: relative; z-index: 2; }
+.tile {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer;
+  background: var(--card); color: var(--ink); border: 0; border-radius: 22px; padding: 12px 14px;
+  box-shadow: 0 6px 0 var(--card-edge), 0 10px 18px var(--shadow); min-height: 76px;
+  transition: transform .08s;
+}
+.tile:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--card-edge); }
+.tile .badge { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; flex: none;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), inset 0 3px 0 rgba(255,255,255,.4); color: var(--on-color); }
+.tile .badge svg { width: 28px; height: 28px; }
+.tile strong { font-family: var(--fd); font-size: 1.3rem; display: block; line-height: 1.1; }
+.tile span { color: var(--ink-soft); font-size: .9rem; font-weight: 600; }
+.tile .go { margin-left: auto; width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: var(--on-color);
+  display: grid; place-items: center; box-shadow: inset 0 -3px 0 var(--green-edge); flex: none; }
+.hills { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; z-index: 0; }
+
+/* ---------- round ---------- */
+.roundhead { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 10px; gap: 8px; }
+.ribbon {
+  font-family: var(--fd); font-size: 1.45rem; font-weight: 700; color: var(--on-color);
+  background: linear-gradient(180deg, var(--purple-hi), var(--purple) 50%);
+  padding: 6px 18px; border-radius: 14px; box-shadow: 0 5px 0 var(--purple-edge); text-shadow: 0 2px 0 var(--purple-edge);
+}
+.board { margin: 0 16px; background: var(--card); border-radius: 22px; padding: 8px; box-shadow: 0 6px 0 var(--card-edge); }
+.row { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 14px; }
+.row + .row { margin-top: 2px; }
+.medal { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-family: var(--fd); font-weight: 700;
+  color: var(--on-warm); box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.5); flex: none; font-size: .95rem; }
+.m1 { background: var(--gold); } .m2 { background: var(--silver); } .m3 { background: var(--bronze); }
+.row .name { font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.05rem; }
+.pts { display: inline-flex; align-items: baseline; gap: 3px; min-width: 64px; justify-content: center;
+  background: linear-gradient(180deg, var(--purple-hi), var(--purple) 55%); color: var(--on-color);
+  border-radius: 12px; padding: 2px 10px 3px; box-shadow: 0 3px 0 var(--purple-edge); text-shadow: 0 1px 0 var(--purple-edge);
+  font-family: var(--fd); font-weight: 800; font-variant-numeric: tabular-nums; font-size: 1.2rem; line-height: 1.3; }
+.pts small { font-size: .7rem; font-weight: 700; letter-spacing: .04em; opacity: .9; }
+.entry { padding: 14px 16px 120px; display: grid; gap: 12px; overflow-y: auto; }
+.entry h3 { margin: 0; font-family: var(--fd); font-size: 1rem; color: var(--ink); font-weight: 600; }
+.places { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.place {
+  font-family: var(--fd); font-weight: 700; font-size: 1.15rem; min-height: 48px; border: 0; border-radius: 16px; cursor: pointer;
+  background: var(--card); color: var(--ink); box-shadow: 0 5px 0 var(--card-edge);
+  transition: transform .08s;
+}
+.place[aria-pressed="true"] { background: linear-gradient(180deg, var(--blue-hi), var(--blue) 50%); color: var(--on-color); box-shadow: 0 5px 0 var(--blue-edge); text-shadow: 0 2px 0 var(--blue-edge); }
+.place:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--card-edge); }
+.bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px 18px; z-index: 3;
+  background: linear-gradient(180deg, transparent, var(--sky-bottom) 30%); }
+.oops { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; background: var(--card); color: var(--ink);
+  border-radius: 16px; padding: 6px 12px 6px 6px; box-shadow: 0 4px 0 var(--red-edge); font-weight: 700; }
+.oops svg { width: 46px; height: 46px; flex: none; }
+.oops[hidden] { display: none; }
+.shake { animation: shake .35s; }
+@keyframes shake { 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+.pop { animation: pop .4s; }
+@keyframes pop { 40% { transform: scale(1.08); } }
+
+/* ---------- winner ---------- */
+.win { align-items: center; text-align: center; padding: 0 16px; }
+.banner { margin-top: 14px; position: relative; font-family: var(--fd); font-weight: 700; font-size: 1.6rem; color: var(--on-color);
+  background: linear-gradient(180deg, var(--red-hi), var(--red) 50%); padding: 10px 34px; border-radius: 10px;
+  box-shadow: 0 6px 0 var(--red-edge); text-shadow: 0 2px 0 var(--red-edge); }
+.banner::before, .banner::after { content: ""; position: absolute; top: 14px; width: 26px; height: 40px; background: var(--red-edge); z-index: -1; }
+.banner::before { left: -16px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40% 50%); }
+.banner::after { right: -16px; clip-path: polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%); }
+.champ { position: relative; width: 170px; margin-top: 10px; }
+.winner-name { font-family: var(--fd); font-size: 2rem; font-weight: 700; margin: 2px 0 0; color: var(--ink);
+  text-shadow: 0 3px 0 var(--card); }
+.winner-sub { margin: 0; color: var(--ink-soft); font-weight: 700; }
+.podium { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 8px; width: 100%; margin: 14px 0 18px; }
+.step { background: var(--card); border-radius: 14px 14px 6px 6px; box-shadow: 0 5px 0 var(--card-edge); padding: 8px 4px; display: grid; gap: 4px; justify-items: center; min-width: 0; }
+.step b { font-family: var(--fd); font-size: 1rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step.s1 { height: 112px; } .step.s2 { height: 92px; } .step.s3 { height: 78px; }
+.actions { display: grid; gap: 14px; width: 100%; }
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 3px; animation: fall 3.2s linear infinite; }
+@keyframes fall { to { transform: translateY(740px) rotate(540deg); } }
+.bob { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .confetti, .bob, .shake, .pop { animation: none !important; }
+  .confetti { display: none; }
+}
+
+.notes { display: grid; gap: 10px; background: var(--card); color: var(--ink); border-radius: 20px; padding: 16px 18px; box-shadow: 0 5px 0 var(--card-edge); }
+.notes h2 { margin: 0; font-family: var(--fd); font-size: 1.2rem; }
+.notes ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; line-height: 1.45; }
+.notes li::marker { color: var(--green); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Three original mascot candidates; the picker swaps every <use class="m-use">. -->
+    <symbol id="m-dado" viewBox="0 0 140 150">
+      <ellipse cx="70" cy="143" rx="42" ry="6" fill="var(--shadow)"/>
+      <rect x="44" y="122" width="18" height="16" rx="8" fill="var(--blue-edge)"/>
+      <rect x="78" y="122" width="18" height="16" rx="8" fill="var(--blue-edge)"/>
+      <path d="M24 72 q-16 -10 -12 -32" stroke="var(--die-edge)" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <circle cx="12" cy="38" r="8" fill="var(--die)" stroke="var(--die-edge)" stroke-width="3"/>
+      <path d="M116 78 q14 6 13 22" stroke="var(--die-edge)" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <rect x="20" y="24" width="100" height="104" rx="28" fill="var(--die-edge)"/>
+      <rect x="20" y="16" width="100" height="104" rx="28" fill="var(--die)"/>
+      <path d="M38 24 Q70 18 102 24" stroke="var(--die-edge)" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+      <g fill="var(--pip)">
+        <circle cx="40" cy="36" r="7"/><circle cx="100" cy="36" r="7"/>
+        <circle cx="40" cy="102" r="7"/><circle cx="100" cy="102" r="7"/>
+      </g>
+      <ellipse cx="56" cy="64" rx="7" ry="9" fill="var(--face)"/>
+      <ellipse cx="84" cy="64" rx="7" ry="9" fill="var(--face)"/>
+      <circle cx="58.5" cy="60" r="2.6" fill="var(--die)"/>
+      <circle cx="86.5" cy="60" r="2.6" fill="var(--die)"/>
+      <ellipse cx="44" cy="79" rx="7" ry="4.5" fill="var(--red-hi)" opacity=".75"/>
+      <ellipse cx="96" cy="79" rx="7" ry="4.5" fill="var(--red-hi)" opacity=".75"/>
+      <path d="M58 80 Q70 92 82 80" stroke="var(--face)" stroke-width="4.5" fill="var(--red)" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="m-coruja" viewBox="0 0 140 150">
+      <ellipse cx="70" cy="143" rx="40" ry="6" fill="var(--shadow)"/>
+      <ellipse cx="56" cy="136" rx="10" ry="6" fill="var(--orange)"/>
+      <ellipse cx="84" cy="136" rx="10" ry="6" fill="var(--orange)"/>
+      <path d="M30 44 L34 12 L56 34 Z M110 44 L106 12 L84 34 Z" fill="var(--purple)" stroke="var(--purple)" stroke-width="6" stroke-linejoin="round"/>
+      <ellipse cx="70" cy="84" rx="48" ry="54" fill="var(--purple)"/>
+      <ellipse cx="70" cy="104" rx="30" ry="30" fill="var(--purple-hi)"/>
+      <path d="M56 98 q6 6 12 0 M72 98 q6 6 12 0 M64 110 q6 6 12 0" stroke="var(--purple)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="26" cy="96" rx="12" ry="26" fill="var(--purple-edge)" transform="rotate(14 26 96)"/>
+      <circle cx="50" cy="60" r="18" fill="var(--die)" stroke="var(--yellow)" stroke-width="5"/>
+      <circle cx="90" cy="60" r="18" fill="var(--die)" stroke="var(--yellow)" stroke-width="5"/>
+      <circle cx="52" cy="62" r="8" fill="var(--face)"/>
+      <circle cx="88" cy="62" r="8" fill="var(--face)"/>
+      <circle cx="55" cy="58" r="3" fill="var(--die)"/>
+      <circle cx="91" cy="58" r="3" fill="var(--die)"/>
+      <path d="M63 74 L77 74 L70 87 Z" fill="var(--orange)" stroke="var(--orange-edge)" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="96" y="80" width="36" height="44" rx="6" fill="var(--die)" stroke="var(--die-edge)" stroke-width="3" transform="rotate(8 114 102)"/>
+      <path d="M104 93 h20 M103 102 h20 M102 111 h12" stroke="var(--blue)" stroke-width="3.5" stroke-linecap="round" transform="rotate(8 114 102)"/>
+      <ellipse cx="104" cy="112" rx="13" ry="9" fill="var(--purple-edge)"/>
+    </symbol>
+    <symbol id="m-carta" viewBox="0 0 140 150">
+      <ellipse cx="70" cy="143" rx="40" ry="6" fill="var(--shadow)"/>
+      <path d="M52 128 v10 M88 128 v10" stroke="var(--face)" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="50" cy="139" rx="9" ry="5" fill="var(--red-edge)"/>
+      <ellipse cx="90" cy="139" rx="9" ry="5" fill="var(--red-edge)"/>
+      <path d="M28 80 q-16 2 -18 -16 M112 80 q16 2 18 -16" stroke="var(--face)" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="10" cy="62" r="8" fill="var(--die)" stroke="var(--face)" stroke-width="4"/>
+      <circle cx="130" cy="62" r="8" fill="var(--die)" stroke="var(--face)" stroke-width="4"/>
+      <rect x="30" y="18" width="88" height="116" rx="16" fill="var(--die-edge)"/>
+      <rect x="26" y="12" width="88" height="116" rx="16" fill="var(--die)"/>
+      <rect x="34" y="20" width="72" height="100" rx="10" fill="none" stroke="var(--red-hi)" stroke-width="3"/>
+      <path d="M40 34 c0 -6 8 -6 8 0 c0 -6 8 -6 8 0 c0 6 -8 10 -8 13 c0 -3 -8 -7 -8 -13 z" fill="var(--red)"/>
+      <path d="M84 108 c0 -6 8 -6 8 0 c0 -6 8 -6 8 0 c0 6 -8 10 -8 13 c0 -3 -8 -7 -8 -13 z" fill="var(--red)"/>
+      <ellipse cx="56" cy="66" rx="7" ry="9" fill="var(--face)"/>
+      <ellipse cx="84" cy="66" rx="7" ry="9" fill="var(--face)"/>
+      <circle cx="58.5" cy="62" r="2.6" fill="var(--die)"/>
+      <circle cx="86.5" cy="62" r="2.6" fill="var(--die)"/>
+      <ellipse cx="44" cy="81" rx="7" ry="4.5" fill="var(--red-hi)" opacity=".75"/>
+      <ellipse cx="96" cy="81" rx="7" ry="4.5" fill="var(--red-hi)" opacity=".75"/>
+      <path d="M58 82 Q70 94 82 82" stroke="var(--face)" stroke-width="4.5" fill="var(--red)" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="crown" viewBox="0 0 80 50">
+      <path d="M6 44 L10 10 L28 28 L40 4 L52 28 L70 10 L74 44 Z" fill="var(--gold)" stroke="var(--yellow-edge)" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="40" cy="30" r="5" fill="var(--red)"/>
+      <circle cx="22" cy="36" r="3.5" fill="var(--blue)"/>
+      <circle cx="58" cy="36" r="3.5" fill="var(--green)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="intro">
+    <h1>Facillit Games com cara de joguinho</h1>
+    <p>Protótipo clicável para escolher a direção visual. Os dados são de exemplo. Troque a fonte e o tema abaixo; na tela de rodada, marque as colocações e confirme.</p>
+  </header>
+
+  <div class="controls">
+    <div class="group"><span>Tela</span>
+      <div class="seg" id="screens">
+        <button type="button" data-go="list" aria-pressed="true">Jogos</button>
+        <button type="button" data-go="round" aria-pressed="false">Rodada</button>
+        <button type="button" data-go="win" aria-pressed="false">Vencedor</button>
+      </div>
+    </div>
+    <div class="group"><span>Mascote</span>
+      <div class="seg" id="mascots">
+        <button type="button" data-mascot-set="dado" aria-pressed="true">Dado</button>
+        <button type="button" data-mascot-set="coruja" aria-pressed="false">Coruja</button>
+        <button type="button" data-mascot-set="carta" aria-pressed="false">Carta</button>
+      </div>
+    </div>
+    <div class="group"><span>Tema</span>
+      <div class="seg" id="themes">
+        <button type="button" data-theme-set="light" aria-pressed="false">Claro</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">Escuro</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fonts" id="fonts">
+    <button type="button" class="fontcard" data-font-set="fredoka" aria-pressed="false">
+      <small>Fredoka</small>
+      <span class="big" style="font-family:'Fredoka',sans-serif;font-weight:700">Rodada 3</span>
+      <span class="mini" style="font-family:'Fredoka',sans-serif">Suave e bem redonda, uma família só.</span>
+    </button>
+    <button type="button" class="fontcard" data-font-set="baloo" aria-pressed="true">
+      <small>Baloo 2</small>
+      <span class="big" style="font-family:'Baloo 2',sans-serif;font-weight:800">Rodada 3</span>
+      <span class="mini" style="font-family:'Baloo 2',sans-serif">Redonda e firme, ótima em texto pequeno.</span>
+    </button>
+    <button type="button" class="fontcard" data-font-set="lilita" aria-pressed="false">
+      <small>Lilita One + Baloo 2</small>
+      <span class="big" style="font-family:'Lilita One',sans-serif">Rodada 3</span>
+      <span class="mini" style="font-family:'Baloo 2',sans-serif">Título bem "de jogo"; texto em Baloo 2.</span>
+    </button>
+  </div>
+
+  <div class="stage">
+    <div class="device" id="device">
+      <div class="stars"></div>
+
+      <!-- =============== GAME LIST =============== -->
+      <section class="screen" data-screen="list">
+        <div class="topbar">
+          <span class="logo">Facillit Games</span>
+          <div class="pill-icons">
+            <button type="button" class="btn purple square" aria-label="Trocar tema" data-theme-toggle>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="hello">
+          <svg class="mascot bob" viewBox="0 0 140 150" role="img" aria-label="Mascote"><use class="m-use" href="#m-dado"/></svg>
+          <div class="bubble"><b>Bora jogar?</b>Escolha o jogo da mesa.</div>
+        </div>
+        <div class="tiles">
+          <button type="button" class="tile" data-go="round">
+            <span class="badge" style="background:var(--orange)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/></svg>
+            </span>
+            <span><strong>Maior Vence</strong><span>De 2 a 4 jogadores</span></span>
+            <span class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+          <button type="button" class="tile" data-go="round">
+            <span class="badge" style="background:var(--purple)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5 13l7 7 7-7"/></svg>
+            </span>
+            <span><strong>Menor Vence</strong><span>De 3 a 6 jogadores</span></span>
+            <span class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <svg class="hills" viewBox="0 0 360 190" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="70" cy="60" rx="38" ry="14" fill="var(--cloud)" opacity=".85"/>
+          <ellipse cx="96" cy="52" rx="26" ry="14" fill="var(--cloud)" opacity=".85"/>
+          <ellipse cx="290" cy="40" rx="30" ry="11" fill="var(--cloud)" opacity=".7"/>
+          <path d="M0 120 Q90 70 190 110 T360 96 V190 H0 Z" fill="var(--hill-back)"/>
+          <path d="M0 150 Q120 105 230 140 T360 130 V190 H0 Z" fill="var(--hill-front)"/>
+          <g fill="var(--hill-back)"><circle cx="300" cy="104" r="16"/><circle cx="318" cy="96" r="20"/><circle cx="338" cy="106" r="15"/></g>
+        </svg>
+      </section>
+
+      <!-- =============== ROUND =============== -->
+      <section class="screen" data-screen="round" hidden>
+        <div class="topbar">
+          <span class="logo">Facillit Games</span>
+          <div class="pill-icons">
+            <button type="button" class="btn blue square" aria-label="Ver histórico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </button>
+            <button type="button" class="btn red square" aria-label="Finalizar" data-go="win">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="roundhead"><span class="ribbon" id="roundLabel">Rodada 3</span></div>
+        <div class="board" id="board" aria-label="Classificação"></div>
+        <div class="entry" id="entry"></div>
+        <div class="bar">
+          <div class="oops" id="oops" role="alert" hidden>
+            <svg viewBox="0 0 140 150" aria-hidden="true"><use class="m-use" href="#m-dado"/></svg>
+            <span id="oopsText">Falta a colocação de Bruno.</span>
+          </div>
+          <button type="button" class="btn xl" id="confirm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            Confirmar rodada
+          </button>
+        </div>
+      </section>
+
+      <!-- =============== WINNER =============== -->
+      <section class="screen win" data-screen="win" hidden>
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="banner">Fim de partida!</div>
+        <div class="champ bob">
+          <svg viewBox="0 0 80 50" width="70" style="position:absolute;left:50px;top:-20px" aria-hidden="true"><use href="#crown"/></svg>
+          <svg viewBox="0 0 140 150" role="img" aria-label="Mascote comemorando"><use class="m-use" href="#m-dado"/></svg>
+        </div>
+        <p class="winner-sub">Vitória de</p>
+        <p class="winner-name" id="winnerName">Ana</p>
+        <div class="podium" id="podium"></div>
+        <div class="actions">
+          <button type="button" class="btn xl" data-go="round" data-reset>Revanche</button>
+          <button type="button" class="btn blue xl" data-go="list" data-reset>Nova partida</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="notes">
+    <h2>O que este protótipo decide</h2>
+    <ul>
+      <li>Botões 3D em CSS puro (degradê, borda escura embaixo, brilho), que afundam ao tocar.</li>
+      <li>Céu com morros no tema claro e noite estrelada no escuro; as cores dos botões são as mesmas nos dois.</li>
+      <li>O mascote aparece na lista, nos avisos de erro e na vitória. Três candidatos: dado, coruja com a ficha de pontos e carta de baralho.</li>
+      <li>Pontos aparecem num selo roxo "30 pts", para não serem confundidos com moedas.</li>
+      <li>Texto escuro sobre laranja e amarelo, porque branco ali não passa no contraste AA.</li>
+      <li>No app, a fonte escolhida seria servida pelo próprio site, sem Google Fonts.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var screens = document.querySelectorAll('.screen');
+  var players = ['Ana', 'Bruno', 'Carla'];
+  var totals = { Ana: 50, Bruno: 40, Carla: 30 };
+  var round = 3;
+  var picks = {};
+
+  function setPressed(container, attr, value) {
+    container.querySelectorAll('button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute(attr) === value));
+    });
+  }
+
+  function go(name) {
+    screens.forEach(function (s) { s.hidden = s.dataset.screen !== name; });
+    setPressed(document.getElementById('screens'), 'data-go', name);
+    if (name === 'win') renderWin();
+  }
+
+  function ranking() {
+    return players.slice().sort(function (a, b) { return totals[b] - totals[a]; });
+  }
+
+  function renderBoard() {
+    var board = document.getElementById('board');
+    board.innerHTML = '';
+    ranking().forEach(function (p, i) {
+      var row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = '<span class="medal m' + (i + 1) + '">' + (i + 1) + 'º</span>' +
+        '<span class="name">' + p + '</span>' +
+        '<span class="pts">' + totals[p] + '<small>pts</small></span>';
+      board.appendChild(row);
+    });
+    document.getElementById('roundLabel').textContent = 'Rodada ' + round;
+  }
+
+  function renderEntry() {
+    var entry = document.getElementById('entry');
+    entry.innerHTML = '';
+    players.forEach(function (p) {
+      var h = document.createElement('h3');
+      h.textContent = 'Colocação de ' + p;
+      var grid = document.createElement('div');
+      grid.className = 'places';
+      [1, 2, 3].forEach(function (n) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'place';
+        b.textContent = n + 'º';
+        b.setAttribute('aria-label', p + ': ' + n + 'º lugar');
+        b.setAttribute('aria-pressed', String(picks[p] === n));
+        b.addEventListener('click', function () {
+          picks[p] = n;
+          document.getElementById('oops').hidden = true;
+          renderEntry();
+        });
+        grid.appendChild(b);
+      });
+      entry.appendChild(h);
+      entry.appendChild(grid);
+    });
+  }
+
+  document.getElementById('confirm').addEventListener('click', function () {
+    var missing = players.filter(function (p) { return !picks[p]; });
+    var oops = document.getElementById('oops');
+    var btn = this;
+    if (missing.length) {
+      document.getElementById('oopsText').textContent = 'Falta a colocação de ' + missing[0] + '.';
+      oops.hidden = false;
+      btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+      return;
+    }
+    players.forEach(function (p) { totals[p] += (players.length - picks[p] + 1) * 10; });
+    round += 1;
+    picks = {};
+    renderBoard();
+    renderEntry();
+    var board = document.getElementById('board');
+    board.classList.remove('pop'); void board.offsetWidth; board.classList.add('pop');
+  });
+
+  function renderWin() {
+    var order = ranking();
+    document.getElementById('winnerName').textContent = order[0];
+    var podium = document.getElementById('podium');
+    podium.innerHTML = '';
+    [1, 0, 2].forEach(function (i) {
+      var p = order[i];
+      var step = document.createElement('div');
+      step.className = 'step s' + (i + 1);
+      step.innerHTML = '<span class="medal m' + (i + 1) + '">' + (i + 1) + 'º</span><b>' + p + '</b>' +
+        '<span class="pts">' + totals[p] + '<small>pts</small></span>';
+      podium.appendChild(step);
+    });
+    var confetti = document.getElementById('confetti');
+    if (!confetti.childElementCount) {
+      var colors = ['var(--red)', 'var(--yellow)', 'var(--green)', 'var(--blue)', 'var(--purple)', 'var(--orange)'];
+      for (var k = 0; k < 28; k++) {
+        var c = document.createElement('i');
+        c.style.left = (k * 37 % 350) + 'px';
+        c.style.background = colors[k % colors.length];
+        c.style.animationDelay = (k * 0.17 % 3) + 's';
+        c.style.animationDuration = (2.6 + (k % 5) * 0.3) + 's';
+        confetti.appendChild(c);
+      }
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-go]');
+    if (t) {
+      if (t.hasAttribute('data-reset')) { totals = { Ana: 0, Bruno: 0, Carla: 0 }; round = 1; picks = {}; renderBoard(); renderEntry(); }
+      go(t.getAttribute('data-go'));
+    }
+    var th = e.target.closest('[data-theme-set]');
+    if (th) { root.setAttribute('data-theme', th.dataset.themeSet); setPressed(document.getElementById('themes'), 'data-theme-set', th.dataset.themeSet); }
+    if (e.target.closest('[data-theme-toggle]')) {
+      var next = (root.getAttribute('data-theme') || initialTheme) === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next); setPressed(document.getElementById('themes'), 'data-theme-set', next);
+    }
+    var m = e.target.closest('[data-mascot-set]');
+    if (m) {
+      document.querySelectorAll('.m-use').forEach(function (u) { u.setAttribute('href', '#m-' + m.dataset.mascotSet); });
+      setPressed(document.getElementById('mascots'), 'data-mascot-set', m.dataset.mascotSet);
+    }
+    var f = e.target.closest('[data-font-set]');
+    if (f) { root.setAttribute('data-font', f.dataset.fontSet); setPressed(document.getElementById('fonts'), 'data-font-set', f.dataset.fontSet); }
+  });
+
+  var initialTheme = root.getAttribute('data-theme') ||
+    (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setPressed(document.getElementById('themes'), 'data-theme-set', initialTheme);
+
+  renderBoard();
+  renderEntry();
+})();
+</script>
