@@ -140,7 +140,8 @@ forgotten by a new part.
   total; `dist/index.html` preloads it; no `http(s)://` URL in `dist/` HTML or
   CSS except the SVG namespace; island JS ≤ 80 kB gzipped (turns the spec 003
   T050 measurement into a test).
-- `src/shell/ui/identity.browser.test.tsx`: mascot on game list, rejection,
+- Browser tests, one per story (`look`, `mascot`, `scoreboard`, `winner`
+  `.browser.test.tsx` in `src/shell/ui/`): buttons and font; mascot on game list, rejection,
   and winner (with crown), never intersecting a button or input; totals read
   `^-?\d+ pts$` in standings and podium; medals per position with shared
   medals on ties; podium step counts for 1-1-3 and two players; with reduced
