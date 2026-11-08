@@ -4,23 +4,26 @@ import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { errorCopy, headings } from '../src/shell/ui/copy';
+
 /**
- * The Principle IV guard.
+ * The Principle IV guard, now pointed at the real match island (FR-026,
+ * research D4 of spec 003).
  *
- * FR-012 only asks for the probe component. A component is documentation, and
- * documentation does not prevent regressions: if someone swaps `client:only`
- * for `client:load` in src/pages/index.astro -- the most likely mistake,
- * because `client:load` is the default in every tutorial -- the build keeps
- * passing and the defect shows up as an empty-screen flash on a phone, far
- * from whoever wrote the line.
+ * Phase 2 proved the mechanism with a probe component; this file kept the
+ * guard alive and now watches `MatchApp`. If someone swaps `client:only` for
+ * `client:load` in src/pages/index.astro -- the most likely mistake, because
+ * `client:load` is the default in every tutorial -- the build keeps passing
+ * and the defect shows up as an empty-screen flash on a phone, far from
+ * whoever wrote the line. Here it fails in CI instead.
  *
- * This file turns the principle into something that fails in CI.
- *
- * When Phase 4 removes ClientOnlyProbe, this test must NOT be removed: it must
- * be repointed to the first real match-state island.
+ * What the built page must contain: the neutral loading frame (the island's
+ * fallback slot, FR-030). What it must not: the app root or any screen copy,
+ * which exist only once the island runs in the browser.
  */
 
-const PROBE_MARKER = 'client-only-probe';
+const APP_MARKER = 'data-testid="match-app"';
+const FALLBACK_MARKER = 'data-testid="loading-frame"';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const indexHtmlPath = `${repoRoot}dist/index.html`;
@@ -42,14 +45,28 @@ describe('static artifact', () => {
     const html = readFileSync(indexHtmlPath, 'utf8');
 
     expect(
-      html.includes(PROBE_MARKER),
-      `dist/index.html contains "${PROBE_MARKER}", meaning the island RENDERED at build time.\n` +
+      html.includes(APP_MARKER),
+      `dist/index.html contains "${APP_MARKER}", meaning the island RENDERED at build time.\n` +
         `This means the directive in src/pages/index.astro is no longer\n` +
         `client:only. With client:load, every component that reads match state\n` +
         `produces a hydration mismatch and an empty-screen flash on every app open --\n` +
         `which is the normal use (phone on the table, tab discarded by the browser).\n` +
         `Constitution Principle IV. Set the directive back to client:only.`,
     ).toBe(false);
+  });
+
+  it('shows the neutral loading frame until the island runs (FR-030)', () => {
+    const html = readFileSync(indexHtmlPath, 'utf8');
+
+    expect(html).toContain(FALLBACK_MARKER);
+    expect(html).toContain('lang="pt-BR"');
+  });
+
+  it('contains no screen copy, which only the island renders', () => {
+    const html = readFileSync(indexHtmlPath, 'utf8');
+    const copy = [...Object.values(errorCopy), ...Object.values(headings)];
+
+    expect(copy.filter((text) => html.includes(text))).toEqual([]);
   });
 
   it('ships the island code to the browser instead of simply omitting it', () => {

@@ -1,0 +1,15 @@
+---
+/**
+ * /dev/test-games: injected only by `astro dev` (astro.config.mjs, research
+ * D5 of spec 003). The production build never sees this page.
+ */
+import BaseLayout from '../../../src/layouts/BaseLayout.astro';
+import LoadingFrame from '../../../src/components/LoadingFrame.astro';
+import DevMatchIsland from './DevMatchIsland';
+---
+
+<BaseLayout title="Facillit Games (jogos de teste)">
+  <DevMatchIsland client:only="react">
+    <LoadingFrame slot="fallback" />
+  </DevMatchIsland>
+</BaseLayout>

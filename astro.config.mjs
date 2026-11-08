@@ -9,7 +9,25 @@ export default defineConfig({
   // requires a runtime and would violate the principle.
   output: 'static',
 
-  integrations: [react()],
+  integrations: [
+    react(),
+    {
+      // Development-only page with the test-only games (FR-029a, research D5
+      // of specs/003-shell-screens). Injected only under `astro dev`, so the
+      // fixtures never reach dist/ and src/ never imports tests/.
+      name: 'dev-test-games',
+      hooks: {
+        'astro:config:setup': ({ command, injectRoute }) => {
+          if (command === 'dev') {
+            injectRoute({
+              pattern: '/dev/test-games',
+              entrypoint: './tests/fixtures/dev/test-games.astro',
+            });
+          }
+        },
+      },
+    },
+  ],
 
   vite: {
     // Tailwind 4 comes in as a Vite plugin. The @astrojs/tailwind integration
