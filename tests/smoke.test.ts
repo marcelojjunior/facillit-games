@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import ClientOnlyProbe from '../src/components/ClientOnlyProbe';
+import MatchIsland from '../src/components/MatchIsland';
 
 /**
  * Proves that the test runner works (FR-009) and that it resolves the
@@ -13,7 +13,7 @@ import ClientOnlyProbe from '../src/components/ClientOnlyProbe';
  */
 describe('test runner', () => {
   it('resolves a project TypeScript module', () => {
-    expect(ClientOnlyProbe).toBeTypeOf('function');
+    expect(MatchIsland).toBeTypeOf('function');
   });
 
   it('runs in an environment without DOM, so an impure scoring rule fails', () => {

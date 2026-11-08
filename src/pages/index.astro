@@ -1,34 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ClientOnlyProbe from '../components/ClientOnlyProbe';
+import LoadingFrame from '../components/LoadingFrame.astro';
+import MatchIsland from '../components/MatchIsland';
 ---
 
-<BaseLayout title="Facillit Games — fundacao">
-  <main class="mx-auto max-w-prose px-4 py-10">
-    <h1 class="text-2xl font-semibold">Facillit Games</h1>
-
-    <p class="mt-4 text-sm leading-relaxed">
-      Fundacao tecnica da plataforma. Esta pagina existe para provar que o pipeline de build
-      estatico funciona e e descartada na Fase 4, junto com o design system e as telas reais.
-    </p>
-
-    <p class="mt-4 text-sm leading-relaxed">
-      Nao ha jogo, cadastro de jogadores nem marcador de pontuacao aqui — por escopo, nao por falta.
-    </p>
-
-    <!--
-      client:only, NOT client:load.
-
-      With client:load the component renders at build time, where the browser
-      API it reads does not exist: that causes a hydration mismatch and an
-      empty-screen flash on every open -- which is the normal use of the app
-      (phone on the table, tab discarded by the browser). Constitution
-      Principle IV.
-
-      tests/static-build.test.ts asserts that this island's markup does NOT
-      appear in dist/index.html. Changing the directive here makes that test
-      fail, which is the point: without it, the change would go unnoticed.
-    -->
-    <ClientOnlyProbe client:only="react" />
-  </main>
+<BaseLayout title="Facillit Games">
+  <!--
+    client:only="react", NEVER another directive (Principle IV): the island
+    reads localStorage, which does not exist at build time. Any directive that
+    renders on the server causes a hydration mismatch and an empty-screen flash
+    on every open -- the normal use of the app (phone on the table, tab
+    discarded). tests/static-build.test.ts and tests/island-directives.test.ts
+    fail if this changes.
+  -->
+  <MatchIsland client:only="react">
+    <LoadingFrame slot="fallback" />
+  </MatchIsland>
 </BaseLayout>
