@@ -224,6 +224,15 @@ describe('defineGame', () => {
   });
 
   describe('RoundEntry (spec 003, FR-009)', () => {
+    it('defineGame throws when RoundEntry is not a component', () => {
+      // A broken import can reach defineGame without a component at run time,
+      // whatever the types say; the check catches it at module load.
+      const overrides: Partial<GameDefinition<PointsRound>> = { RoundEntry: () => null };
+      Reflect.set(overrides, 'RoundEntry', undefined);
+
+      expect(() => makeGame(overrides)).toThrow(/RoundEntry/);
+    });
+
     it('passes the round entry through unchanged', () => {
       const RoundEntry = () => null;
       const { game } = makeGame({ RoundEntry });
@@ -240,7 +249,6 @@ describe('defineGame', () => {
       ['minPlayers above maxPlayers', { minPlayers: 5, maxPlayers: 4 }],
       ['an id that is not kebab-case', { id: 'Tiny_Game' }],
       ['an id with a trailing hyphen', { id: 'tiny-' }],
-      ['a RoundEntry that is not a component', { RoundEntry: Reflect.get({}, 'missing') }],
     ])('defineGame throws for %s', (_label, override) => {
       expect(() => makeGame(override)).toThrow();
     });
