@@ -51,7 +51,7 @@ history, spec 002) and shows the game list.
 |---|---|
 | `{ ok: true, persisted: true }` | Clear the not-saved warning and any shown error. |
 | `{ ok: true, persisted: false }` | Show the not-saved warning (stays until a persisted result). |
-| `{ ok: false, error: { code: 'invalid_round', reasons } }` | Pass `reasons` to the round entry and list them above the bottom bar; keep the draft. |
+| `{ ok: false, error: { code: 'invalid_round', reasons } }` | Pass `reasons` to the round entry and list them inside the fixed bottom bar, right above the confirm button, so they are never hidden behind it; keep the draft. |
 | `{ ok: false, error: { code } }` (any other) | Show `errorCopy[code]` next to the control that triggered it. |
 
 ## Copy (pt-BR), `src/shell/ui/copy.ts`

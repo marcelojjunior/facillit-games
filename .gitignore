@@ -22,8 +22,9 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
-# === Coverage ===
+# === Coverage / browser-test failure screenshots ===
 coverage/
+.vitest/
 
 # === Agents ===
 # Machine-local permissions and configuration. May contain absolute paths and
