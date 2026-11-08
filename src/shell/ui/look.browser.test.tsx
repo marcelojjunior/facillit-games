@@ -2,9 +2,9 @@
  * US1 of spec 004 — the app feels like a casual mobile game (FR-004, FR-006).
  *
  * Every visible button on every screen and overlay is a 3D game button
- * (`btn-3d`) or a raised card (`card-3d`); the only exceptions are the theme
- * control's options and inline text actions marked `data-inline-action`, so a
- * new flat button cannot slip in unnoticed. Text uses the self-hosted game
+ * (`btn-3d`) or a raised card (`card-3d`); the only exception is an inline
+ * text action marked `data-inline-action`, so a new flat button cannot slip
+ * in unnoticed. Text uses the self-hosted game
  * typeface.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -30,7 +30,6 @@ function seed(match: Match): void {
 function flatButtons(): string[] {
   return [...document.querySelectorAll<HTMLElement>('[data-testid="match-app"] button')]
     .filter((button) => button.checkVisibility())
-    .filter((button) => !button.closest('[data-testid="theme-control"]'))
     .filter((button) => !button.hasAttribute('data-inline-action'))
     .filter((button) => !button.classList.contains('btn-3d'))
     .filter((button) => !button.classList.contains('card-3d'))

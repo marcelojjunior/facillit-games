@@ -107,10 +107,8 @@ export const labels = {
   abandon: 'Abandonar partida',
   abandonWarning: 'Os jogadores e as rodadas desta partida serão apagados.',
   abandonConfirm: 'Abandonar',
-  theme: 'Tema',
-  themeAuto: 'Automático',
-  themeLight: 'Claro',
-  themeDark: 'Escuro',
+  themeToDark: 'Mudar para o tema escuro',
+  themeToLight: 'Mudar para o tema claro',
   notSaved:
     'Não foi possível salvar neste aparelho. Se o app for fechado, a partida pode se perder.',
 } as const;

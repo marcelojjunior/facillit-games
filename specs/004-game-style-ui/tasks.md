@@ -201,10 +201,10 @@ motion all render as specified.
 **Goal**: the owner's review of the implemented screens (spec Clarifications,
 FR-017a, FR-017b).
 
-- [ ] T036 Update the theme tests in `src/shell/ui/layout.browser.test.tsx` to FR-017a (expected to fail first): one `data-testid="theme-control"` button on every screen; with nothing stored it follows an emulated device change both ways; a tap switches to the opposite theme, stores `{ "schemaVersion": 1, "theme": "dark" | "light" }`, survives a remount, and then wins over a device change; a tap still switches when `setItem` throws; its accessible name is "Mudar para o tema escuro" in light and "Mudar para o tema claro" in dark
-- [ ] T037 Add a browser test (expected to fail first) in `src/shell/ui/layout.browser.test.tsx` that, at a 1280×800 viewport, the center of `confirm-round` is within 2 px of the viewport's horizontal center (FR-017b)
-- [ ] T038 Rewrite `src/shell/ui/parts/ThemeControl.tsx` per research D13 (one `btn-3d btn-plain` square, `data-testid="theme-control"`, moon/sun icons, labels from `src/shell/ui/copy.ts`; remove the three-option labels) and keep `look.browser.test.tsx` green without the theme-control exception; make T036 pass
-- [ ] T039 Center the confirm button in `src/shell/ui/parts/ConfirmBar.tsx` per research D14; make T037 pass
+- [X] T036 Update the theme tests in `src/shell/ui/layout.browser.test.tsx` to FR-017a (expected to fail first): one `data-testid="theme-control"` button on every screen; with nothing stored it follows an emulated device change both ways; a tap switches to the opposite theme, stores `{ "schemaVersion": 1, "theme": "dark" | "light" }`, survives a remount, and then wins over a device change; a tap still switches when `setItem` throws; its accessible name is "Mudar para o tema escuro" in light and "Mudar para o tema claro" in dark
+- [X] T037 Add a browser test (expected to fail first) in `src/shell/ui/layout.browser.test.tsx` that, at a 1280×800 viewport, the center of `confirm-round` is within 2 px of the viewport's horizontal center (FR-017b)
+- [X] T038 Rewrite `src/shell/ui/parts/ThemeControl.tsx` per research D13 (one `btn-3d btn-plain` square, `data-testid="theme-control"`, moon/sun icons, labels from `src/shell/ui/copy.ts`; remove the three-option labels) and keep `look.browser.test.tsx` green without the theme-control exception; make T036 pass
+- [X] T039 Center the confirm button in `src/shell/ui/parts/ConfirmBar.tsx` per research D14; make T037 pass
 
 ## Dependencies & execution order
 
