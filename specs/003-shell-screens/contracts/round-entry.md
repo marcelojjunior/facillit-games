@@ -1,4 +1,4 @@
-# Contract: Round entry and ranking (game contract, revision 2)
+# Contract: Round entry and positions (game contract, revision 2)
 
 **Changes**: [`specs/002-game-contract/contracts/game-contract.md`](../../002-game-contract/contracts/game-contract.md).
 **Consumers**: every game folder, the in-progress screen, the fix-round sheet.
@@ -75,24 +75,32 @@ function (programming error otherwise, like the other static fields).
    renders a valid value, renders garbage without throwing, and emits a value
    that the game's own `validateRound` accepts after a normal interaction.
 
-## `Game.rank`
+## `Evaluation.positions`
 
 ```ts
+type Evaluation =
+  | {
+      ok: true;
+      roundScores: readonly Scores[];
+      totals: Scores;
+      winners: readonly string[];
+      /** Position of each player (1 = best), keyed by player id. */
+      positions: Scores;
+    }
+  | { ok: false; roundIndex: number; reasons: readonly RoundRejection[] };
+
 interface Game {
   // ...existing members
   readonly RoundEntry: RoundEntryComponent;
-  /**
-   * Position of each player (1 = best), keyed by player id, derived from the
-   * game's resolveWinners by peeling winners (research D2). Ties share a
-   * position and skip the next ones: 1, 1, 3.
-   */
-  readonly rank: (totals: Scores, players: readonly PlayerRef[]) => Readonly<Record<string, number>>;
 }
 ```
 
-`rank` is computed by `defineGame`; games do not write it. With zero rounds,
-`resolveWinners` returns every player, so everyone is position 1.
+`positions` is computed by `defineGame` inside `evaluate` by peeling winners
+(research D2): winners are 1, then `resolveWinners` over the remaining players,
+and so on. Ties share a position and skip the next ones: 1, 1, 3. With zero
+rounds every player is 1. Games do not write it; `MatchView.evaluation.positions`
+carries it to the screens.
 
 If a game's `resolveWinners` returns an empty list or an id outside the given
-players during peeling, `rank` throws a contract error (programming error,
+players during peeling, `evaluate` throws a contract error (programming error,
 FR-009a of spec 002), caught by the game's tests.

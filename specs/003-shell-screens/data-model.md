@@ -28,7 +28,7 @@ One per player, computed on every render from the store's `MatchView`:
 |---|---|
 | `player` | `match.players[i]` (roster order) |
 | `total` | `evaluation.totals[player.id]` |
-| `position` | `game.rank(totals, players)[player.id]` (research D2) |
+| `position` | `evaluation.positions[player.id]` (research D2) |
 
 Displayed sorted by `position`, then roster order. Exactly one line per player
 regardless of round count (FR-004).
