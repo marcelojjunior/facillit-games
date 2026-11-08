@@ -77,7 +77,8 @@ background scene and surfaces but not the button colors.
 1. **Given** the light theme, **When** any screen is shown, **Then** the
    background is a daytime sky scene.
 2. **Given** the dark theme, **When** any screen is shown, **Then** the
-   background is a night sky scene with stars, and no surface glares.
+   background is a night sky scene with stars, and no card, sheet, or dialog
+   surface is lighter than the lightest color of the night sky.
 3. **Given** either theme, **When** a colored button is shown, **Then** it has
    the same color as in the other theme.
 4. **Given** a stored theme choice, **When** the app opens, **Then** the first
@@ -181,7 +182,7 @@ motion.
   skips as before (1, 2, 2, 4), and position 4 gets the plain badge.
 - **The game font fails to load** (slow network, blocked download): the app
   shows a rounded fallback typeface with the same layout; nothing overlaps or
-  clips.
+  clips. Checked by hand with the font request blocked (no automated check).
 - **Reduced motion**: no confetti, no mascot bobbing, no button sink animation
   beyond an instant pressed state; every element still visible.
 - **Many games in the list**: the hills illustration stays behind the list and
@@ -288,7 +289,10 @@ motion.
   both themes at 360 px wide, as matching the approved prototype's direction.
 - **SC-002**: 100% of the automated checks of spec 003 still pass with no
   change to what they assert (flows, persistence, 44 px targets, horizontal
-  scroll, confirm in reach, contrast, theme before first paint).
+  scroll, confirm in reach, contrast, theme before first paint). The one
+  allowed adjustment is how a check reads a displayed total, because FR-011
+  changes its format ("190" becomes "190 pts"); the expected numbers never
+  change.
 - **SC-003**: 100% of text-on-color and text-on-surface pairs meet WCAG AA in
   both themes, including every colored button.
 - **SC-004**: The app makes zero runtime requests to hosts other than its own.

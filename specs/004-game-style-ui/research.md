@@ -151,6 +151,29 @@ forgotten by a new part.
 - Every spec 003 test runs unchanged in what it asserts (SC-002); only
   selectors that named removed classes may change.
 
+## D11 — Keeping the island under 80 kB
+
+**Context**: the island already ships 77.6 kB gzipped (spec 003 research D13),
+almost all of it React; the new parts add markup only, but 2.4 kB of headroom
+is thin and the budget test (D8) fails only at the end.
+
+**Decision**: measure after Phase 2 and after US1 (tasks T010, T017). Keep the
+added code small by construction:
+
+- The mascot is one SVG with a crown group shown by a prop, not separate
+  drawings per moment.
+- Confetti is one element whose pieces come from CSS (pseudo-elements and
+  `nth-child` positions over a short fixed list), with no per-piece props or
+  arrays in JavaScript.
+- The scene lives in the static layout, so it costs the island nothing.
+- No new runtime dependency.
+
+**If a measurement passes 78 kB**: first move decorative SVG that never
+changes (mascot body, crown) into a static sprite in the layout referenced
+with `<use href="#...">`, so it leaves the island bundle; record the new
+measurement here. Raising the budget is not an option without amending the
+plan of spec 003.
+
 ## D9 — No external URL in the artifact
 
 **Decision**: covered by the static-build check in D8. It replaces the manual
