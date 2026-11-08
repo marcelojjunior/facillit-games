@@ -169,7 +169,7 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
           <button
             type="button"
             onClick={() => setOverlay('abandon')}
-            className={`${secondaryButton} justify-start text-danger`}
+            className={`${dangerButton} justify-start`}
           >
             {labels.abandon}
           </button>

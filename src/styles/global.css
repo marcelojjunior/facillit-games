@@ -225,16 +225,22 @@
   }
 
   /*
-   * Neutral actions: the raised surface with a line edge (the defaults above),
-   * without the top gloss, which reads as a light rim on dark surfaces.
+   * Neutral actions: the raised surface with a line outline and bottom edge
+   * (the defaults above). The outline keeps the shape visible on a surface of
+   * the same color (cards, dialogs); no top gloss, which reads as a light rim
+   * on dark surfaces.
    */
   .btn-plain {
     font-weight: 700;
-    box-shadow: 0 0.3rem 0 var(--btn-edge);
+    box-shadow:
+      inset 0 0 0 2px var(--btn-edge),
+      0 0.3rem 0 var(--btn-edge);
   }
 
   .btn-plain:active:not(:disabled) {
-    box-shadow: 0 0.1rem 0 var(--btn-edge);
+    box-shadow:
+      inset 0 0 0 2px var(--btn-edge),
+      0 0.1rem 0 var(--btn-edge);
   }
 
   /* The app title: white letters with a thick blue outline, like a game logo. */
