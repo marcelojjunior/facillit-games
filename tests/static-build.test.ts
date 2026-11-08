@@ -130,6 +130,11 @@ function distFiles(pattern: RegExp): string[] {
     .filter((path) => pattern.test(path));
 }
 
+const VERCEL_ANALYTICS_STRINGS = [
+  'https://va.vercel-scripts.com/v1/script.debug.js',
+  'https://vercel.com/docs/analytics/quickstart',
+];
+
 const ownOrigin = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : undefined;
@@ -189,10 +194,14 @@ describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
       [
         ...readFileSync(path, 'utf8')
           .replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, '')
-          .matchAll(/https?:\/\/[^\s"')>]+/g),
+          .matchAll(/https?:\/\/[^\s"')>`]+/g),
       ]
         .map((match) => match[0])
         .filter((url) => url !== 'http://www.w3.org/2000/svg')
+        // @vercel/analytics (inlined): the debug script loads only in
+        // development mode, and the docs link is console text. In production
+        // the script comes from this site's own /_vercel/insights.
+        .filter((url) => !VERCEL_ANALYTICS_STRINGS.includes(url))
         // The app's own address, when the build knows it (share tags).
         .filter((url) => !ownOrigin || !url.startsWith(ownOrigin))
         .map((url) => `${path.slice(repoRoot.length)}: ${url}`),

@@ -161,6 +161,17 @@ review.
 Code, comments, docs, specs, commits, and PRs are in English. Only what the end
 user sees is in Brazilian Portuguese. See constitution Principle IX.
 
+## Analytics
+
+Vercel Web Analytics (`@vercel/analytics`, the Astro component in
+`src/layouts/BaseLayout.astro`) counts page views. It sets no cookies and
+sends to the site's own origin (`/_vercel/insights`), so the app still makes
+no request to another host in production (constitution Principle I); the
+package's only external URLs are a development-only debug script and a docs
+link in a console message, allow-listed in `tests/static-build.test.ts`.
+Enable it in the Vercel dashboard (project → Analytics → Enable). Off Vercel
+the script is missing and nothing else changes.
+
 ## Favicon and link previews
 
 The favicon is the mascot die (`public/favicon.svg`). The link-preview image
