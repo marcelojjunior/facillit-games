@@ -4,7 +4,7 @@
  * rounds, plus the theme control.
  */
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
-import { commands } from 'vitest/browser';
+import { commands, page } from 'vitest/browser';
 import { render, type RenderResult } from 'vitest-browser-react';
 
 import { highestWins, lowestWins } from '../../../tests/fixtures/games/registry';
@@ -62,7 +62,7 @@ function expectLayout(where: string): void {
   const visible = [
     ...document.querySelectorAll('button, a, input, select, [role="button"]'),
   ].filter((element) => element.checkVisibility());
-  expect(visible.length, `${where}: no tappable element found`).toBeGreaterThan(3);
+  expect(visible.length, `${where}: no tappable element found`).toBeGreaterThanOrEqual(3);
   const small = visible
     .map((element) => ({ element, box: element.getBoundingClientRect() }))
     .filter(({ box }) => box.width < 43.5 || box.height < 43.5)
@@ -170,12 +170,35 @@ describe('every screen and overlay at 360×640 (SC-002, SC-004, SC-007)', () => 
   });
 });
 
-describe('theme control (FR-020, FR-020a, SC-008)', () => {
+describe('theme button (spec 004 FR-017a, spec 003 FR-020a, SC-008)', () => {
   const theme = () => document.documentElement.dataset.theme;
+  const control = (screen: RenderResult) => screen.getByTestId('theme-control');
 
-  it('switches live and persists across a remount', async () => {
+  beforeEach(async () => {
+    await commands.emulateColorScheme('light');
+  });
+
+  it('with nothing chosen, follows the device both ways', async () => {
+    await render(<MatchApp registry={registry} />);
+    await expect.poll(theme).toBe('light');
+    await commands.emulateColorScheme('dark');
+    await expect.poll(theme).toBe('dark');
+    await commands.emulateColorScheme('light');
+    await expect.poll(theme).toBe('light');
+    expect(localStorage.getItem(THEME_KEY)).toBeNull();
+  });
+
+  it('is one button, named by what it does', async () => {
     const screen = await render(<MatchApp registry={registry} />);
-    await button(screen, labels.themeDark).click();
+    expect(screen.getByTestId('theme-control').elements()).toHaveLength(1);
+    await expect.element(control(screen)).toHaveAccessibleName(labels.themeToDark);
+    await control(screen).click();
+    await expect.element(control(screen)).toHaveAccessibleName(labels.themeToLight);
+  });
+
+  it('a tap switches, is stored, survives a remount, and then wins over the device', async () => {
+    const screen = await render(<MatchApp registry={registry} />);
+    await control(screen).click();
     expect(theme()).toBe('dark');
     expect(document.documentElement.style.colorScheme).toBe('dark');
     expect(JSON.parse(localStorage.getItem(THEME_KEY) ?? '')).toEqual({
@@ -186,8 +209,18 @@ describe('theme control (FR-020, FR-020a, SC-008)', () => {
     await screen.unmount();
     delete document.documentElement.dataset.theme;
     const again = await render(<MatchApp registry={registry} />);
-    await expect.element(button(again, labels.themeDark)).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(theme).toBe('dark');
+    await commands.emulateColorScheme('light');
     expect(theme()).toBe('dark');
+
+    await control(again).click();
+    expect(theme()).toBe('light');
+    expect(JSON.parse(localStorage.getItem(THEME_KEY) ?? '')).toEqual({
+      schemaVersion: 1,
+      theme: 'light',
+    });
+    await commands.emulateColorScheme('dark');
+    expect(theme()).toBe('light');
   });
 
   it('still switches when saving the choice fails', async () => {
@@ -199,25 +232,10 @@ describe('theme control (FR-020, FR-020a, SC-008)', () => {
       },
     };
     const screen = await render(<MatchApp registry={registry} storage={refusing} />);
-    await button(screen, labels.themeDark).click();
+    await control(screen).click();
     expect(theme()).toBe('dark');
-    await button(screen, labels.themeLight).click();
+    await control(screen).click();
     expect(theme()).toBe('light');
-  });
-
-  it('in automatic, follows a device change without reload', async () => {
-    const screen = await render(<MatchApp registry={registry} />);
-    await button(screen, labels.themeAuto).click();
-
-    await commands.emulateColorScheme('dark');
-    await expect.poll(theme).toBe('dark');
-    await commands.emulateColorScheme('light');
-    await expect.poll(theme).toBe('light');
-
-    // An explicit choice overrides the device.
-    await button(screen, labels.themeDark).click();
-    await commands.emulateColorScheme('light');
-    expect(theme()).toBe('dark');
   });
 
   it('is never touched by match operations', async () => {
@@ -226,5 +244,19 @@ describe('theme control (FR-020, FR-020a, SC-008)', () => {
     const screen = await render(<MatchApp registry={registry} />);
     await screen.getByTestId('new-match').click();
     expect(localStorage.getItem(THEME_KEY)).toBe('{"schemaVersion":1,"theme":"dark"}');
+  });
+});
+
+describe('wide screens (spec 004 FR-017b)', () => {
+  afterAll(async () => {
+    await page.viewport(360, 640);
+  });
+
+  it('centers the confirm-round button', async () => {
+    await page.viewport(1280, 800);
+    seed(inProgress);
+    const screen = await render(<MatchApp registry={registry} />);
+    const box = screen.getByTestId('confirm-round').element().getBoundingClientRect();
+    expect(Math.abs(box.left + box.width / 2 - window.innerWidth / 2)).toBeLessThanOrEqual(2);
   });
 });

@@ -71,13 +71,6 @@ export const MoonIcon = () => (
   </Icon>
 );
 
-export const AutoThemeIcon = () => (
-  <Icon>
-    <circle cx="12" cy="12" r="8" />
-    <path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" />
-  </Icon>
-);
-
 export const PlayIcon = () => (
   <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
     <path d="M8 5.5v13l10.5-6.5z" />

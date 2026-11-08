@@ -1,10 +1,14 @@
 /**
- * Theme choice — automatic, light, dark — in the shared header, so it is on
- * every screen (FR-020, research D10 of spec 003). Applies at once; saving is
- * best effort and never blocks (FR-020a). In automatic it follows the device
- * live (SC-008). The pre-paint script already set the initial theme.
+ * The theme button, in the shared header so it is on every screen (spec 004
+ * FR-017a, research D13; replaces spec 003's three options).
+ *
+ * With nothing chosen (`auto`), the theme follows the device and changes with
+ * it; a device that says nothing means light. A tap stores the opposite of
+ * what is shown, which then wins over the device. Saving is best effort and
+ * never blocks (spec 003 FR-020a). The pre-paint script already set the
+ * first frame's theme.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { StorageLike } from '../../match/persistence';
 import {
@@ -15,53 +19,53 @@ import {
   type ThemeChoice,
 } from '../../theme/preference';
 import { labels } from '../copy';
-import { AutoThemeIcon, MoonIcon, SunIcon } from './icons';
+import { MoonIcon, SunIcon } from './icons';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
-const OPTIONS: readonly { choice: ThemeChoice; label: string; icon: ReactNode }[] = [
-  { choice: 'auto', label: labels.themeAuto, icon: <AutoThemeIcon /> },
-  { choice: 'light', label: labels.themeLight, icon: <SunIcon /> },
-  { choice: 'dark', label: labels.themeDark, icon: <MoonIcon /> },
-];
+function deviceMedia(): MediaQueryList | null {
+  try {
+    return window.matchMedia(DARK_QUERY);
+  } catch {
+    return null; // no preference available: light (resolveTheme with false)
+  }
+}
 
 export function ThemeControl({ storage }: { readonly storage: StorageLike | null }) {
   const [choice, setChoice] = useState<ThemeChoice>(() => readThemeChoice(storage));
+  const [prefersDark, setPrefersDark] = useState(() => deviceMedia()?.matches ?? false);
+  const theme = resolveTheme(choice, prefersDark);
 
   useEffect(() => {
-    const media = window.matchMedia(DARK_QUERY);
-    const apply = () => applyTheme(document.documentElement, resolveTheme(choice, media.matches));
-    apply();
-    if (choice !== 'auto') {
+    applyTheme(document.documentElement, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const media = deviceMedia();
+    if (media === null) {
       return;
     }
-    media.addEventListener('change', apply);
-    return () => media.removeEventListener('change', apply);
-  }, [choice]);
+    const follow = () => setPrefersDark(media.matches);
+    media.addEventListener('change', follow);
+    return () => media.removeEventListener('change', follow);
+  }, []);
+
+  const next = theme === 'dark' ? 'light' : 'dark';
+  const label = next === 'dark' ? labels.themeToDark : labels.themeToLight;
 
   return (
-    <div
+    <button
+      type="button"
       data-testid="theme-control"
-      role="group"
-      aria-label={labels.theme}
-      className="card-3d flex gap-0.5 p-1"
+      aria-label={label}
+      title={label}
+      onClick={() => {
+        setChoice(next);
+        writeThemeChoice(storage, next);
+      }}
+      className="btn-3d btn-plain size-12 px-0"
     >
-      {OPTIONS.map((option) => (
-        <button
-          key={option.choice}
-          type="button"
-          aria-label={option.label}
-          title={option.label}
-          aria-pressed={choice === option.choice}
-          onClick={() => {
-            setChoice(option.choice);
-            writeThemeChoice(storage, option.choice);
-          }}
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-control text-ink-muted aria-pressed:bg-blue aria-pressed:text-on-color aria-pressed:shadow-[inset_0_-3px_0_var(--color-blue-edge)]"
-        >
-          {option.icon}
-        </button>
-      ))}
-    </div>
+      {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+    </button>
   );
 }

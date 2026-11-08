@@ -38,7 +38,8 @@ export function ConfirmBar({ disabled, onConfirm, children }: ConfirmBarProps) {
             locked.current = false;
           });
         }}
-        className="btn-3d btn-green mx-auto min-h-14 w-full max-w-md text-xl"
+        // `flex` (not the inline-flex of .btn-3d) so mx-auto centers it (spec 004 research D14).
+        className="btn-3d btn-green mx-auto flex min-h-14 w-full max-w-md text-xl"
       >
         <CheckIcon />
         {labels.confirmRound}
