@@ -110,7 +110,9 @@ image request.
 
 ## D6 — Podium groups by position
 
-**Decision**: a pure helper `podiumSteps(view)` returns up to three steps for
+**Decision**: a pure helper `podiumSteps(players, positions)` (in
+`parts/podiumSteps.ts`; a file named `podium.ts` would collide with
+`Podium.tsx` on case-insensitive file systems) returns up to three steps for
 positions 1, 2, 3 that exist, each with the players at that position in roster
 order (positions come from `evaluation.positions`, spec 003 D2). The component
 lays them out second–first–third; a step with several players lists every

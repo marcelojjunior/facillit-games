@@ -124,7 +124,7 @@ src/
     │   ├── Mascot.tsx          # the die, optional crown (D5)
     │   ├── PointsBadge.tsx     # "N pts" (FR-011)
     │   ├── Medal.tsx           # gold/silver/bronze/plain (FR-012)
-    │   ├── Podium.tsx (+ podium.ts, podium.test.ts)   # D6
+    │   ├── Podium.tsx (+ podiumSteps.ts, podiumSteps.test.ts)   # D6
     │   ├── Confetti.tsx        # CSS-only pieces (FR-014)
     │   └── …                   # existing parts restyled
     ├── screens/                # restyled; GameList greets, Winner celebrates

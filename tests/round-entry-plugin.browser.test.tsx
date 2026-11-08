@@ -114,5 +114,5 @@ it('a game with its own round shape plays a full match through the same screens'
   await expect.element(screen.getByTestId('winner-names')).not.toMatchTextContent('Bruno');
   await expect
     .element(screen.getByTestId('standing-row').filter({ hasText: 'Ana' }))
-    .toMatchTextContent(/2$/);
+    .toMatchTextContent(/2 pts$/);
 });

@@ -91,7 +91,9 @@ async function expectResultMatchesRules(screen: Screen, game: Game): Promise<voi
   }
   for (const player of match.players) {
     const row = screen.getByTestId('standing-row').filter({ hasText: player.name });
-    await expect.element(row).toMatchTextContent(new RegExp(`${evaluation.totals[player.id]}$`));
+    await expect
+      .element(row)
+      .toMatchTextContent(new RegExp(`${evaluation.totals[player.id]} pts$`));
   }
   for (const id of evaluation.winners) {
     const winner = match.players.find((player) => player.id === id);
@@ -191,7 +193,7 @@ describe('a full match (SC-001)', () => {
     }
 
     const ana = screen.getByTestId('standing-row').filter({ hasText: 'Ana' });
-    await expect.element(ana).toMatchTextContent(/-25$/);
+    await expect.element(ana).toMatchTextContent(/-25 pts$/);
 
     await finishMatch(screen);
     await expectResultMatchesRules(screen, lowestWins);

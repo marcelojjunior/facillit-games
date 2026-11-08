@@ -61,7 +61,7 @@ describe('fixing a confirmed round (US3 1, 2, 4)', () => {
   it('saving changes only that round and the totals, and keeps the draft', async () => {
     seed(ROUNDS, DRAFT);
     const screen = await render(<MatchApp registry={testRegistry} />);
-    await expect.element(row(screen, 'Ana')).toMatchTextContent(/12$/);
+    await expect.element(row(screen, 'Ana')).toMatchTextContent(/12 pts$/);
 
     await openFix(screen, 0);
     const sheet = screen.getByRole('dialog');
@@ -69,7 +69,7 @@ describe('fixing a confirmed round (US3 1, 2, 4)', () => {
     await sheet.getByLabelText('Ana', { exact: true }).fill('-10');
     await screen.getByTestId('save-fix').click();
 
-    await expect.element(row(screen, 'Ana')).toMatchTextContent(/1$/);
+    await expect.element(row(screen, 'Ana')).toMatchTextContent(/1 pts$/);
     expect(stored().rounds).toEqual([round(-10, 2, 3), ROUNDS[1], ROUNDS[2]]);
     expect(stored().draft).toEqual(DRAFT);
     await expect
@@ -120,7 +120,7 @@ describe('removing the last round (US3 3, FR-008)', () => {
 
     await openMenuItem(screen, labels.removeLastRound);
     await screen.getByTestId('confirm-remove-last').click();
-    await expect.element(row(screen, 'Ana')).toMatchTextContent(/5$/);
+    await expect.element(row(screen, 'Ana')).toMatchTextContent(/5 pts$/);
     expect(stored().rounds).toEqual(ROUNDS.slice(0, 2));
   });
 });

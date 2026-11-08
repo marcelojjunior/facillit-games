@@ -245,18 +245,168 @@
       0 4px 0 var(--color-blue-edge);
   }
 
-  /* A screen title on a ribbon (the round number). Large text: 3:1 applies. */
+  /* Confetti pieces (Confetti.tsx): colors and timing per piece, no JavaScript. */
+  .confetti i {
+    position: absolute;
+    top: -1rem;
+    width: 0.55rem;
+    height: 0.85rem;
+    border-radius: 2px;
+    animation: confetti-fall 3s linear infinite;
+  }
+
+  .confetti i:nth-child(1) {
+    left: 11%;
+    background-color: var(--color-red);
+    animation-delay: -0s;
+    animation-duration: 2.6s;
+  }
+
+  .confetti i:nth-child(2) {
+    left: 48%;
+    background-color: var(--color-yellow);
+    animation-delay: -0.37s;
+    animation-duration: 2.95s;
+  }
+
+  .confetti i:nth-child(3) {
+    left: 85%;
+    background-color: var(--color-green);
+    animation-delay: -0.74s;
+    animation-duration: 3.3s;
+  }
+
+  .confetti i:nth-child(4) {
+    left: 26%;
+    background-color: var(--color-blue);
+    animation-delay: -1.11s;
+    animation-duration: 3.65s;
+  }
+
+  .confetti i:nth-child(5) {
+    left: 63%;
+    background-color: var(--color-purple);
+    animation-delay: -1.48s;
+    animation-duration: 4s;
+  }
+
+  .confetti i:nth-child(6) {
+    left: 4%;
+    background-color: var(--color-orange);
+    animation-delay: -1.85s;
+    animation-duration: 2.6s;
+  }
+
+  .confetti i:nth-child(7) {
+    left: 41%;
+    background-color: var(--color-red);
+    animation-delay: -2.22s;
+    animation-duration: 2.95s;
+  }
+
+  .confetti i:nth-child(8) {
+    left: 78%;
+    background-color: var(--color-yellow);
+    animation-delay: -2.59s;
+    animation-duration: 3.3s;
+  }
+
+  .confetti i:nth-child(9) {
+    left: 19%;
+    background-color: var(--color-green);
+    animation-delay: -2.96s;
+    animation-duration: 3.65s;
+  }
+
+  .confetti i:nth-child(10) {
+    left: 56%;
+    background-color: var(--color-blue);
+    animation-delay: -0.33s;
+    animation-duration: 4s;
+  }
+
+  .confetti i:nth-child(11) {
+    left: 93%;
+    background-color: var(--color-purple);
+    animation-delay: -0.7s;
+    animation-duration: 2.6s;
+  }
+
+  .confetti i:nth-child(12) {
+    left: 34%;
+    background-color: var(--color-orange);
+    animation-delay: -1.07s;
+    animation-duration: 2.95s;
+  }
+
+  .confetti i:nth-child(13) {
+    left: 71%;
+    background-color: var(--color-red);
+    animation-delay: -1.44s;
+    animation-duration: 3.3s;
+  }
+
+  .confetti i:nth-child(14) {
+    left: 12%;
+    background-color: var(--color-yellow);
+    animation-delay: -1.81s;
+    animation-duration: 3.65s;
+  }
+
+  @keyframes confetti-fall {
+    to {
+      transform: translateY(110vh) rotate(540deg);
+    }
+  }
+
+  /* A screen title on a ribbon. Large text: the 3:1 pairs apply. */
   .ribbon {
+    --ribbon: var(--color-purple);
+    --ribbon-hi: var(--color-purple-hi);
+    --ribbon-edge: var(--color-purple-edge);
     display: inline-block;
     padding: 0.125rem 1rem;
     border-radius: var(--radius-control);
-    background: linear-gradient(180deg, var(--color-purple-hi) 0%, var(--color-purple) 50%);
-    box-shadow: 0 0.3rem 0 var(--color-purple-edge);
+    background: linear-gradient(180deg, var(--ribbon-hi) 0%, var(--ribbon) 50%);
+    box-shadow: 0 0.3rem 0 var(--ribbon-edge);
     color: var(--color-on-color);
-    text-shadow: 0 2px 0 var(--color-purple-edge);
+    text-shadow: 0 2px 0 var(--ribbon-edge);
     font-size: var(--text-display);
     line-height: var(--text-display--line-height);
     font-weight: 800;
+  }
+
+  .ribbon-red {
+    --ribbon: var(--color-red);
+    --ribbon-hi: var(--color-red-hi);
+    --ribbon-edge: var(--color-red-edge);
+  }
+
+  /* The mascot's gentle bob (stopped by the reduced-motion rule below). */
+  .mascot-bob {
+    animation: mascot-bob 2.4s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+
+  @keyframes mascot-bob {
+    50% {
+      transform: translateY(-4px) rotate(-2deg);
+    }
+  }
+
+  /* A speech bubble pointing left, at the mascot. */
+  .bubble {
+    position: relative;
+  }
+
+  .bubble::before {
+    content: '';
+    position: absolute;
+    left: -0.6rem;
+    bottom: 1rem;
+    border: 0.6rem solid transparent;
+    border-left: 0;
+    border-right-color: var(--color-surface-raised);
   }
 
   /* A raised card: the same edge language as the buttons, without the press. */

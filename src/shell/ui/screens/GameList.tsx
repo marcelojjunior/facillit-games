@@ -2,6 +2,7 @@
 import type { Game } from '../../game/contract';
 import { headings, labels } from '../copy';
 import { PlayIcon, TrophyIcon } from '../parts/icons';
+import { Mascot } from '../parts/Mascot';
 
 interface GameListProps {
   readonly games: readonly Game[];
@@ -15,6 +16,13 @@ export function GameList({ games, onPick }: GameListProps) {
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-display font-extrabold">{headings.gameList}</h1>
+      <div className="flex items-end gap-4">
+        <Mascot className="w-24" />
+        <p className="bubble card-3d mb-4 flex-1 px-4 py-3 text-base font-semibold">
+          <strong className="block text-xl font-extrabold">{labels.greetingTitle}</strong>
+          {labels.greetingText}
+        </p>
+      </div>
       {games.length === 0 ? (
         <p className="card-3d p-5 text-lg font-semibold text-ink-muted">{labels.noGames}</p>
       ) : (
