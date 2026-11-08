@@ -182,6 +182,10 @@ plan of spec 003.
   Phase 2, 77 895 after US1, **79 254 after US5** (budget 81 920, i.e. 80 KiB);
   the D11 fallback was not needed, but only ~2.6 KiB of headroom remain. The
   font ships as one 33 188-byte file.
+- **D11 fallback applied** (before spec 005 added MECHE-MECHE, spec 005
+  task T005): the mascot's drawing moved to a static sprite
+  (`src/components/MascotSprite.astro`) referenced with `<use>`; island JS
+  went from 79 162 to 78 741 bytes gzipped.
 - **Contrast on the sky**: small or muted text on the scene failed or was
   fragile, so only headings sit on the sky (pairs `ink` on `sky-top` and
   `sky-bottom` added to `textPairs`); everything smaller is on a raised card
