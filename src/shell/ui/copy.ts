@@ -71,6 +71,7 @@ export const labels = {
   add: 'Adicionar',
   remove: 'Remover',
   rename: 'Renomear',
+  ok: 'OK',
   start: 'Iniciar partida',
   confirmRound: 'Confirmar rodada',
   finish: 'Finalizar',
