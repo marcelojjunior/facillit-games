@@ -127,7 +127,7 @@ src/
     │   ├── Confetti.tsx        # CSS-only pieces (FR-014)
     │   └── …                   # existing parts restyled
     ├── screens/                # restyled; GameList greets, Winner celebrates
-    └── *.browser.test.tsx      # + identity.browser.test.tsx (mascot, badge, medals, podium, motion)
+    └── *.browser.test.tsx      # + look, mascot, scoreboard, winner browser tests (one per story)
 
 tests/
 ├── static-build.test.ts        # + font served locally, no external URL, size budgets (D9)

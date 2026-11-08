@@ -21,7 +21,10 @@ pnpm test
 | `src/styles/tokens.test.ts` | FR-005, FR-015, FR-018, SC-003 |
 | `tests/static-build.test.ts` | FR-007, SC-004, SC-005 (font ≤ 80 kB, island JS ≤ 80 kB gz, no external URL) |
 | `src/shell/ui/parts/podium.test.ts` | FR-013 (steps for ties and two players) |
-| `src/shell/ui/identity.browser.test.tsx` | FR-009–FR-014, SC-006, SC-007 |
+| `src/shell/ui/look.browser.test.tsx` | FR-004, FR-006 |
+| `src/shell/ui/mascot.browser.test.tsx` | FR-009, FR-010 |
+| `src/shell/ui/scoreboard.browser.test.tsx` | FR-011, FR-012, SC-007 |
+| `src/shell/ui/winner.browser.test.tsx` | FR-013, FR-014, SC-006 |
 | `src/shell/ui/layout.browser.test.tsx` (unchanged) | FR-016 on every restyled screen |
 
 ## Visual check (SC-001)
