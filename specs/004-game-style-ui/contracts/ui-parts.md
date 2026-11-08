@@ -50,9 +50,9 @@ interface MedalProps { readonly position: number }
 `data-testid="medal"`, `data-medal="gold" | "silver" | "bronze" | "plain"`,
 text `"<position>º"`. Gold/silver/bronze use `on-warm` text.
 
-### `Podium` — `parts/Podium.tsx` + `parts/podium.ts`
+### `Podium` — `parts/Podium.tsx` + `parts/podiumSteps.ts`
 
-`podiumSteps(view)` per data-model; the component renders
+`podiumSteps(players, positions)` per data-model; the component renders
 `data-testid="podium"` with one `data-testid="podium-step"`
 (`data-position="1|2|3"`) per step, each with a `Medal`, every player's name
 (truncated, full name in `title`) and a `PointsBadge`.

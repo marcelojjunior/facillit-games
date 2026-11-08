@@ -141,7 +141,7 @@ describe('another tab (FR-018)', () => {
     seed(inProgress);
     const screen = await render(<MatchApp registry={testRegistry} />);
     const ana = screen.getByTestId('standing-row').filter({ hasText: 'Ana' });
-    await expect.element(ana).toMatchTextContent(/20$/);
+    await expect.element(ana).toMatchTextContent(/20 pts$/);
 
     const newValue = serializeState({
       ...inProgress,
@@ -150,7 +150,7 @@ describe('another tab (FR-018)', () => {
     localStorage.setItem(STORAGE_KEY, newValue);
     window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue }));
 
-    await expect.element(ana).toMatchTextContent(/40$/);
+    await expect.element(ana).toMatchTextContent(/40 pts$/);
     await expect.element(screen.getByText(roundCopy(3), { exact: true })).toBeVisible();
   });
 });

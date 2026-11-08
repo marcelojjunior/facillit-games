@@ -104,6 +104,13 @@ describe('color tokens (FR-005, FR-018)', () => {
     expect(colorVariables("[data-theme='dark']")).toEqual(expected);
   });
 
+  it('night surfaces are never lighter than the night sky (spec 004 US2)', () => {
+    const sky = Math.max(luminance(themed['sky-top'].dark), luminance(themed['sky-bottom'].dark));
+    for (const surface of ['surface', 'surface-raised', 'surface-sunken'] as const) {
+      expect(luminance(themed[surface].dark), surface).toBeLessThanOrEqual(sky);
+    }
+  });
+
   it('cloud vanishes at night and stars by day (spec 004 research D4)', () => {
     expect(themed.cloud.dark.slice(7)).toBe('00');
     expect(themed.star.light.slice(7)).toBe('00');

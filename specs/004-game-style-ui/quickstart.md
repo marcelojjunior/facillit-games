@@ -20,7 +20,7 @@ pnpm test
 | every spec 003 test, unchanged in what it asserts | SC-002, FR-001, FR-016, FR-017 |
 | `src/styles/tokens.test.ts` | FR-005, FR-015, FR-018, SC-003 |
 | `tests/static-build.test.ts` | FR-007, SC-004, SC-005 (font ≤ 80 kB, island JS ≤ 80 kB gz, no external URL) |
-| `src/shell/ui/parts/podium.test.ts` | FR-013 (steps for ties and two players) |
+| `src/shell/ui/parts/podiumSteps.test.ts` | FR-013 (steps for ties and two players) |
 | `src/shell/ui/look.browser.test.tsx` | FR-004, FR-006 |
 | `src/shell/ui/mascot.browser.test.tsx` | FR-009, FR-010 |
 | `src/shell/ui/scoreboard.browser.test.tsx` | FR-011, FR-012, SC-007 |

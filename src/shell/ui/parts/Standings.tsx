@@ -6,7 +6,9 @@
 import type { ReactNode } from 'react';
 
 import type { MatchView } from '../../match/store';
-import { labels, positionCopy } from '../copy';
+import { labels } from '../copy';
+import { Medal } from './Medal';
+import { PointsBadge } from './PointsBadge';
 
 interface StandingsProps {
   readonly view: MatchView;
@@ -43,15 +45,11 @@ export function Standings({ view, onOpen, action }: StandingsProps) {
             data-testid="standing-row"
             className="flex min-h-11 items-center gap-3 px-2 py-1.5"
           >
-            <span className="w-8 shrink-0 font-bold text-ink-muted tabular-nums">
-              {positionCopy(position)}
-            </span>
+            <Medal position={position} />
             <span className="min-w-0 flex-1 truncate text-lg font-bold" title={player.name}>
               {player.name}
             </span>
-            <span className="shrink-0 text-xl font-extrabold tabular-nums">
-              {totals[player.id] ?? 0}
-            </span>
+            <PointsBadge points={totals[player.id] ?? 0} />
           </li>
         ))}
       </ol>

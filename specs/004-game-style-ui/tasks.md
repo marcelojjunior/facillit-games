@@ -117,8 +117,8 @@ the prototype's direction.
 **Independent Test**: tokens test green; build shows the scene; dark mode on a
 phone shows the night scene at once.
 
-- [ ] T018 [US2] Extend `tests/static-build.test.ts` (expected to pass after T009, and to fail if the scene ever moves into the island): the scene markup sits before the island's fallback in `dist/index.html` (the literal-color scan of T003 already covers `src/components/*.astro`); and in `src/styles/tokens.test.ts` assert `cloud` is fully transparent in dark and `star` fully transparent in light (research D4)
-- [ ] T019 [US2] Tune the dark surfaces in `src/styles/tokens.ts` and `src/styles/global.css` so cards and dialogs on the night scene do not glare: no surface lighter than the scene's lightest stop, and `ink` on every surface still ≥ 4.5:1, and verify on `/dev/test-games` in both themes at 360×640 against the prototype
+- [X] T018 [US2] Extend `tests/static-build.test.ts` (expected to pass after T009, and to fail if the scene ever moves into the island): the scene markup sits before the island's fallback in `dist/index.html` (the literal-color scan of T003 already covers `src/components/*.astro`); and in `src/styles/tokens.test.ts` assert `cloud` is fully transparent in dark and `star` fully transparent in light (research D4)
+- [X] T019 [US2] Tune the dark surfaces in `src/styles/tokens.ts` and `src/styles/global.css` so cards and dialogs on the night scene do not glare: no surface lighter than the scene's lightest stop, and `ink` on every surface still ≥ 4.5:1, and verify on `/dev/test-games` in both themes at 360×640 against the prototype
 
 **Checkpoint**: day and night scenes both approved for legibility.
 
@@ -133,12 +133,12 @@ control.
 
 ### Tests first
 
-- [ ] T020 [US3] Create `src/shell/ui/mascot.browser.test.tsx` (expected to fail first): `data-testid="mascot"` is visible on the game list (also with an empty registry), inside the confirm bar after an invalid confirm (and gone after a successful one), and on the winner screen with `data-crown="true"`; on each, the mascot's bounding box intersects no visible `button`, `input`, or the heading; the mascot is `aria-hidden` (FR-009, FR-010)
+- [X] T020 [US3] Create `src/shell/ui/mascot.browser.test.tsx` (expected to fail first): `data-testid="mascot"` is visible on the game list (also with an empty registry), inside the confirm bar after an invalid confirm (and gone after a successful one), and on the winner screen with `data-crown="true"`; on each, the mascot's bounding box intersects no visible `button`, `input`, or the heading; the mascot is `aria-hidden` (FR-009, FR-010)
 
 ### Implementation
 
-- [ ] T021 [P] [US3] Create `src/shell/ui/parts/Mascot.tsx` per `contracts/ui-parts.md` and research D5: the die from `specs/004-game-style-ui/prototype.html` (`#m-dado`), token fills only (`die`, `die-edge`, `pip`, `face`, `red`, `red-hi`, `blue-edge`), optional crown (`gold`, `yellow-edge`, `red`, `blue`, `green`), props `{ crown?: boolean; className?: string }`, `aria-hidden="true"`, `data-testid="mascot"`, `data-crown` when crowned, a bob animation class (off under reduced motion via the global rule)
-- [ ] T022 [US3] Add the greeting copy to `src/shell/ui/copy.ts` (e.g. headline "Bora jogar?" and "Escolha o jogo da mesa."), render the mascot with a speech bubble in `src/shell/ui/screens/GameList.tsx`, a 44 px mascot inside the rejection box in `src/shell/ui/screens/InProgress.tsx`, and the crowned mascot on `src/shell/ui/screens/Winner.tsx`; make T020 pass
+- [X] T021 [P] [US3] Create `src/shell/ui/parts/Mascot.tsx` per `contracts/ui-parts.md` and research D5: the die from `specs/004-game-style-ui/prototype.html` (`#m-dado`), token fills only (`die`, `die-edge`, `pip`, `face`, `red`, `red-hi`, `blue-edge`), optional crown (`gold`, `yellow-edge`, `red`, `blue`, `green`), props `{ crown?: boolean; className?: string }`, `aria-hidden="true"`, `data-testid="mascot"`, `data-crown` when crowned, a bob animation class (off under reduced motion via the global rule)
+- [X] T022 [US3] Add the greeting copy to `src/shell/ui/copy.ts` (e.g. headline "Bora jogar?" and "Escolha o jogo da mesa."), render the mascot with a speech bubble in `src/shell/ui/screens/GameList.tsx`, a 44 px mascot inside the rejection box in `src/shell/ui/screens/InProgress.tsx`, and the crowned mascot on `src/shell/ui/screens/Winner.tsx`; make T020 pass
 
 **Checkpoint**: the app has a face.
 
@@ -153,12 +153,12 @@ shared on ties.
 
 ### Tests first
 
-- [ ] T023 [US4] Create `src/shell/ui/scoreboard.browser.test.tsx` (expected to fail first): in the standings of an in-progress `lowest-wins` match with a negative total, every `data-testid="points"` text matches `^-?\d+ pts$` and the negative one reads `"-25 pts"`; for positions 1, 2, 2, 4 the medals are `gold`, `silver`, `silver`, `plain` (`data-medal`), with text `"1º"`, `"2º"`, `"2º"`, `"4º"`; a tie for first shows two `gold`; no `img` and no element whose class or text mentions coin/moeda inside `data-testid="standings"` (FR-011, FR-012, SC-007)
+- [X] T023 [US4] Create `src/shell/ui/scoreboard.browser.test.tsx` (expected to fail first): in the standings of an in-progress `lowest-wins` match with a negative total, every `data-testid="points"` text matches `^-?\d+ pts$` and the negative one reads `"-25 pts"`; for positions 1, 2, 2, 4 the medals are `gold`, `silver`, `silver`, `plain` (`data-medal`), with text `"1º"`, `"2º"`, `"2º"`, `"4º"`; a tie for first shows two `gold`; no `img` and no element whose class or text mentions coin/moeda inside `data-testid="standings"` (FR-011, FR-012, SC-007)
 
 ### Implementation
 
-- [ ] T024 [P] [US4] Create `src/shell/ui/parts/PointsBadge.tsx` and `src/shell/ui/parts/Medal.tsx` per `contracts/ui-parts.md` (badge on `purple` with `on-color`, label from a new `labels.points: 'pts'` in `src/shell/ui/copy.ts`, number never wraps; medal `gold|silver|bronze` with `on-warm` text, `plain` on `surface-sunken` with `ink`)
-- [ ] T025 [US4] Use them in `src/shell/ui/parts/Standings.tsx` (medal instead of the plain position, badge instead of the plain total; still one line per player and full name in `title`); make T023 pass and keep `flow`, `fix`, and `persistence` browser tests green (they read totals from `standing-row` text, which now ends in " pts" — adjust only the regex anchors, never the expected numbers)
+- [X] T024 [P] [US4] Create `src/shell/ui/parts/PointsBadge.tsx` and `src/shell/ui/parts/Medal.tsx` per `contracts/ui-parts.md` (badge on `purple` with `on-color`, label from a new `labels.points: 'pts'` in `src/shell/ui/copy.ts`, number never wraps; medal `gold|silver|bronze` with `on-warm` text, `plain` on `surface-sunken` with `ink`)
+- [X] T025 [US4] Use them in `src/shell/ui/parts/Standings.tsx` (medal instead of the plain position, badge instead of the plain total; still one line per player and full name in `title`); make T023 pass and keep `flow`, `fix`, and `persistence` browser tests green (they read totals from `standing-row` text, which now ends in " pts" — adjust only the regex anchors, never the expected numbers)
 
 **Checkpoint**: the scoreboard reads as a game.
 
@@ -173,14 +173,14 @@ motion all render as specified.
 
 ### Tests first
 
-- [ ] T026 [P] [US5] Create `src/shell/ui/parts/podium.test.ts` (expected to fail first) covering every row of the podium table in `specs/004-game-style-ui/data-model.md` (positions 1,2,3,4 → three steps; 1,1,3 → two steps, first with two players; 1,2,2 → second step with two players; two players tied → one step; two players → two steps) and that players inside a step keep roster order
-- [ ] T027 [US5] Create `src/shell/ui/winner.browser.test.tsx` (expected to fail first): a finished match shows a ribbon heading, `data-testid="podium"` with the right number of `podium-step`s for a single winner, a tie for first (one step with both names; the shared-win text of spec 003 still present), and two players; `data-testid="confetti"` is visible; with `commands.emulateReducedMotion('reduce')`, confetti is not displayed and `document.getAnimations()` is empty, while names, podium, and actions are still visible; reset to `'no-preference'` after (FR-013, FR-014, SC-006)
+- [X] T026 [P] [US5] Create `src/shell/ui/parts/podiumSteps.test.ts` (expected to fail first) covering every row of the podium table in `specs/004-game-style-ui/data-model.md` (positions 1,2,3,4 → three steps; 1,1,3 → two steps, first with two players; 1,2,2 → second step with two players; two players tied → one step; two players → two steps) and that players inside a step keep roster order
+- [X] T027 [US5] Create `src/shell/ui/winner.browser.test.tsx` (expected to fail first): a finished match shows a ribbon heading, `data-testid="podium"` with the right number of `podium-step`s for a single winner, a tie for first (one step with both names; the shared-win text of spec 003 still present), and two players; `data-testid="confetti"` is visible; with `commands.emulateReducedMotion('reduce')`, confetti is not displayed and `document.getAnimations()` is empty, while names, podium, and actions are still visible; reset to `'no-preference'` after (FR-013, FR-014, SC-006)
 
 ### Implementation
 
-- [ ] T028 [P] [US5] Create `src/shell/ui/parts/podium.ts` (`podiumSteps(view)` per research D6) and `src/shell/ui/parts/Podium.tsx` (steps laid out second–first–third, heights from the prototype, each with `Medal`, every name truncated with `title`, and `PointsBadge`); make T026 pass
-- [ ] T029 [P] [US5] Create `src/shell/ui/parts/Confetti.tsx` (research D11: one element with CSS-generated pieces, no per-piece JavaScript; deterministic pieces in family colors, `aria-hidden`, `data-testid="confetti"`, `motion-reduce:hidden`, falling animation in `global.css`)
-- [ ] T030 [US5] Rebuild `src/shell/ui/screens/Winner.tsx`: red ribbon heading (tie heading kept from spec 003), crowned mascot, `winner-names` kept, `Podium`, standings, `Confetti`, rematch `btn-green` and new match `btn-blue` as large buttons; make T027 pass and keep `flow` and `replay` browser tests green
+- [X] T028 [P] [US5] Create `src/shell/ui/parts/podiumSteps.ts` (`podiumSteps(players, positions)` per research D6) and `src/shell/ui/parts/Podium.tsx` (steps laid out second–first–third, heights from the prototype, each with `Medal`, every name truncated with `title`, and `PointsBadge`); make T026 pass
+- [X] T029 [P] [US5] Create `src/shell/ui/parts/Confetti.tsx` (research D11: one element with CSS-generated pieces, no per-piece JavaScript; deterministic pieces in family colors, `aria-hidden`, `data-testid="confetti"`, `motion-reduce:hidden`, falling animation in `global.css`)
+- [X] T030 [US5] Rebuild `src/shell/ui/screens/Winner.tsx`: red ribbon heading (tie heading kept from spec 003), crowned mascot, `winner-names` kept, `Podium`, standings, `Confetti`, rematch `btn-green` and new match `btn-blue` as large buttons; make T027 pass and keep `flow` and `replay` browser tests green
 
 **Checkpoint**: every story done.
 

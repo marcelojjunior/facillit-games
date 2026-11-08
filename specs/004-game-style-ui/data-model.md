@@ -34,7 +34,7 @@ From `evaluation.positions[player.id]`: 1 → gold, 2 → silver, 3 → bronze,
 ### Podium step (research D6)
 
 ```text
-podiumSteps(view) → Step[]   (at most 3, ordered by position)
+podiumSteps(players, positions) → Step[]   (at most 3, ordered by position)
 Step = { position: 1 | 2 | 3, players: PlayerRef[] (roster order) }
 ```
 

@@ -172,8 +172,13 @@ describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
     expect(gzipped).toBeLessThanOrEqual(80 * KB);
   });
 
-  it('draws the scene in the static page, so it shows from the first frame', () => {
-    expect(readFileSync(indexHtmlPath, 'utf8')).toContain('data-testid="scene"');
+  it('draws the scene in the static page, before the island, so it shows from the first frame', () => {
+    // If the scene ever moved into the island it would paint late, after the
+    // loading frame (spec 004 FR-017, research D4).
+    const html = readFileSync(indexHtmlPath, 'utf8');
+    const scene = html.indexOf('data-testid="scene"');
+    expect(scene).toBeGreaterThan(-1);
+    expect(scene).toBeLessThan(html.indexOf(FALLBACK_MARKER));
   });
 });
 

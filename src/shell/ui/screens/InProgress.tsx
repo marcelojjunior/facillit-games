@@ -18,6 +18,7 @@ import { AbandonDialog } from '../parts/AbandonDialog';
 import { ConfirmBar } from '../parts/ConfirmBar';
 import { Dialog } from '../parts/Dialog';
 import { FixSheet } from '../parts/FixSheet';
+import { Mascot } from '../parts/Mascot';
 import { FlagIcon, MoreIcon } from '../parts/icons';
 import { RenameDialog } from '../parts/RenameDialog';
 import { ScoreTable } from '../parts/ScoreTable';
@@ -104,19 +105,22 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
         {problems && (
           <div
             role="alert"
-            className="mb-3 max-h-40 overflow-y-auto rounded-card bg-surface-raised p-3 text-sm font-semibold text-danger shadow-[0_0.3rem_0_var(--color-red-edge)]"
+            className="mb-3 flex max-h-40 items-start gap-3 overflow-y-auto rounded-card bg-surface-raised p-3 text-sm font-semibold text-danger shadow-[0_0.3rem_0_var(--color-red-edge)]"
           >
-            {reasons.length > 0 && (
-              <>
-                <p className="font-extrabold">{labels.roundProblems}</p>
-                <ul className="mt-1 list-disc pl-5">
-                  {reasons.map((reason) => (
-                    <li key={`${reason.code}:${reason.message}`}>{reason.message}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {error !== null && <p className="font-medium">{error}</p>}
+            <Mascot className="w-11" />
+            <div className="min-w-0 flex-1">
+              {reasons.length > 0 && (
+                <>
+                  <p className="font-extrabold">{labels.roundProblems}</p>
+                  <ul className="mt-1 list-disc pl-5">
+                    {reasons.map((reason) => (
+                      <li key={`${reason.code}:${reason.message}`}>{reason.message}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {error !== null && <p className="font-medium">{error}</p>}
+            </div>
           </div>
         )}
       </ConfirmBar>
