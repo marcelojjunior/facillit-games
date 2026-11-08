@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { bootScript } from '../shell/theme/boot';
 
 interface Props {
   title: string;
@@ -13,9 +14,14 @@ const { title } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <!--
-      Principle VI: mobile-first. This phase delivers no layout, but it must not
-      start with the wrong viewport -- the reference screen is a phone held in
-      one hand.
+      Sets data-theme before first paint (FR-020, research D7 of spec 003):
+      reads only the theme key, never match state. Generated from
+      src/shell/theme/preference.ts, so it cannot drift from the module.
+    -->
+    <script is:inline set:html={bootScript()} />
+    <!--
+      Principle VI: mobile-first. The reference screen is a phone held in one
+      hand.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />

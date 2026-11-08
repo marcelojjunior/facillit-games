@@ -26,6 +26,12 @@ const APP_MARKER = 'data-testid="match-app"';
 const FALLBACK_MARKER = 'data-testid="loading-frame"';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
+
+function inlineScripts(html: string): string[] {
+  return [...html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(
+    (match) => match[1] ?? '',
+  );
+}
 const indexHtmlPath = `${repoRoot}dist/index.html`;
 const pocFiles = ['index.html', 'script.js', 'style.css'] as const;
 
@@ -87,13 +93,32 @@ describe('static artifact', () => {
     }
   });
 
-  it('does not leak localStorage, persisted schema, or game names', () => {
-    // The phase's negative scope, made verifiable (FR-018, SC-008). The
-    // GameDefinition contract and the versioned schema belong to Phase 3;
-    // anticipating them here would be a guess dressed up as a decision.
+  it('reads storage only in the theme boot script, never the match', () => {
+    // The phase's negative scope, made verifiable: the built HTML holds no
+    // match state. The one inline script allowed to touch storage is the
+    // theme boot script (FR-020), and it reads only the theme key.
     const html = readFileSync(indexHtmlPath, 'utf8');
+    const scripts = inlineScripts(html);
+    const withoutScripts = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
 
-    expect(html).not.toMatch(/localStorage|schemaVersion|GameDefinition/i);
+    expect(withoutScripts).not.toMatch(/localStorage|schemaVersion|GameDefinition/i);
+    expect(scripts.some((script) => script.includes('facillit-games:theme'))).toBe(true);
+    expect(html).not.toContain('facillit-games:state');
+  });
+
+  it('the built theme script applies a stored choice before paint', () => {
+    const boot = inlineScripts(readFileSync(indexHtmlPath, 'utf8')).find((script) =>
+      script.includes('facillit-games:theme'),
+    );
+    const root = { dataset: {} as Record<string, string>, style: {} as Record<string, string> };
+    const storage = { getItem: () => '{"schemaVersion":1,"theme":"dark"}' };
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval -- running the built source is the test
+    const script = new Function('localStorage', 'matchMedia', 'document', boot ?? '') as (
+      ...globals: unknown[]
+    ) => void;
+    script(storage, () => ({ matches: false }), { documentElement: root });
+    expect(root.dataset.theme).toBe('dark');
+    expect(root.style.colorScheme).toBe('dark');
   });
 });
 
