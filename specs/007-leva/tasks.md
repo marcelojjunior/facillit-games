@@ -32,15 +32,15 @@ attribution.
 **Goal**: LEVA is listed and scores lives correctly. **Independent test**: the full 4-player match of T009.
 
 - [ ] T006 [P] [US1] Create `src/games/leva/rules.test.ts` (expected to fail first), normal/edge/tie per rule and for `nextRound`: `validateRound` accepts `{cards, guesses, taken}` and rejects each code of data-model.md (`invalid_shape`, `no_players`, `unknown_player`, `missing_guess`, `missing_taken` naming the player, `value_out_of_range`, `too_many_taken`), accepts Σ taken < cards and Σ taken = 0; `scoreRound` gives `−|guess − taken|` to participants and 0 to others (guess 2 took 0 → −2; guess 0 took 1 → −1; exact → 0); `computeTotals` = `max(0, 5 + Σ)` (1 life missing by 3 → 0); `resolveWinners` highest, ties shared, all-0 shared; `nextRound` → cards 1 with no rounds, `last.cards + 1` without elimination, 1 after a round that put any player (or several) from > 0 to 0, `alive` excludes players at 0, invalid stored rounds skipped
-- [ ] T007 [US1] Implement `src/games/leva/rules.ts` (`LevaRound`, `STARTING_LIVES = 5`, the four rules, `nextRound(rounds, players) → { cards, alive, lives }`, Portuguese messages); make T006 pass
+- [ ] T007 [US1] Implement `src/games/leva/rules.ts` (`validateRound` returns only `{ cards, guesses, taken }`, dropping `step`; `LevaRound`, `STARTING_LIVES = 5`, the four rules, `nextRound(rounds, players) → { cards, alive, lives }`, Portuguese messages); make T006 pass
 - [ ] T008 [US1] Create `src/games/leva/Icon.tsx` (a face with a card on the forehead, `currentColor` strokes, `var(--badge)` card face) and `src/games/leva/index.ts` (`defineGame({ id: 'leva', name: 'LEVA', minPlayers: 2, maxPlayers: 10, unit: { one: 'vida', other: 'vidas' }, … })`); add `leva` to `src/games/registry.ts`; update `src/games/registry.test.ts` to list `['meche-meche', 'leva']` with LEVA's name, limits 2–10, `Icon` and `unit`
-- [ ] T009 [US1] Create `src/games/leva/match.browser.test.tsx` (expected to fail until T011): a full 4-player match through `MatchApp` until one player is left, with a round where two players are out and a round where cards cancelled (Σ taken < cards); after every round assert the lives (hand-computed in the test's comments), the "N carta(s)" header, and the living players; at the end the entry says who won, confirm is disabled, and finishing shows that player as the winner with "vidas" badges
+- [ ] T009 [US1] Create `src/games/leva/match.browser.test.tsx` (expected to fail until T011): a full 4-player match through `MatchApp` until one player is left, with a round where two players are out and a round where cards cancelled (Σ taken < cards); after every round assert the lives (hand-computed in the test's comments), the "N carta(s)" header, and the living players; once, after entering a round's guesses, unmount and remount `MatchApp` from storage and assert the guesses are still there (SC-004); at the end the entry says who won, confirm is disabled, and finishing shows that player as the winner with "vidas" badges
 
 ## Phase 4: User Story 2 — Guesses first, results after (P1)
 
 **Goal**: the two-step entry that keeps the guesses. **Independent test**: T010.
 
-- [ ] T010 [P] [US2] Create `src/games/leva/RoundEntry.browser.test.tsx` (expected to fail first): shows "1 carta" and "Leva"/"Não leva" with no rounds; shows "3 cartas" and buttons 0–3 after two rounds without elimination; only living players, each with lives; guesses step then results step with each guess visible; going back keeps results; every edit calls `onChange` with `{cards, step, guesses, taken}`; a value from an unknown shape renders an empty guesses step without throwing; a stored draft with stale `cards` shows the derived cards and drops out-of-range values; with one living player shows "Vitória de <nome>" and no buttons, and with none shows "Ninguém sobrou", calling `onChange(undefined)` if a draft exists; when fixing (value is a stored round) shows that round's cards and players; `reasons` from a rejected confirm are not hidden by the entry
+- [ ] T010 [P] [US2] Create `src/games/leva/RoundEntry.browser.test.tsx` (expected to fail first): shows "1 carta" and "Leva"/"Não leva" with no rounds; shows "3 cartas" and buttons 0–3 after two rounds without elimination; only living players, each with lives; guesses step then results step with each guess visible; going back keeps results; every edit calls `onChange` with `{cards, step, guesses, taken}`; a value from an unknown shape renders an empty guesses step without throwing; a stored draft with stale `cards` shows the derived cards, drops out-of-range values, and calls `onChange` with the corrected draft without any tap; with one living player shows "Vitória de <nome>" and no buttons, and with none shows "Ninguém sobrou", calling `onChange(undefined)` if a draft exists; when fixing (value is a stored round, no `step`) shows that round's cards and players on the results step; `reasons` from a rejected confirm are not hidden by the entry
 - [ ] T011 [US2] Implement `src/games/leva/RoundEntry.tsx` per plan and research D5–D7 (tolerant `read(value)`, `nextRound(rounds, players)` for the next round, the round's own cards and players when `value` is a valid stored round, sunken panel per player, step buttons); make T010 and T009 pass
 
 **Checkpoint**: gate green; commit `feat(leva): add LEVA`.
@@ -52,8 +52,11 @@ attribution.
 ## Phase 6: Polish
 
 - [ ] T013 Assert LEVA ships in `tests/static-build.test.ts` (its name in `dist/`) and the island ≤ 92 160 bytes; record the measured size in `specs/007-leva/research.md` D9
-- [ ] T014 Update README.md game list and the "Adding a game" comment in `src/games/registry.ts` (mention `rounds` and `unit`); add `LEVA` to the OG badge in `scripts/render-share-images.mjs` only if the owner asks (skip by default)
+- [ ] T014 Update README.md game list and the "Adding a game" comment in `src/games/registry.ts` (mention `rounds` and `unit`)
 - [ ] T015 Gate, then check by hand at 360 px in light and dark per [quickstart.md](./quickstart.md)
+
+Note: the share image (`scripts/render-share-images.mjs`) keeps its
+MECHE-MECHE badge; adding LEVA there is not part of this feature.
 
 ## Dependencies
 

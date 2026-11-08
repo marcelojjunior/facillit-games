@@ -38,6 +38,10 @@ contract, not in the shell, and in a way that leaves MECHE-MECHE untouched.
 - Q: What if everybody guesses 0 and someone takes a trick? → A: no special
   rule: each player loses the difference between their guess and what they
   took, in any round.
+- Q: Can the last players all reach 0 in the same round and tie? → A: no.
+  Lives are lost trick by trick ("volta a volta"); the first to reach 0 is
+  out, so in the final duel one player always keeps at least 1 life. The
+  winner is whoever was not the first to lose all their lives.
 - Q: Script budget? → A: raise the island script budget of spec 003 from
   80 KiB to 90 KiB gzipped, as a recorded amendment (MECHE-MECHE left less than
   1 KB). Loading games on demand is deferred until there are 4 or 5 games.
@@ -156,9 +160,16 @@ players, the most of any game so far.
 - **Ten players**: the entry still fits 360 px.
 - **Several players out in the same round**: all are out; the next round deals
   1 card.
-- **Everyone left is out in the same round** (e.g. the last two both reach 0):
-  nobody is alive; the round screen says the match is over with no player
-  standing; standings are by lives (all 0), so they share the win.
+- **Everyone left is out in the same round**: does not happen at the table.
+  Lives are lost trick by trick, and the first player to reach 0 is out, so
+  the last two never reach 0 together (Clarifications). The app trusts the
+  results entered (Assumptions); if such a round is entered anyway, nobody is
+  alive, the round screen says the match is over with no player standing, and
+  standings are by lives (everyone at 0 shares the win). No extra rule is built
+  for it.
+- **A round cut short**: when a player reaches 0 in the middle of a round, the
+  tricks not played are not counted, so the results may add up to less than
+  the number of cards (already allowed).
 - **Total taken equals 0**: every trick cancelled; valid.
 - **Everybody guesses 0**: no special rule (Clarifications).
 - **Fixing a past round**: the fix sheet shows that round's own number of
