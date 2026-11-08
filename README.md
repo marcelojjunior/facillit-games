@@ -17,7 +17,7 @@ The rewrite is in progress. Two sets of files coexist at the root:
 | | What it is |
 |---|---|
 | `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
-| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered, plus **MECHE-MECHE**, the first game ([`specs/005-meche-meche/`](specs/005-meche-meche/)), playable on `/`. |
+| `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered, plus two games playable on `/`: **MECHE-MECHE** ([`specs/005-meche-meche/`](specs/005-meche-meche/)) and **LEVA** ([`specs/007-leva/`](specs/007-leva/)). |
 
 The foundation is specified in
 [`specs/001-astro-foundation/`](specs/001-astro-foundation/), the game
@@ -25,7 +25,9 @@ contract and match store in
 [`specs/002-game-contract/`](specs/002-game-contract/), the game-style look
 in [`specs/004-game-style-ui/`](specs/004-game-style-ui/), and the design system
 and screens in [`specs/003-shell-screens/`](specs/003-shell-screens/). To add a game, read
-[`contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md).
+[`contracts/game-contract.md`](specs/002-game-contract/contracts/game-contract.md)
+and its revision 4 ([`contracts/game-contract-rev4.md`](specs/007-leva/contracts/game-contract-rev4.md):
+the round history for the entry and the unit of totals).
 
 ## Requirements
 

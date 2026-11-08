@@ -87,5 +87,6 @@
 ## D9 — Budget
 
 - **Decision**: island limit 90 KiB (92 160 bytes gzip -9), recorded in spec
-  003's plan. Estimated LEVA cost: 1.5–2.5 KB gzipped.
+  003's plan. Estimated LEVA cost: 1.5–2.5 KB gzipped. Measured
+  (2026-11-08): 82 653 bytes with LEVA, +1 684 over 80 969.
 - **Alternatives**: per-game lazy loading — deferred until 4–5 games (owner).

@@ -51,9 +51,9 @@ attribution.
 
 ## Phase 6: Polish
 
-- [ ] T013 Assert LEVA ships in `tests/static-build.test.ts` (its name in `dist/`) and the island ≤ 92 160 bytes; record the measured size in `specs/007-leva/research.md` D9
-- [ ] T014 Update README.md game list and the "Adding a game" comment in `src/games/registry.ts` (mention `rounds` and `unit`)
-- [ ] T015 Gate, then check by hand at 360 px in light and dark per [quickstart.md](./quickstart.md)
+- [X] T013 Assert LEVA ships in `tests/static-build.test.ts` (its name in `dist/`) and the island ≤ 92 160 bytes; record the measured size in `specs/007-leva/research.md` D9
+- [X] T014 Update README.md game list and the "Adding a game" comment in `src/games/registry.ts` (mention `rounds` and `unit`)
+- [X] T015 Gate, then check by hand at 360 px in light and dark per [quickstart.md](./quickstart.md)
 
 Note: the share image (`scripts/render-share-images.mjs`) keeps its
 MECHE-MECHE badge; adding LEVA there is not part of this feature.
