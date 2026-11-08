@@ -39,8 +39,7 @@ few SVG paths.
   through and throws a contract error if it is present and not a function.
 - **Header**: `[title] … [house] [theme]`; the house is `btn-3d btn-plain
   size-12 px-0` with a house SVG, `data-testid="home"`. Dialog title "Voltar
-  para a lista de jogos?"; text per status; buttons "Cancelar" and "Voltar
-  aos jogos" (`data-testid="confirm-home"`, red or blue per FR-003).
+  para a lista de jogos?"; text per status; buttons "Cancelar" and "Voltar" (`data-testid="confirm-home"`, red or blue per FR-003).
 - **Setup**: the input/button row becomes a column; the button gets `w-full`.
 - **Icon in the badge**: icons draw with `currentColor` strokes; the cards'
   faces fill with the badge color through a CSS variable `--badge` that

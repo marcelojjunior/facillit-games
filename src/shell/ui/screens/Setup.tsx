@@ -51,7 +51,7 @@ export function Setup({ view, store, act, error }: SetupProps) {
           <label htmlFor="player-name" className="text-sm font-semibold text-ink-muted">
             {labels.playerName}
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-3">
             <input
               id="player-name"
               data-testid="player-name-input"
@@ -68,7 +68,7 @@ export function Setup({ view, store, act, error }: SetupProps) {
               type="submit"
               data-testid="add-player"
               disabled={full}
-              className={`${primaryButton} shrink-0`}
+              className={`${primaryButton} w-full`}
             >
               <PlusIcon />
               {labels.add}

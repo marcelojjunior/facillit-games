@@ -3,6 +3,7 @@
  * folder plus one line in src/games/registry.ts (spec 002 SC-001).
  */
 import { defineGame } from '../../shell/game/contract';
+import Icon from './Icon';
 import RoundEntry from './RoundEntry';
 import { computeTotals, resolveWinners, scoreRound, validateRound, type MecheRound } from './rules';
 
@@ -16,4 +17,5 @@ export default defineGame<MecheRound>({
   computeTotals,
   resolveWinners,
   RoundEntry,
+  Icon,
 });

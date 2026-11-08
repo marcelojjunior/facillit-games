@@ -241,6 +241,26 @@ describe('defineGame', () => {
     });
   });
 
+  describe('Icon (spec 006, contracts/game-icon.md)', () => {
+    it('passes an icon through unchanged', () => {
+      const Icon = () => null;
+      const { game } = makeGame({ Icon });
+
+      expect(game.Icon).toBe(Icon);
+    });
+
+    it('leaves it undefined when the game declares none', () => {
+      expect(makeGame().game.Icon).toBeUndefined();
+    });
+
+    it('throws when an icon is present and not a component', () => {
+      const overrides: Partial<GameDefinition<PointsRound>> = {};
+      Reflect.set(overrides, 'Icon', 'cards');
+
+      expect(() => makeGame(overrides)).toThrow(/Icon/);
+    });
+  });
+
   describe('programming errors (FR-009a)', () => {
     it.each([
       ['a non-integer minPlayers', { minPlayers: 1.5 }],

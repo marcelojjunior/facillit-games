@@ -76,3 +76,9 @@ export const PlayIcon = () => (
     <path d="M8 5.5v13l10.5-6.5z" />
   </svg>
 );
+
+export const HomeIcon = () => (
+  <Icon>
+    <path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9M10 19v-5h4v5" />
+  </Icon>
+);

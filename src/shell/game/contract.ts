@@ -75,6 +75,8 @@ export interface GameDefinition<R> {
   readonly resolveWinners: (totals: Scores, players: readonly PlayerRef[]) => readonly string[];
   /** The game's own screen piece for entering a round (spec 003, FR-009). */
   readonly RoundEntry: RoundEntryComponent;
+  /** Decorative picture for the game list badge; the shell's trophy when absent (spec 006). */
+  readonly Icon?: ComponentType;
 }
 
 export type RoundVerdict =
@@ -108,6 +110,7 @@ export interface Game {
   readonly validateRound: (input: unknown, players: readonly PlayerRef[]) => RoundVerdict;
   readonly evaluate: (rounds: readonly unknown[], players: readonly PlayerRef[]) => Evaluation;
   readonly RoundEntry: RoundEntryComponent;
+  readonly Icon?: ComponentType;
 }
 
 /** Implemented in src/games/registry.ts; typed here so the shell never imports from src/games/. */
@@ -164,6 +167,9 @@ export function defineGame<R>(definition: GameDefinition<R>): Game {
   }
   if (typeof definition.RoundEntry !== 'function') {
     throw contractError(id, 'RoundEntry must be a component.');
+  }
+  if (definition.Icon !== undefined && typeof definition.Icon !== 'function') {
+    throw contractError(id, 'Icon, when present, must be a component.');
   }
 
   /**
@@ -251,5 +257,6 @@ export function defineGame<R>(definition: GameDefinition<R>): Game {
     },
 
     RoundEntry: definition.RoundEntry,
+    ...(definition.Icon === undefined ? {} : { Icon: definition.Icon }),
   };
 }

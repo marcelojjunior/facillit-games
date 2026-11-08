@@ -12,6 +12,8 @@ import type { Registry, RoundRejection } from '../game/contract';
 import { safeStorage, type StorageLike } from '../match/persistence';
 import { createMatchStore, type MatchView, type OperationResult } from '../match/store';
 import { errorCopy, labels } from './copy';
+import { Dialog } from './parts/Dialog';
+import { HomeIcon } from './parts/icons';
 import { Notices } from './parts/Notices';
 import { ThemeControl } from './parts/ThemeControl';
 import { GameList } from './screens/GameList';
@@ -76,6 +78,8 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
   const [reasons, setReasons] = useState<readonly RoundRejection[]>(NO_REASONS);
   // FR-016: set by an unsaved operation, cleared by the next saved one.
   const [notSaved, setNotSaved] = useState(false);
+  // Spec 006: the house button's confirmation.
+  const [goingHome, setGoingHome] = useState(false);
 
   // Result handling (contracts/screens.md): success clears messages; a round
   // rejection goes to the entry with the draft kept; anything else is copy.
@@ -103,8 +107,52 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
     <div data-testid="match-app" data-screen={screen} className="min-h-dvh">
       <header className="mx-auto flex min-h-14 max-w-md items-center justify-between gap-3 px-4">
         <span className="logo-title">{labels.appTitle}</span>
-        <ThemeControl storage={themeStorage} />
+        <div className="flex items-center gap-2">
+          {state !== null && (
+            <button
+              type="button"
+              data-testid="home"
+              aria-label={labels.home}
+              title={labels.home}
+              onClick={() => setGoingHome(true)}
+              className="btn-3d btn-plain size-12 px-0"
+            >
+              <HomeIcon />
+            </button>
+          )}
+          <ThemeControl storage={themeStorage} />
+        </div>
       </header>
+      {/* Spec 006 FR-002/FR-003: back to the game list, saying what is lost. */}
+      <Dialog
+        open={goingHome && state !== null}
+        title={labels.homeTitle}
+        onClose={() => setGoingHome(false)}
+      >
+        <p className="text-ink-muted">
+          {state?.match.status === 'finished' ? labels.homeCloses : labels.homeLoses}
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setGoingHome(false)}
+            className="btn-3d btn-plain flex-1"
+          >
+            {labels.cancel}
+          </button>
+          <button
+            type="button"
+            data-testid="confirm-home"
+            onClick={() => {
+              setGoingHome(false);
+              act(() => store.discardMatch());
+            }}
+            className={`btn-3d flex-1 ${state?.match.status === 'finished' ? 'btn-blue' : 'btn-red'}`}
+          >
+            {labels.homeConfirm}
+          </button>
+        </div>
+      </Dialog>
       <Notices
         discard={discardNotice}
         onDismissDiscard={() => store.acknowledgeDiscardNotice()}
