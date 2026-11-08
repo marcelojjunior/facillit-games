@@ -32,10 +32,10 @@ export function Winner({ view, store, act }: WinnerProps) {
 
       <div
         data-testid="winner-names"
-        className="flex items-center gap-3 rounded-card bg-accent p-5 text-accent-ink"
+        className="flex items-center gap-3 rounded-card bg-green p-5 text-on-color"
       >
         <TrophyIcon />
-        <p className="min-w-0 text-lg font-semibold break-words">
+        <p className="min-w-0 text-xl font-extrabold break-words">
           {tie ? labels.sharedWin : labels.winnerIs} {listFormat.format(names)}
         </p>
       </div>

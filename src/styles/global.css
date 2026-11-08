@@ -1,9 +1,11 @@
 /*
- * Design tokens (FR-019, research D7 of spec 003).
+ * Design tokens and the game-style look
+ * (specs/004-game-style-ui/contracts/visual-tokens.md and ui-parts.md).
  *
  * Tailwind 4 does not use tailwind.config.js: configuration lives here, in
- * CSS. Color values MUST match src/styles/tokens.ts (tokens.test.ts checks
- * both blocks below against it, plus WCAG contrast).
+ * CSS. Color values MUST match src/styles/tokens.ts; tokens.test.ts checks
+ * both theme blocks against it, plus WCAG contrast. Fixed tokens (the game
+ * palette) are declared once and never overridden in the dark block.
  *
  * `--color-*: initial` drops Tailwind's default palette, so `text-red-500`
  * and friends do not even exist: components can only use these tokens.
@@ -12,49 +14,103 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/*
+ * Baloo 2, variable 400-800, Latin subset (every Portuguese letter), served
+ * by the app itself: no font host at runtime (spec 004 research D1,
+ * Principle I). License: src/assets/fonts/OFL.txt.
+ */
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/baloo-2-latin-wght-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @theme {
   --color-*: initial;
-  --color-surface: #f6f4ef;
+  /* fixed: the same in both themes */
+  --color-green: #2e9b38;
+  --color-green-edge: #1e6e27;
+  --color-green-hi: #6fd35a;
+  --color-blue: #1f7fe0;
+  --color-blue-edge: #155ab0;
+  --color-blue-hi: #6cbcff;
+  --color-red: #e0393f;
+  --color-red-edge: #a8202a;
+  --color-red-hi: #ff8a7a;
+  --color-orange: #ff9d2e;
+  --color-orange-edge: #c8650f;
+  --color-orange-hi: #ffc46b;
+  --color-yellow: #ffd23f;
+  --color-yellow-edge: #d39a0b;
+  --color-yellow-hi: #fff08a;
+  --color-purple: #7e44d8;
+  --color-purple-edge: #55279e;
+  --color-purple-hi: #b98cff;
+  --color-on-color: #ffffff;
+  --color-on-warm: #3d2304;
+  --color-gold: #ffc933;
+  --color-silver: #cfd8e3;
+  --color-bronze: #e09a5a;
+  --color-die: #ffffff;
+  --color-die-edge: #d9e1ec;
+  --color-pip: #e0393f;
+  --color-face: #23264f;
+  /* themed: light values */
+  --color-surface: #eef5f9;
   --color-surface-raised: #ffffff;
-  --color-surface-sunken: #ebe8e1;
-  --color-ink: #1b1a17;
-  --color-ink-muted: #57534b;
-  --color-line: #858076;
-  --color-accent: #1d6b57;
-  --color-accent-ink: #ffffff;
-  --color-danger: #b42318;
-  --color-danger-ink: #ffffff;
+  --color-surface-sunken: #e3ecf3;
+  --color-ink: #23264f;
+  --color-ink-muted: #545a86;
+  --color-line: #767c9f;
+  --color-accent: #1b63c4;
+  --color-danger: #c0262f;
+  --color-sky-top: #6fd3f2;
+  --color-sky-bottom: #c8f5e4;
+  --color-hill-back: #7ccf5a;
+  --color-hill-front: #4cb847;
+  --color-cloud: #ffffffd9;
+  --color-star: #ffffff00;
 
   /* Spacing step (Tailwind default, stated on purpose) and the touch target (Principle VI). */
   --spacing: 0.25rem;
   --spacing-touch: 2.75rem;
 
-  --radius-control: 0.75rem;
-  --radius-card: 1rem;
+  --radius-control: 0.875rem;
+  --radius-card: 1.375rem;
 
-  --text-display: 1.75rem;
+  --text-display: 1.875rem;
   --text-display--line-height: 2.25rem;
 
-  /* System font stack: no web font, no CDN (research D8, Principle I). */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Rounded fallbacks keep the look if the font has not arrived (spec 004 Edge Cases). */
+  --font-sans: 'Baloo 2', ui-rounded, 'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif;
 }
 
 [data-theme='dark'] {
-  --color-surface: #131513;
-  --color-surface-raised: #1e211f;
-  --color-surface-sunken: #0c0d0c;
-  --color-ink: #ecebe6;
-  --color-ink-muted: #a8a69e;
-  --color-line: #73776f;
-  --color-accent: #63c7a9;
-  --color-accent-ink: #062a20;
-  --color-danger: #f4877d;
-  --color-danger-ink: #2a0a06;
+  --color-surface: #1f2357;
+  --color-surface-raised: #2b3070;
+  --color-surface-sunken: #181b45;
+  --color-ink: #ffffff;
+  --color-ink-muted: #c3c6f5;
+  --color-line: #8389cc;
+  --color-accent: #8cc8ff;
+  --color-danger: #ff8f87;
+  --color-sky-top: #141a4a;
+  --color-sky-bottom: #3a2c86;
+  --color-hill-back: #2c4f73;
+  --color-hill-front: #1f3b5c;
+  --color-cloud: #ffffff00;
+  --color-star: #ffffffd9;
 }
 
 @layer base {
   body {
-    background-color: var(--color-surface);
+    /* The scene (src/components/Scene.astro) paints over this. */
+    background-color: var(--color-sky-bottom);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
@@ -63,5 +119,133 @@
   dialog::backdrop {
     /* A dark scrim in both themes: mixing the ink token would turn pale in dark mode. */
     background-color: rgb(0 0 0 / 0.55);
+  }
+}
+
+/*
+ * The 3D game button (spec 004 research D10): gradient from the highlight to
+ * the base, a darker bottom edge, a gloss on top, and it sinks while pressed.
+ * Labels are bold and at least 19 px, so the large-text contrast pairs of
+ * tokens.ts apply (research D3). Pick a color with one modifier class.
+ */
+@layer components {
+  .btn-3d {
+    --btn: var(--color-surface-raised);
+    --btn-hi: var(--color-surface-raised);
+    --btn-edge: var(--color-line);
+    --btn-ink: var(--color-ink);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    min-width: 2.75rem;
+    padding-inline: 1.125rem;
+    border: 0;
+    border-radius: var(--radius-control);
+    font-weight: 800;
+    font-size: 1.1875rem;
+    line-height: 1.1;
+    color: var(--btn-ink);
+    background: linear-gradient(180deg, var(--btn-hi) 0%, var(--btn) 48%);
+    box-shadow:
+      0 0.3rem 0 var(--btn-edge),
+      inset 0 2px 0 rgb(255 255 255 / 0.4);
+    cursor: pointer;
+    transition:
+      transform 0.08s ease,
+      box-shadow 0.08s ease;
+  }
+
+  .btn-3d:active:not(:disabled) {
+    transform: translateY(0.2rem);
+    box-shadow:
+      0 0.1rem 0 var(--btn-edge),
+      inset 0 2px 0 rgb(255 255 255 / 0.4);
+  }
+
+  .btn-3d:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-3d:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .btn-green,
+  .btn-blue,
+  .btn-red,
+  .btn-purple {
+    --btn-ink: var(--color-on-color);
+    text-shadow: 0 2px 0 var(--btn-edge);
+  }
+
+  .btn-orange,
+  .btn-yellow {
+    --btn-ink: var(--color-on-warm);
+  }
+
+  .btn-green {
+    --btn: var(--color-green);
+    --btn-hi: var(--color-green-hi);
+    --btn-edge: var(--color-green-edge);
+  }
+
+  .btn-blue {
+    --btn: var(--color-blue);
+    --btn-hi: var(--color-blue-hi);
+    --btn-edge: var(--color-blue-edge);
+  }
+
+  .btn-red {
+    --btn: var(--color-red);
+    --btn-hi: var(--color-red-hi);
+    --btn-edge: var(--color-red-edge);
+  }
+
+  .btn-purple {
+    --btn: var(--color-purple);
+    --btn-hi: var(--color-purple-hi);
+    --btn-edge: var(--color-purple-edge);
+  }
+
+  .btn-orange {
+    --btn: var(--color-orange);
+    --btn-hi: var(--color-orange-hi);
+    --btn-edge: var(--color-orange-edge);
+  }
+
+  .btn-yellow {
+    --btn: var(--color-yellow);
+    --btn-hi: var(--color-yellow-hi);
+    --btn-edge: var(--color-yellow-edge);
+  }
+
+  /* Neutral actions: the raised surface with a line edge (the defaults above). */
+  .btn-plain {
+    font-weight: 700;
+  }
+
+  /* A raised card: the same edge language as the buttons, without the press. */
+  .card-3d {
+    background-color: var(--color-surface-raised);
+    border-radius: var(--radius-card);
+    box-shadow: 0 0.3rem 0 var(--color-line);
+  }
+}
+
+/*
+ * Reduced motion: no animation or transition anywhere (spec 004 research D7,
+ * SC-006). A pressed button still shows its pressed position, instantly.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

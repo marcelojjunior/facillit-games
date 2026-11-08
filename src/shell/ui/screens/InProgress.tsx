@@ -22,7 +22,7 @@ import { FlagIcon, MoreIcon } from '../parts/icons';
 import { RenameDialog } from '../parts/RenameDialog';
 import { ScoreTable } from '../parts/ScoreTable';
 import { Standings } from '../parts/Standings';
-import { iconButton, primaryButton, secondaryButton } from '../parts/styles';
+import { dangerButton, iconButton, primaryButton, secondaryButton } from '../parts/styles';
 
 type Overlay =
   'none' | 'finish' | 'history' | 'menu' | 'rename' | 'remove-last' | 'fix' | 'abandon';
@@ -195,7 +195,7 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
                 close();
               }
             }}
-            className="flex min-h-12 flex-1 items-center justify-center rounded-control bg-danger px-5 font-semibold text-danger-ink"
+            className={`${dangerButton} flex-1`}
           >
             {labels.remove}
           </button>
