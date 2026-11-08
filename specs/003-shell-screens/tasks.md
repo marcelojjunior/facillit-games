@@ -154,9 +154,9 @@ one touches only its folder and the registry.
 
 **Independent Test**: SC-006 and the per-entry contract tests.
 
-- [ ] T032 [P] [US6] Create `tests/fixtures/games/highest-wins/RoundEntry.browser.test.tsx` and `tests/fixtures/games/lowest-wins/RoundEntry.browser.test.tsx`: each renders with `value` undefined, a valid value, and garbage (`42`, `{ranks: 'x'}`, `null`) without throwing; after a normal interaction the last `onChange` value passes the game's `validateRound`; it renders no `button[type=submit]` and no `<form>` (contracts/round-entry.md, rules 1–7)
-- [ ] T033 [US6] Create `tests/round-entry-plugin.browser.test.tsx`: defines a third game inline in the test (a different round shape and its own `RoundEntry`), builds a registry with `createRegistry`, and plays a full match through `MatchApp`; assert `tests/shell-boundary.test.ts` still passes unchanged (SC-006, FR-013)
-- [ ] T034 [US6] Update `AGENTS.md` pitfall 11 (game folder now also has `RoundEntry.tsx` and its browser test; link `specs/003-shell-screens/contracts/round-entry.md`) and pitfall 12 (the store is created in `MatchApp`, the only island)
+- [X] T032 [P] [US6] Create `tests/fixtures/games/highest-wins/RoundEntry.browser.test.tsx` and `tests/fixtures/games/lowest-wins/RoundEntry.browser.test.tsx`: each renders with `value` undefined, a valid value, and garbage (`42`, `{ranks: 'x'}`, `null`) without throwing; after a normal interaction the last `onChange` value passes the game's `validateRound`; it renders no `button[type=submit]` and no `<form>` (contracts/round-entry.md, rules 1–7)
+- [X] T033 [US6] Create `tests/round-entry-plugin.browser.test.tsx`: defines a third game inline in the test (a different round shape and its own `RoundEntry`), builds a registry with `createRegistry`, and plays a full match through `MatchApp`; assert `tests/shell-boundary.test.ts` still passes unchanged (SC-006, FR-013)
+- [X] T034 [US6] Update `AGENTS.md` pitfall 11 (game folder now also has `RoundEntry.tsx` and its browser test; link `specs/003-shell-screens/contracts/round-entry.md`) and pitfall 12 (the store is created in `MatchApp`, the only island)
 
 **Checkpoint**: any game shape plugs in.
 
