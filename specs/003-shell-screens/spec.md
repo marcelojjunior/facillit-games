@@ -370,6 +370,9 @@ finds no game name or id comparison in the shell.
   this phase by spec 002, research D7).
 - **FR-029**: The shipped artifact MUST NOT contain the test-only games
   (existing guard), and MUST NOT name any real game until Phase 5.
+  *Note (spec 005)*: MECHE-MECHE, the first real game, ends the "MUST NOT
+  name any real game until Phase 5" clause; the test-only games still never
+  reach the artifact.
 - **FR-029a**: In development mode only, a development-only page MUST offer
   the test-only games in its game list, so every screen can be played by hand
   on a phone before Phase 5; the production build MUST NOT contain that page. The mechanism MUST keep the shell free of game names and ids
