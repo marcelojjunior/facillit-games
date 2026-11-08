@@ -59,6 +59,7 @@ function makeGame(overrides: Partial<GameDefinition<PointsRound>> = {}) {
       const best = Math.max(...players.map((player) => totals[player.id] ?? 0));
       return players.filter((player) => totals[player.id] === best).map((player) => player.id);
     },
+    RoundEntry: () => null,
     ...overrides,
   };
 
@@ -116,6 +117,7 @@ describe('defineGame', () => {
         ],
         totals: { p1: 40, p2: 25 },
         winners: ['p1'],
+        positions: { p1: 1, p2: 2 },
       });
     });
 
@@ -124,7 +126,9 @@ describe('defineGame', () => {
 
       game.evaluate([{ points: { p1: 1, p2: 2 } }], players);
 
-      expect(calls).toEqual(['validate', 'score', 'totals', 'winners']);
+      // The second 'winners' is the peel that places the remaining player
+      // (spec 003, research D2).
+      expect(calls).toEqual(['validate', 'score', 'totals', 'winners', 'winners']);
     });
 
     it('rejects at the first invalid stored round, with its index and reasons', () => {
@@ -152,7 +156,79 @@ describe('defineGame', () => {
 
       const evaluation = game.evaluate([], players);
 
-      expect(evaluation).toMatchObject({ ok: true, winners: ['p1', 'p2'] });
+      expect(evaluation).toMatchObject({
+        ok: true,
+        winners: ['p1', 'p2'],
+        positions: { p1: 1, p2: 1 },
+      });
+    });
+  });
+
+  describe('positions (spec 003, research D2)', () => {
+    const four: readonly PlayerRef[] = [
+      { id: 'p1', name: 'Ana' },
+      { id: 'p2', name: 'Bia' },
+      { id: 'p3', name: 'Caio' },
+      { id: 'p4', name: 'Duda' },
+    ];
+    const round = (p1: number, p2: number, p3: number, p4: number) => ({
+      points: { p1, p2, p3, p4 },
+    });
+
+    it('ranks every player by peeling the winners (normal case)', () => {
+      const { game } = makeGame();
+
+      expect(game.evaluate([round(30, 10, 20, 0)], four)).toMatchObject({
+        positions: { p1: 1, p3: 2, p2: 3, p4: 4 },
+      });
+    });
+
+    it('shares a position on a tie and skips the next one (1, 1, 3)', () => {
+      const { game } = makeGame();
+
+      expect(game.evaluate([round(30, 30, 10, 20)], four)).toMatchObject({
+        positions: { p1: 1, p2: 1, p4: 3, p3: 4 },
+      });
+    });
+
+    it('puts everyone in first place when every total ties', () => {
+      const { game } = makeGame();
+
+      expect(game.evaluate([round(5, 5, 5, 5)], four)).toMatchObject({
+        positions: { p1: 1, p2: 1, p3: 1, p4: 1 },
+      });
+    });
+
+    it('follows the game when the lowest total wins', () => {
+      const { game } = makeGame({
+        resolveWinners: (totals, ps) => {
+          const best = Math.min(...ps.map((p) => totals[p.id] ?? 0));
+          return ps.filter((p) => totals[p.id] === best).map((p) => p.id);
+        },
+      });
+
+      expect(game.evaluate([round(30, 10, 20, -5)], four)).toMatchObject({
+        winners: ['p4'],
+        positions: { p4: 1, p2: 2, p3: 3, p1: 4 },
+      });
+    });
+
+    it.each([
+      ['an empty list', () => []],
+      ['an id outside the remaining players', () => ['intruder']],
+    ])('throws when resolveWinners returns %s while peeling', (_label, winners) => {
+      const { game } = makeGame({ resolveWinners: winners });
+
+      expect(() => game.evaluate([round(1, 2, 3, 4)], four)).toThrow(/game contract/);
+    });
+  });
+
+  describe('RoundEntry (spec 003, FR-009)', () => {
+    it('passes the round entry through unchanged', () => {
+      const RoundEntry = () => null;
+      const { game } = makeGame({ RoundEntry });
+
+      expect(game.RoundEntry).toBe(RoundEntry);
     });
   });
 
@@ -164,6 +240,7 @@ describe('defineGame', () => {
       ['minPlayers above maxPlayers', { minPlayers: 5, maxPlayers: 4 }],
       ['an id that is not kebab-case', { id: 'Tiny_Game' }],
       ['an id with a trailing hyphen', { id: 'tiny-' }],
+      ['a RoundEntry that is not a component', { RoundEntry: Reflect.get({}, 'missing') }],
     ])('defineGame throws for %s', (_label, override) => {
       expect(() => makeGame(override)).toThrow();
     });

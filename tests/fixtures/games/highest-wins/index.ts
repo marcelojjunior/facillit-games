@@ -1,5 +1,6 @@
 import { defineGame } from '../../../../src/shell/game/contract';
 import { computeTotals, resolveWinners, scoreRound, validateRound, type RanksRound } from './rules';
+import RoundEntry from './RoundEntry';
 
 export default defineGame<RanksRound>({
   id: 'highest-wins',
@@ -10,4 +11,5 @@ export default defineGame<RanksRound>({
   scoreRound,
   computeTotals,
   resolveWinners,
+  RoundEntry,
 });
