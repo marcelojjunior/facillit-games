@@ -44,5 +44,7 @@ describe('production registry', () => {
     const games = registry.list();
     expect(games.map((game) => game.id)).toEqual(['meche-meche']);
     expect(games[0]).toMatchObject({ name: 'MECHE-MECHE', minPlayers: 2, maxPlayers: 7 });
+    // A card game shows its own picture on the game list (spec 006 FR-006).
+    expect(games[0]?.Icon).toBeTypeOf('function');
   });
 });
