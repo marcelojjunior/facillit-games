@@ -2,7 +2,7 @@
 // The reference above is required: getViteConfig types its return value as
 // Vite's UserConfig, which does not know the `test` key. Without it,
 // `pnpm typecheck` fails this file with ts(2353).
-import { playwright } from '@vitest/browser-playwright';
+import { defineBrowserCommand, playwright } from '@vitest/browser-playwright';
 import { getViteConfig } from 'astro/config';
 
 export default getViteConfig({
@@ -41,6 +41,14 @@ export default getViteConfig({
             // The reference screen: a phone held in one hand (Principle VI).
             viewport: { width: 360, height: 640 },
             instances: [{ browser: 'chromium' }],
+            commands: {
+              // SC-008: the theme in `auto` must follow a device change live.
+              emulateColorScheme: defineBrowserCommand<['light' | 'dark']>(
+                async (context, colorScheme) => {
+                  await context.page.emulateMedia({ colorScheme });
+                },
+              ),
+            },
           },
         },
       },

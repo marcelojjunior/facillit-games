@@ -2,3 +2,10 @@
 // reach), so they must render with the real stylesheet. In the app it comes
 // from BaseLayout.astro, which these tests never render.
 import '../src/styles/global.css';
+
+declare module 'vitest/browser' {
+  interface BrowserCommands {
+    /** Emulates the device's prefers-color-scheme (vitest.config.ts). */
+    emulateColorScheme: (colorScheme: 'light' | 'dark') => Promise<void>;
+  }
+}
