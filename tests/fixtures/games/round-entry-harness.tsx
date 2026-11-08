@@ -12,13 +12,16 @@ interface HarnessProps {
   readonly players: readonly PlayerRef[];
   readonly initial?: unknown;
   readonly emitted: unknown[];
+  /** Earlier confirmed rounds (spec 007 FR-002); none by default. */
+  readonly rounds?: readonly unknown[];
 }
 
-export function RoundEntryHarness({ Entry, players, initial, emitted }: HarnessProps) {
+export function RoundEntryHarness({ Entry, players, initial, emitted, rounds = [] }: HarnessProps) {
   const [value, setValue] = useState<unknown>(initial);
   return (
     <Entry
       players={players}
+      rounds={rounds}
       value={value}
       onChange={(next) => {
         emitted.push(next);

@@ -51,6 +51,10 @@ and Safari iOS); desktop works as a wider layout.
 phone (match ≤ 7 players × tens of rounds; full re-evaluation is
 microseconds). Island JS ≤ 80 kB gzipped including React.
 
+> **Amendment (spec 007, 2026-11-08)**: island JS ≤ 90 KiB (92 160 bytes,
+> gzip -9). MECHE-MECHE left less than 1 KB of the 80 KiB, and LEVA would
+> exceed it; loading games on demand is deferred until there are 4–5 games.
+
 **Constraints**: no `client:load`/`client:visible`; no `src/` → `tests/`
 import; no game name or id branch in the shell; no literal colors in
 components; no runtime network request; no change to the match schema.

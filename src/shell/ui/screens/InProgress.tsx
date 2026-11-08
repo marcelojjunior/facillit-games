@@ -92,6 +92,7 @@ export function InProgress({ view, store, act, error, reasons }: InProgressProps
       <div data-testid="round-entry" className="card-3d p-4">
         <RoundEntry
           players={match.players}
+          rounds={match.rounds}
           value={match.draft}
           onChange={(value) => act(() => store.updateDraft(value))}
           reasons={reasons}

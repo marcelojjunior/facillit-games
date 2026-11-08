@@ -49,7 +49,7 @@ export function Standings({ view, onOpen, action }: StandingsProps) {
             <span className="min-w-0 flex-1 truncate text-lg font-bold" title={player.name}>
               {player.name}
             </span>
-            <PointsBadge points={totals[player.id] ?? 0} />
+            <PointsBadge points={totals[player.id] ?? 0} unit={view.game.unit} />
           </li>
         ))}
       </ol>

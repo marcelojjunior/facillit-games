@@ -261,6 +261,28 @@ describe('defineGame', () => {
     });
   });
 
+  describe('unit (spec 007 FR-003, contracts/game-contract-rev4.md)', () => {
+    it('passes a unit through unchanged', () => {
+      const unit = { one: 'vida', other: 'vidas' };
+      expect(makeGame({ unit }).game.unit).toBe(unit);
+    });
+
+    it('leaves it undefined when the game declares none', () => {
+      expect(makeGame().game.unit).toBeUndefined();
+    });
+
+    it.each([
+      ['a string', 'vidas'],
+      ['an empty one', { one: '', other: 'vidas' }],
+      ['a missing other', { one: 'vida' }],
+    ])('throws for %s', (_label, unit) => {
+      const overrides: Partial<GameDefinition<PointsRound>> = {};
+      Reflect.set(overrides, 'unit', unit);
+
+      expect(() => makeGame(overrides)).toThrow(/unit/);
+    });
+  });
+
   describe('programming errors (FR-009a)', () => {
     it.each([
       ['a non-integer minPlayers', { minPlayers: 1.5 }],
