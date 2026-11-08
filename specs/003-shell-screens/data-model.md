@@ -47,7 +47,7 @@ per round plus total (FR-004a).
 
 | State | Lives in | Lifetime | Notes |
 |---|---|---|---|
-| Open overlay | `MatchApp` | until closed | one of: none, history, fix sheet, rename, confirm-finish, confirm-abandon, confirm-remove-last, theme |
+| Open overlay | `MatchApp` | until closed | one of: none, history, fix sheet, rename, confirm-finish, confirm-abandon, confirm-remove-last (the theme control is inline in the header, not an overlay) |
 | Fix working value | fix sheet | until save/cancel | copy of `match.rounds[i]`; lost on reload (research D6) |
 | Fix index | fix sheet | until save/cancel | if the round disappears (other tab removed it), the sheet closes |
 | Last rejection reasons | `MatchApp` | until next successful confirm/save or draft edit | passed to `RoundEntry.reasons` |

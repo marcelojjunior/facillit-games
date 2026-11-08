@@ -254,6 +254,12 @@ unstyled markup and size checks measured nothing real. The browser project
 now sets `css: true` and loads `src/styles/global.css` from
 `tests/browser-setup.ts`.
 
+**Bundle measured (T050, 2026-11-08)**: the island ships three files; gzip -9
+sizes are 65.7 kB (React DOM client), 8.9 kB (`MatchIsland`: the shell
+screens), and 3.0 kB (React), **77.6 kB in total**, under the 80 kB goal of
+the plan. Almost all of it is React itself, so the margin is thin: a new
+runtime dependency in the island needs a measurement before it lands.
+
 **Alternatives rejected**: Playwright Test against `astro dev` (needs a server
 and the dev-only page; slower, two runners); jsdom + Testing Library (cannot
 measure layout, which is half of what Principle VI asks).
