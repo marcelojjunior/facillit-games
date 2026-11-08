@@ -130,6 +130,42 @@ function distFiles(pattern: RegExp): string[] {
     .filter((path) => pattern.test(path));
 }
 
+const ownOrigin = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : undefined;
+
+/** Width and height from a PNG's IHDR chunk. */
+function pngSize(path: string): [number, number] {
+  const bytes = readFileSync(path);
+  return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
+}
+
+describe('share metadata: favicon and link previews', () => {
+  it('ships the die favicon and the iOS home-screen icon', () => {
+    const html = readFileSync(indexHtmlPath, 'utf8');
+    expect(existsSync(`${repoRoot}dist/favicon.svg`)).toBe(true);
+    expect(html).toContain('<link rel="icon" type="image/svg+xml" href="/favicon.svg">');
+    expect(pngSize(`${repoRoot}dist/apple-touch-icon.png`)).toEqual([180, 180]);
+    expect(html).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png">');
+  });
+
+  it('describes the page and its preview image for link previews', () => {
+    const html = readFileSync(indexHtmlPath, 'utf8');
+    expect(pngSize(`${repoRoot}dist/og.png`)).toEqual([1200, 630]);
+    for (const tag of [
+      'name="description"',
+      'property="og:title"',
+      'property="og:description"',
+      'property="og:image"',
+      'property="og:locale" content="pt_BR"',
+      'name="twitter:card" content="summary_large_image"',
+    ]) {
+      expect(html, tag).toContain(tag);
+    }
+    expect(html).toMatch(/property="og:image" content="(https:\/\/[^"]+)?\/og\.png"/);
+  });
+});
+
 describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
   const KB = 1024;
 
@@ -157,6 +193,8 @@ describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
       ]
         .map((match) => match[0])
         .filter((url) => url !== 'http://www.w3.org/2000/svg')
+        // The app's own address, when the build knows it (share tags).
+        .filter((url) => !ownOrigin || !url.startsWith(ownOrigin))
         .map((url) => `${path.slice(repoRoot.length)}: ${url}`),
     );
     expect(external).toEqual([]);
