@@ -12,6 +12,7 @@ import type { Registry, RoundRejection } from '../game/contract';
 import type { StorageLike } from '../match/persistence';
 import { createMatchStore, type MatchView, type OperationResult } from '../match/store';
 import { errorCopy, labels } from './copy';
+import { Notices } from './parts/Notices';
 import { GameList } from './screens/GameList';
 import { InProgress } from './screens/InProgress';
 import { Setup } from './screens/Setup';
@@ -46,23 +47,26 @@ const NO_REASONS: readonly RoundRejection[] = [];
 export default function MatchApp({ registry, storage }: MatchAppProps) {
   // ponytail: created once per mount; under StrictMode's double effect the
   // cross-tab listener would be gone. Astro does not use StrictMode.
-  const [{ store, subscribe, getSnapshot }] = useState(() => {
+  const [{ store, subscribe, getSnapshot, getNotice }] = useState(() => {
     const created = createMatchStore(storage === undefined ? { registry } : { registry, storage });
     return {
       store: created,
       subscribe: (listener: () => void) => created.subscribe(listener),
       getSnapshot: () => created.getState(),
+      getNotice: () => created.getDiscardNotice(),
     };
   });
   useEffect(() => () => store.dispose(), [store]);
 
   const state = useSyncExternalStore(subscribe, getSnapshot);
+  // A separate snapshot: acknowledging the notice notifies without changing the match.
+  const discardNotice = useSyncExternalStore(subscribe, getNotice);
   const screen = screenOf(state);
 
   const [error, setError] = useState<string | null>(null);
   const [reasons, setReasons] = useState<readonly RoundRejection[]>(NO_REASONS);
-  // Read by the not-saved warning (US2, FR-016).
-  const [, setNotSaved] = useState(false);
+  // FR-016: set by an unsaved operation, cleared by the next saved one.
+  const [notSaved, setNotSaved] = useState(false);
 
   // Result handling (contracts/screens.md): success clears messages; a round
   // rejection goes to the entry with the draft kept; anything else is copy.
@@ -88,6 +92,11 @@ export default function MatchApp({ registry, storage }: MatchAppProps) {
       <header className="flex min-h-14 items-center px-4">
         <span className="font-semibold">{labels.appTitle}</span>
       </header>
+      <Notices
+        discard={discardNotice}
+        onDismissDiscard={() => store.acknowledgeDiscardNotice()}
+        notSaved={notSaved}
+      />
       <main className="mx-auto max-w-md px-4 pt-2">
         {state === null ? (
           <GameList
