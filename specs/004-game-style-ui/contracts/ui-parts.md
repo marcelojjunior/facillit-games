@@ -72,7 +72,7 @@ Static, in `BaseLayout`, behind the page (`position: fixed`, `z-index: -1`,
 
 | Screen | Changes |
 |---|---|
-| Header (all) | title in the game treatment (white with a `blue-edge` outline); theme control as a raised segmented control |
+| Header (all) | title in the game treatment (white with a `blue-edge` outline); theme control as one square `btn-plain` button that switches light/dark (moon in light, sun in dark; research D13) |
 | Game list | mascot + greeting bubble; game options as raised cards with a colored icon badge and a green play disc |
 | Setup | raised cards; add = green, start = green, abandon = plain |
 | In progress | round title as a purple ribbon; standings rows with `Medal` and `PointsBadge`; confirm bar green `.btn-3d`; rejection box with a small `Mascot` |
