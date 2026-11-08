@@ -34,11 +34,8 @@ export default function RoundEntry({ players, value, onChange, reasons }: RoundE
                   aria-pressed={selected}
                   aria-label={`${player.name}: ${place}º lugar`}
                   onClick={() => onChange({ ranks: { ...ranks, [player.id]: place } })}
-                  className={`min-h-11 min-w-11 flex-1 rounded-control border text-base font-semibold ${
-                    selected
-                      ? 'border-accent bg-accent text-accent-ink'
-                      : 'border-line bg-surface-raised text-ink'
-                  }`}
+                  // The shell's 3D buttons (spec 004 contracts/ui-parts.md); selected = blue.
+                  className={`btn-3d flex-1 px-0 ${selected ? 'btn-blue' : 'btn-plain'}`}
                 >
                   {place}º
                 </button>

@@ -1,6 +1,10 @@
 ---
 import '../styles/global.css';
 import { bootScript } from '../shell/theme/boot';
+import Scene from '../components/Scene.astro';
+// The hashed URL of the self-hosted font, so the preload hits the same file
+// global.css loads (spec 004 research D1).
+import fontUrl from '../assets/fonts/baloo-2-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -25,9 +29,11 @@ const { title } = Astro.props;
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
   </head>
   <body>
+    <Scene />
     <slot />
   </body>
 </html>

@@ -174,6 +174,10 @@ fallback in the wrong theme first).
 React components. No web font, no icon font, no CDN (Principle I; the POC's
 Google Fonts and Font Awesome links are not carried over).
 
+**Superseded for the typeface** by spec 004 research D1: the app now ships a
+self-hosted Baloo 2 file (still no font host at runtime). The icons part of
+this decision stands.
+
 ## D9 — Dialogs with native `<dialog>`
 
 **Decision**: confirmations (finish, abandon, remove last round), the full

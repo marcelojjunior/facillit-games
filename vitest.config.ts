@@ -48,6 +48,12 @@ export default getViteConfig({
                   await context.page.emulateMedia({ colorScheme });
                 },
               ),
+              // Spec 004 SC-006: no animation remains under reduced motion.
+              emulateReducedMotion: defineBrowserCommand<['reduce' | 'no-preference']>(
+                async (context, reducedMotion) => {
+                  await context.page.emulateMedia({ reducedMotion });
+                },
+              ),
             },
           },
         },

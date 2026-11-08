@@ -1,5 +1,6 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -119,6 +120,60 @@ describe('static artifact', () => {
     script(storage, () => ({ matches: false }), { documentElement: root });
     expect(root.dataset.theme).toBe('dark');
     expect(root.style.colorScheme).toBe('dark');
+  });
+});
+
+function distFiles(pattern: RegExp): string[] {
+  const distDir = `${repoRoot}dist`;
+  return readdirSync(distDir, { recursive: true, encoding: 'utf8' })
+    .map((entry) => join(distDir, entry))
+    .filter((path) => pattern.test(path));
+}
+
+describe('game-style assets (spec 004 research D1, D4, D8, D11)', () => {
+  const KB = 1024;
+
+  it('serves the font from the app itself, within 80 kB (FR-007, SC-005)', () => {
+    const fonts = distFiles(/\.woff2$/);
+    expect(fonts.length).toBeGreaterThan(0);
+    const total = fonts.reduce((sum, path) => sum + statSync(path).size, 0);
+    expect(total).toBeLessThanOrEqual(80 * KB);
+  });
+
+  it('preloads the font', () => {
+    const html = readFileSync(indexHtmlPath, 'utf8');
+    expect(html).toMatch(
+      /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="font")(?=[^>]*\btype="font\/woff2")(?=[^>]*\bcrossorigin)(?=[^>]*\bhref="[^"]+\.woff2")[^>]*>/,
+    );
+  });
+
+  it('references no other host in HTML or CSS (Principle I, SC-004)', () => {
+    const external = distFiles(/\.(html|css)$/).flatMap((path) =>
+      // Comments (e.g. Tailwind's license banner) cite URLs but fetch nothing.
+      [
+        ...readFileSync(path, 'utf8')
+          .replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, '')
+          .matchAll(/https?:\/\/[^\s"')>]+/g),
+      ]
+        .map((match) => match[0])
+        .filter((url) => url !== 'http://www.w3.org/2000/svg')
+        .map((url) => `${path.slice(repoRoot.length)}: ${url}`),
+    );
+    expect(external).toEqual([]);
+  });
+
+  it('keeps the island script within 80 kB gzipped (SC-005)', () => {
+    const scripts = distFiles(/_astro[\\/][^\\/]+\.js$/);
+    expect(scripts.length).toBeGreaterThan(0);
+    const gzipped = scripts.reduce(
+      (sum, path) => sum + gzipSync(readFileSync(path), { level: 9 }).length,
+      0,
+    );
+    expect(gzipped).toBeLessThanOrEqual(80 * KB);
+  });
+
+  it('draws the scene in the static page, so it shows from the first frame', () => {
+    expect(readFileSync(indexHtmlPath, 'utf8')).toContain('data-testid="scene"');
   });
 });
 

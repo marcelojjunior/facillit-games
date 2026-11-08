@@ -38,7 +38,7 @@ export function ConfirmBar({ disabled, onConfirm, children }: ConfirmBarProps) {
             locked.current = false;
           });
         }}
-        className="mx-auto flex min-h-14 w-full max-w-md items-center justify-center gap-2 rounded-control bg-accent text-lg font-semibold text-accent-ink disabled:opacity-50"
+        className="btn-3d btn-green mx-auto min-h-14 w-full max-w-md text-xl"
       >
         <CheckIcon />
         {labels.confirmRound}

@@ -4,7 +4,7 @@
  */
 import { headings, labels } from '../copy';
 import { Dialog } from './Dialog';
-import { secondaryButton } from './styles';
+import { dangerButton, secondaryButton } from './styles';
 
 interface AbandonDialogProps {
   readonly open: boolean;
@@ -24,7 +24,7 @@ export function AbandonDialog({ open, onClose, onConfirm }: AbandonDialogProps) 
           type="button"
           data-testid="confirm-abandon"
           onClick={onConfirm}
-          className="flex min-h-12 flex-1 items-center justify-center rounded-control bg-danger px-5 font-semibold text-danger-ink"
+          className={`${dangerButton} flex-1`}
         >
           {labels.abandonConfirm}
         </button>
