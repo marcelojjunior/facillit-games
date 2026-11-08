@@ -6,6 +6,7 @@ import { useState } from 'react';
 import type { MatchStore, MatchView } from '../../match/store';
 import { errorCopy, headings, labels, missingPlayersCopy, rosterLimitCopy } from '../copy';
 import type { Act } from '../MatchApp';
+import { AbandonDialog } from '../parts/AbandonDialog';
 import { PlusIcon, TrashIcon } from '../parts/icons';
 import { iconButton, primaryButton, secondaryButton, textInput } from '../parts/styles';
 
@@ -21,6 +22,7 @@ const MAX_NAME = 30;
 export function Setup({ view, store, act, error }: SetupProps) {
   const [name, setName] = useState('');
   const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const [abandoning, setAbandoning] = useState(false);
   const { game, match } = view;
   const count = match.players.length;
   const full = count >= game.maxPlayers;
@@ -146,7 +148,16 @@ export function Setup({ view, store, act, error }: SetupProps) {
         >
           {labels.start}
         </button>
+        <button type="button" onClick={() => setAbandoning(true)} className={secondaryButton}>
+          {labels.abandon}
+        </button>
       </div>
+
+      <AbandonDialog
+        open={abandoning}
+        onClose={() => setAbandoning(false)}
+        onConfirm={() => act(() => store.discardMatch())}
+      />
     </section>
   );
 }

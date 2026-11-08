@@ -189,8 +189,8 @@ draft.
 
 **Independent Test**: finish → rematch → finish → new match.
 
-- [ ] T039 [US4] Create `src/shell/ui/replay.browser.test.tsx` (expected to fail first): rematch opens setup with the same game and players and no rounds, still editable; new match shows the game list; abandon from setup and from in progress asks for confirmation, cancel keeps everything, confirm shows the game list (US4 scenarios 1–3)
-- [ ] T040 [US4] Wire rematch (`createRematch`) and new match (`discardMatch`) in `src/shell/ui/screens/Winner.tsx`, and "Abandonar" with a confirmation `Dialog` in `src/shell/ui/screens/Setup.tsx` and the in-progress overflow menu; make T039 pass (FR-007, FR-008)
+- [X] T039 [US4] Create `src/shell/ui/replay.browser.test.tsx` (expected to fail first): rematch opens setup with the same game and players and no rounds, still editable; new match shows the game list; abandon from setup and from in progress asks for confirmation, cancel keeps everything, confirm shows the game list (US4 scenarios 1–3)
+- [X] T040 [US4] Wire rematch (`createRematch`) and new match (`discardMatch`) in `src/shell/ui/screens/Winner.tsx`, and "Abandonar" with a confirmation `Dialog` in `src/shell/ui/screens/Setup.tsx` and the in-progress overflow menu; make T039 pass (FR-007, FR-008)
 
 **Checkpoint**: groups can play many matches.
 
