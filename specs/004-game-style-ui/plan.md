@@ -42,7 +42,8 @@ and Safari iOS); desktop as a wider layout.
 **Project Type**: static web app (Astro, one page, one island)
 
 **Performance Goals**: island JS ≤ 80 kB gzipped (spec 003: 77.6 kB today; this
-feature adds markup and classes only, target ≤ 80 kB); font ≤ 80 kB total
+feature adds markup and classes only, target ≤ 80 kB, measured after Phase 2
+and US1 with a fallback plan in research D11); font ≤ 80 kB total
 (33 kB planned); no layout shift when the font swaps in (fallback metrics
 close to Baloo 2, research D1).
 

@@ -16,7 +16,8 @@
 
 `parts/styles.ts` keeps its exported names (`primaryButton`, `secondaryButton`,
 `iconButton`, `textInput`) mapped to these classes, so screens and fixture
-entries keep compiling. Square icon buttons stay ≥ 44×44.
+entries keep compiling, and adds `dangerButton` (`btn-3d btn-red`) for
+destructive actions. Square icon buttons stay ≥ 44×44.
 
 ## Parts
 
