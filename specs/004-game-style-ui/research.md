@@ -205,6 +205,28 @@ plan of spec 003.
 - **External URL check** ignores comments: Tailwind's license banner cites its
   site but fetches nothing.
 
+## D13 — One theme button (owner review)
+
+**Decision**: `ThemeControl` becomes one `btn-3d btn-plain` square button
+(`data-testid="theme-control"`) showing the moon in light and the sun in dark.
+It keeps the stored choice in state (`readThemeChoice`, unchanged), resolves
+the effective theme with `resolveTheme(choice, prefersDark)` (unchanged), and
+on tap stores the opposite of the effective theme with `writeThemeChoice`. In
+`auto` it follows `prefers-color-scheme` changes live, as before. The boot
+script already resolves `auto` with a missing or failing `matchMedia` to
+light, so no change there.
+
+**Rationale**: the owner's rule (spec Clarifications); the storage contract of
+spec 003 keeps working, since `auto` is still what "nothing chosen" reads as.
+A player can no longer go back to automatic from the UI; accepted by the owner.
+
+## D14 — Centering a 3D button
+
+**Decision**: `.btn-3d` is `inline-flex`, so `mx-auto` alone does not center
+it; the confirm bar's button adds `flex` (block-level flex), so its
+`max-w-md` box centers in the bar at any width. A browser test checks the
+button's center against the viewport's at a wide viewport.
+
 ## D9 — No external URL in the artifact
 
 **Decision**: covered by the static-build check in D8. It replaces the manual

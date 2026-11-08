@@ -27,6 +27,20 @@ Every flow, screen, message meaning, and guarantee of
 those screens look, adds a mascot and decorative illustration, and replaces one
 decision of spec 003 (research D8: system font only).
 
+## Clarifications
+
+### Session 2026-11-08 (owner review of the implemented screens)
+
+- Q: Should the theme control keep three options (automatic, light, dark)?
+  → A: No. One button that switches between light and dark. With nothing
+  chosen, the app follows the device; if the device does not say, it is light.
+  Once the player taps it, the tapped theme stays. This replaces the
+  three-option control of spec 003 FR-020 (the stored format does not change:
+  "nothing chosen" is the stored `auto` or no value; a tap stores `light` or
+  `dark`).
+- Q: The confirm-round button sits to the left on wide screens. → A: It must
+  be centered at any width (bug found by the owner on a desktop browser).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - The app feels like a casual mobile game (Priority: P1)
@@ -262,8 +276,19 @@ motion.
 - **FR-016**: Every tappable element MUST stay at least 44×44 px; no screen MAY
   scroll horizontally at 360 px except inside the full history; the
   confirm-round action MUST stay in thumb reach without scrolling at 360×640.
-- **FR-017**: The theme choice (automatic, light, dark) MUST still apply before
-  the first frame, background scene included.
+- **FR-017**: The theme MUST still apply before the first frame, background
+  scene included.
+- **FR-017a**: The theme control MUST be a single button, on every screen, that
+  switches between light and dark. With no choice stored (or the stored
+  `auto`), the theme follows the device and changes with it; when the device
+  gives no preference, it is light. A tap stores the theme it switched to
+  (`light` or `dark`), which then wins over the device, survives a reload, and
+  still applies for the page's lifetime if saving fails. The button's
+  accessible name says what it does ("Mudar para o tema escuro" / "claro").
+  The stored format of spec 003 does not change. Replaces the three-option
+  control of spec 003 FR-020.
+- **FR-017b**: The confirm-round button MUST be centered in its bar at any
+  viewport width.
 - **FR-018**: Components MUST still use design tokens only, never literal
   colors (spec 003 FR-019).
 - **FR-019**: All user-visible copy, including the mascot's greeting and the
