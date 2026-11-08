@@ -31,6 +31,9 @@ export default getViteConfig({
           // (specs/003-shell-screens/research.md, D13).
           name: 'browser',
           include: ['src/**/*.browser.test.tsx', 'tests/**/*.browser.test.tsx'],
+          setupFiles: ['./tests/browser-setup.ts'],
+          // Process CSS (Vitest skips it by default): sizes are what we test.
+          css: true,
           browser: {
             enabled: true,
             headless: true,
