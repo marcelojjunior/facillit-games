@@ -184,7 +184,9 @@ reproduces.
 #### Round entry
 
 - **FR-012**: For each player, the entry MUST show every score on offer as a
-  tappable button, a "no score" choice, and a +10 bonus toggle; a score taken
+  tappable button, a "no score" choice (the POC's "Nenhum"; shown as "—" so it
+  fits the score grid, read by screen readers as "sem pontuação"), and a +10
+  bonus toggle; a score taken
   by another player MUST show as taken and not be selectable.
 - **FR-013**: Every change in the entry MUST be kept as the round being typed,
   so a reload restores it, bonuses included (spec 003 FR-011).
@@ -221,6 +223,9 @@ reproduces.
   matches (including a tie and a round with bonuses).
 - **SC-002**: Adding MECHE-MECHE changes no file outside its game folder and
   the registry, except tests and docs that stop expecting an empty registry.
+  Moving the mascot's drawing out of the island to keep spec 004's script
+  budget is spec 004's planned fallback (its research D11), done in its own
+  commit before the game lands, and is not counted here.
 - **SC-003**: A 7-player round can be entered at 360×640 with taps only, no
   sideways scrolling, every target at least 44×44 px.
 - **SC-004**: 0 of the six POC bugs listed in User Story 3 reproduce.

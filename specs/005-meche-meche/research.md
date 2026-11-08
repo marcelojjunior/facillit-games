@@ -74,13 +74,14 @@ what is left.
 81 920. MECHE-MECHE is the first game in the production registry, so its
 rules and entry ship in the island.
 
-**Decision**: write the game lean (no helpers beyond `scoresOnOffer`, no new
-icons; reuse the shell's button classes) and measure right after the entry
-exists. If the total passes 81 920, apply spec 004 research D11's planned
-fallback in the same PR: move the mascot's static SVG (body and crown) to a
-sprite in the static layout referenced with `<use>`, which takes it out of the
-island; record the measurement in spec 004's research. Raising the budget is
-not an option without amending spec 003's plan.
+**Decision** (revised after /speckit-analyze): apply spec 004 research D11's
+planned fallback **before** the game lands, in its own commit (task T005):
+the mascot's drawing becomes a static SVG sprite in the layout, referenced
+with `<use>`, which takes it out of the island. The game's own diff then stays
+inside `src/games/` (SC-002). Write the game lean (no helpers beyond
+`scoresOnOffer`, no new icons, the shell's button classes) and measure right
+after the entry exists (T012). If the budget still fails, stop and bring the
+decision to the owner; raising the budget means amending spec 003's plan.
 
 ## D6 — Ending "no real game before Phase 5"
 
