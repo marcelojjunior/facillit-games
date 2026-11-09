@@ -135,25 +135,19 @@ export interface NextRound {
 
 /**
  * The round to deal after the stored `rounds` (research D4): 1 card at the
- * start and after any round that put a player out, else one more than the
- * round before. Rounds the rules do not accept are skipped.
+ * start, else one more than the round before, also after an elimination
+ * (FR-010 as revised). Rounds the rules do not accept are skipped.
  */
 export function nextRound(rounds: readonly unknown[], players: readonly PlayerRef[]): NextRound {
   const scores: Scores[] = [];
   let cards = 1;
-  let lives = computeTotals([], players);
   for (const input of rounds) {
     const result = validateRound(input, players);
-    if (!result.ok) {
-      continue;
+    if (result.ok) {
+      scores.push(scoreRound(result.round, players));
+      cards = result.round.cards + 1;
     }
-    scores.push(scoreRound(result.round, players));
-    const after = computeTotals(scores, players);
-    const someoneOut = players.some(
-      (player) => (lives[player.id] ?? 0) > 0 && after[player.id] === 0,
-    );
-    cards = someoneOut ? 1 : result.round.cards + 1;
-    lives = after;
   }
+  const lives = computeTotals(scores, players);
   return { cards, alive: players.filter((player) => (lives[player.id] ?? 0) > 0), lives };
 }

@@ -201,26 +201,27 @@ describe('nextRound (FR-010, FR-011, research D4)', () => {
     expect(nextRound(rounds, players).cards).toBe(3);
   });
 
-  it('goes back to 1 card after a round that put a player out, and drops them', () => {
+  it('keeps counting cards after a round that put a player out, and drops them', () => {
     const rounds = [
       round(1, all, { ...all, [caio]: 1 }), // Caio missed by 1 → 4
       round(2, { ...all, [caio]: 2 }, { ...all, [ana]: 1 }), // Caio −2 → 2, Ana −1 → 4
       round(3, { ...all, [caio]: 3 }, all), // Caio −3 → 0: out
     ];
     const next = nextRound(rounds, players);
-    expect(next.cards).toBe(1);
+    expect(next.cards).toBe(4);
     expect(next.alive.map((player) => player.id)).toEqual([ana, bia, duda]);
     expect(next.lives).toEqual({ [ana]: 4, [bia]: 5, [caio]: 0, [duda]: 5 });
   });
 
-  it('goes back to 1 card after two players out in the same round', () => {
+  it('keeps counting cards after two players out in the same round', () => {
     const rounds = [round(5, { ...all, [ana]: 5, [bia]: 5 }, all)];
     const next = nextRound(rounds, players);
-    expect(next.cards).toBe(1);
+    expect(next.cards).toBe(6);
     expect(next.alive.map((player) => player.id)).toEqual([caio, duda]);
   });
 
-  it('counts up again after the reset', () => {
+  it('follows the last round, even one stored with 1 card after an elimination', () => {
+    // Matches saved before FR-010 was revised reset to 1 card; they go on from there.
     const out = round(5, { ...all, [ana]: 5 }, all);
     const rest = { [bia]: 0, [caio]: 0, [duda]: 0 };
     expect(nextRound([out, round(1, rest, rest)], players).cards).toBe(2);
