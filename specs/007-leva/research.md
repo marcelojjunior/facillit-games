@@ -37,8 +37,9 @@
 
 - **Decision**: a pure `nextRound(rounds, players)` in `rules.ts`: parse each
   stored round with `validateRound` (skip invalid ones), accumulate lives;
-  `cards` = 1 when there are no rounds or the last valid round took a player
-  from > 0 to 0 lives, else `last.cards + 1`; `alive` = players with lives > 0.
+  `cards` = 1 when there are no valid rounds, else `last.cards + 1` (no reset
+  after an elimination since the owner's revision of FR-010); `alive` =
+  players with lives > 0.
 - **Rationale**: one function for the entry and the tests; reuses the rules.
 
 ## D5 — Draft shape and steps

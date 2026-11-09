@@ -36,7 +36,10 @@ contract, not in the shell, and in a way that leaves MECHE-MECHE untouched.
   above the number of cards either; whatever is entered is scored, and each
   player loses the difference as usual (owner's decision).
 - Q: Is there a ceiling on the number of cards? → A: no. Cards go 1, 2, 3, …
-  and go back to 1 whenever a player is eliminated.
+- Q: Does the number of cards go back to 1 when a player is eliminated? → A:
+  no (revised by the owner after release, 2026-11-08; it used to go back to 1).
+  The count keeps going: the round after an elimination deals one card more
+  than the round before, like any other round.
 - Q: What if everybody guesses 0 and someone takes a trick? → A: no special
   rule: each player loses the difference between their guess and what they
   took, in any round.
@@ -82,7 +85,7 @@ round, and the winner equal those computed by hand.
    took 1 loses 1; a player who guessed right loses none.
 6. **Given** a round that leaves a player at 0 lives, **When** the next round
    shows, **Then** that player is out (shown as eliminated, takes no part) and
-   the round deals 1 card again.
+   the round deals one card more than the round before (no reset).
 7. **Given** a player with 1 life who misses by 3, **When** the round is
    confirmed, **Then** they end at 0 lives, never below.
 8. **Given** only one player left with lives, **When** the round screen shows,
@@ -160,7 +163,7 @@ players, the most of any game so far.
 - **Two players**: a normal match; the first elimination ends it.
 - **Ten players**: the entry still fits 360 px.
 - **Several players out in the same round**: all are out; the next round deals
-  1 card.
+  one card more, as usual.
 - **Everyone left is out in the same round**: does not happen at the table.
   Lives are lost trick by trick, and the first player to reach 0 is out, so
   the last two never reach 0 together (Clarifications). The app trusts the
@@ -221,8 +224,8 @@ players, the most of any game so far.
 - **FR-009**: A player's lives MUST be 5 minus all the lives lost so far, and
   never below 0. A player at 0 lives is out.
 - **FR-010**: The next round's number of cards MUST be 1 for the first round
-  and for the round after any round that put a player out; otherwise one more
-  than the round before. There is no ceiling.
+  and one more than the round before for every other round, including the
+  round after a player is out. There is no ceiling.
 - **FR-011**: The next round's players MUST be the players with lives left.
 - **FR-012**: The most lives MUST win; players sharing the most lives are all
   winners. Positions follow the shell's rule (spec 003 research D2). (When one

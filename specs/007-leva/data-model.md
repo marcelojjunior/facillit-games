@@ -32,8 +32,7 @@ Participants = keys of `guesses`; `taken` must have exactly the same keys.
 `nextRound(rounds, players) → { cards, alive: PlayerRef[], lives: Scores }`
 
 - no valid rounds → cards 1
-- last valid round put someone from > 0 to 0 → cards 1
-- else → last.cards + 1
+- else → last.cards + 1 (also after an elimination: FR-010 as revised)
 
 ## Draft (round being typed)
 
