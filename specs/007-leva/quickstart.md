@@ -17,8 +17,8 @@ under 92 160 bytes gzip -9; the registry lists `meche-meche` and `leva`.
 3. Enter guesses, reload: guesses still there. Move to results, enter them,
    confirm; lives drop by |guess − taken|.
 4. Round 2 shows "2 cartas". A result total above the cards is accepted.
-5. Bring a player to 0: they disappear from the entry, round goes back to
-   "1 carta".
+5. Bring a player to 0: they disappear from the entry; the next round deals
+   one card more (no reset).
 6. Play until one is left: the entry says who won; confirm is disabled; finish
    shows that player as the winner.
 7. Fix an earlier round from the history: the sheet shows that round's cards
