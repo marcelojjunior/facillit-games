@@ -12,11 +12,13 @@ its own scoring rule.
 
 ## Current state
 
-The rewrite is in progress. Two sets of files coexist at the root:
+The rewrite is done and live at https://facillit-games.vercel.app/ (`main` is
+production). The original POC was retired at the cutover
+([`specs/008-cutover/`](specs/008-cutover/)).
 
 | | What it is |
 |---|---|
-| `index.html`, `script.js`, `style.css` | **Frozen POC.** Published and live until the cutover. **Do not apply new bug fixes** — the known bugs are acceptance criteria for the rewrite. |
+| `index.html` (root) and `.nojekyll` | **Redirect only.** GitHub Pages serves them from `main`, so the old address (`marcelojjunior.github.io/facillit-games/`) sends people to the new app. Not part of the build. |
 | `src/`, `tests/`, and the configuration | The new application (Astro). Foundation, game contract, persisted match store, and the game screens in a casual-mobile-game style (3D buttons, sky/night scene, the die mascot) delivered, plus two games playable on `/`: **MECHE-MECHE** ([`specs/005-meche-meche/`](specs/005-meche-meche/)) and **LEVA** ([`specs/007-leva/`](specs/007-leva/)). |
 
 The foundation is specified in
@@ -126,15 +128,11 @@ declares `astro: ^3||^4||^5` and `tailwindcss: ^3.0.24` — incompatible in two
 dimensions with Astro 7 + Tailwind 4. Tailwind comes in as a Vite plugin, in
 `astro.config.mjs`.
 
-### 3. `tsconfig.json` excludes the POC on purpose. Removing the `exclude` breaks the typecheck.
+### 3. (Retired) The POC exclusions
 
-The `astro/tsconfigs/base` preset brings `allowJs: true` with
-`include: ["${configDir}/**/*"]`. Without the exclusions, the 16 KB of
-`script.js` enter the TypeScript program and `pnpm typecheck` starts failing on
-errors in a file the constitution forbids fixing.
-
-The same three exclusions exist in `eslint.config.js` and `.prettierignore`. The
-Prettier one is the most important: unlike lint, `pnpm format` **writes**.
+`tsconfig.json`, `eslint.config.js`, and `.prettierignore` used to exclude the
+POC files; they left with the POC at the cutover
+([`specs/008-cutover/`](specs/008-cutover/)).
 
 ## Match state must be a `client:only` island
 

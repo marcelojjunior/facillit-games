@@ -7,16 +7,10 @@ import tseslint from 'typescript-eslint';
 // reports it as a hint on every typecheck.
 export default defineConfig([
   {
-    // The POC (index.html, script.js, style.css) stays frozen and published
-    // until the Phase 6 cutover. No tool in this repository may fail it or
-    // rewrite it (FR-015/FR-016 of spec 001).
     ignores: [
       'dist/',
       '.astro/',
       'node_modules/',
-      'index.html',
-      'script.js',
-      'style.css',
       // Maintained by the Spec Kit CLI, pinned at 1.2.5. Linting here would
       // create drift against the `init` diff, which the constitution requires
       // being able to review.

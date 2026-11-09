@@ -32,7 +32,7 @@ every principle is verifiable.
   on-screen messages, `lang="pt-BR"`.
 - When a Spec Kit command generates a spec, plan, or tasks file, write it in
   English even if the conversation is in Portuguese.
-- Exempt: the frozen POC and git history before constitution v1.1.0.
+- Exempt: git history before constitution v1.1.0.
 
 Constitution, Principle IX.
 
@@ -106,14 +106,14 @@ git switch -c feature/<slug>        # e.g. feature/game-contract
 
 A bug fix uses `bugfix/<slug>` the same way.
 
-### `main` until the cutover
+### `main` after the cutover
 
-- **`main` is frozen** with the published POC and only receives something at the
-  Phase 6 cutover, when the POC goes offline in the same move. Do not merge or
-  push anything to it before then.
-- Phases 3 to 6 branch from `develop` and merge back into it.
-- `main` is a direct ancestor of `develop`, so the cutover merge is a
-  fast-forward. Preserve that property: no direct commits on `main`.
+- **`main` is production** since the Phase 6 cutover (spec 008): Vercel
+  publishes it, and GitHub Pages serves its root `index.html`, which redirects
+  the old address to the new app.
+- Features and bug fixes branch from `develop` and merge back into it; a release
+  takes `develop` into `main`. Hotfixes branch from `main`.
+- No direct commits on `main`.
 
 ## Paperclip ↔ Spec Kit boundary
 
@@ -178,19 +178,13 @@ Changing any layer requires a constitution amendment.
 2. **A tie is a normal case.** `resolveWinners` returns a list, not a player.
 3. **Save on every mutation.** An in-progress match is identified by an explicit
    `status` field, never inferred from the number of rounds.
-4. **The POC is frozen.** `index.html`, `script.js`, and `style.css` are the
-   original POC, published and live until the cutover. Do not fix new bugs in
-   it; the known bugs are acceptance criteria for the rewrite.
-5. **Astro's `tsconfig` would drag the POC into the typecheck.** The
-   `astro/tsconfigs/base` preset brings `allowJs: true` with
-   `include: ["${configDir}/**/*"]`. Without the explicit `exclude` of
-   `script.js`, `index.html`, and `style.css`, `script.js` enters the TypeScript
-   program and `pnpm typecheck` starts failing on errors in a file that pitfall
-   4 forbids fixing — the command would only pass by violating the freeze. The
-   same three exclusions exist in `eslint.config.js` and `.prettierignore`; the
-   Prettier one is the most critical, because `pnpm format` **writes**. Do not
-   remove any of the three without reading
-   [`specs/001-astro-foundation/research.md`](specs/001-astro-foundation/research.md).
+4. **The root `index.html` is not the app.** Since the cutover (spec 008) it
+   only redirects the old GitHub Pages address to
+   `https://facillit-games.vercel.app/`; the app is built from `src/` into
+   `dist/`. Keep `.nojekyll` next to it, or Pages runs Jekyll over the docs.
+5. **(Retired at the cutover.)** The POC's tool exclusions in `tsconfig.json`,
+   `eslint.config.js`, and `.prettierignore` left with the POC; see
+   [`specs/008-cutover/`](specs/008-cutover/).
 6. **Prettier formats code, not prose.** `*.md`, `.specify/`, and `.claude/` are
    in `.prettierignore`. Without that, `pnpm format` rewrites the YAML
    frontmatter of the Spec Kit skills and stretches the tables in this file

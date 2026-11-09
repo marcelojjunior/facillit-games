@@ -17,18 +17,8 @@
     "jsxImportSource": "react"
   },
 
-  // WARNING: this `exclude` is not hygiene, it is a blocker.
-  //
-  // The astro/tsconfigs/base preset brings `allowJs: true` with
-  // `include: ["${configDir}/**/*"]`. Without the three POC lines below, the
-  // 16 KB of script.js enter the TypeScript program and `pnpm typecheck`
-  // starts failing on errors in a file the constitution forbids fixing (the
-  // POC stays frozen and published until the Phase 6 cutover). The command
-  // would only pass by violating the freeze.
-  //
-  // Overriding `exclude` also drops the preset's `["${configDir}/dist"]`, so
-  // `dist` has to be repeated here.
-  //
-  // See specs/001-astro-foundation/research.md, Decision 3.
-  "exclude": ["dist", "node_modules", ".astro", "index.html", "script.js", "style.css"]
+  // Overriding `exclude` drops the preset's `["${configDir}/dist"]`, so `dist`
+  // is repeated here. (The POC exclusions of specs/001-astro-foundation
+  // research D3 left with the POC at the cutover, spec 008.)
+  "exclude": ["dist", "node_modules", ".astro"]
 }
