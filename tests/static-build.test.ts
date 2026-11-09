@@ -275,12 +275,11 @@ describe('redirect page at the old address (spec 008)', () => {
     expect(page()).toContain(`location.replace('${NEW_APP}')`);
   });
 
-  it('shows the move, the lost match, and a link without scripts (FR-002)', () => {
+  it('shows the move and a link without scripts (FR-002)', () => {
     const html = page();
     expect(html).toMatch(/<html lang="pt-BR">/);
     expect(html).toMatch(new RegExp(`<a\\b[^>]*href="${NEW_APP}"`));
     expect(html).toContain('mudou');
-    expect(html).toContain('partida');
   });
 
   it('loads nothing else (FR-003)', () => {

@@ -16,8 +16,9 @@ Pages from `main` at `https://marcelojjunior.github.io/facillit-games/`.
 ### Session 2026-11-09
 
 - Q: A match in progress in the POC cannot move to the new app (another
-  address, so the browser keeps it apart). What do we do? → A: only tell the
-  user; nothing of the old match is shown or kept.
+  address, so the browser keeps it apart). What do we do? → A: nothing; the
+  old match is not shown or kept. (First answered "only tell the user"; after
+  seeing the page the owner removed that sentence.)
 - Q: Should the old address send people to the new one by itself? → A: yes, at
   once. If the script does not run, the page shows a fallback message and a
   button to the new address.
@@ -45,9 +46,8 @@ button opens the new address.
    browser goes to the new address at once, without leaving the old page in
    the back history.
 2. **Given** the old address, **When** it opens with scripts off (or the
-   redirect fails), **Then** it shows, in Portuguese, that the app moved, that a
-   match in progress in the old version is not carried over, and a button to
-   the new address.
+   redirect fails), **Then** it shows, in Portuguese, that the app moved and a
+   button to the new address.
 3. **Given** the fallback page, **When** it shows on a 360 px phone, **Then**
    it fits without sideways scrolling and the button is at least 44×44 px.
 
@@ -74,7 +74,7 @@ the guards that excluded them from the tools are gone; the docs describe
 ### Edge Cases
 
 - **A match in progress in the POC**: lost at the new address (another
-  origin); the fallback text says so. Nothing is migrated (owner's decision).
+  origin). Nothing is migrated or announced (owner's decision).
 - **Deep paths of the old address** (e.g. `/facillit-games/style.css`): they
   stop existing; GitHub Pages' own "not found" page applies.
 - **Old home-screen icons**: they open the old address, which redirects.
@@ -87,8 +87,8 @@ the guards that excluded them from the tools are gone; the docs describe
   `https://facillit-games.vercel.app/` as soon as it loads, replacing the
   current history entry.
 - **FR-002**: The same page MUST show, without depending on scripts, a
-  Portuguese message that the app moved, that a match in progress in the old
-  version is not carried over, and a button (a plain link) to the new address.
+  Portuguese message that the app moved and a button (a plain link) to the new
+  address.
 - **FR-003**: The page MUST be self-contained: no other file, font, script, or
   stylesheet from any host; at 360 px it fits without sideways scrolling and
   the button is at least 44×44 px.
