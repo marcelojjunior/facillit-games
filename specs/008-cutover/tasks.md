@@ -20,4 +20,4 @@ Rules: tests first; before each commit the full gate (`pnpm build && pnpm test
 
 - [X] T004 [US2] Delete `script.js` and `style.css`; add an empty `.nojekyll`; remove the POC exclusions from `.prettierignore`, `eslint.config.js`, `tsconfig.json`
 - [X] T005 [US2] Update README.md, AGENTS.md, CLAUDE.md for the state after the cutover (FR-006)
-- [ ] T006 Gate; PR into `develop`; after the owner's go-ahead, fast-forward `main` to `develop` (FR-007)
+- [X] T006 Gate; PR into `develop`; after the owner's go-ahead, fast-forward `main` to `develop` (FR-007)
