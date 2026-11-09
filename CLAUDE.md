@@ -18,8 +18,9 @@ Summary of what you cannot get wrong:
 4. **Pure client-side.** No backend, no API, no auth. Only `localStorage`.
 5. **`localStorage` does not exist at build time.** Match state only in a
    `client:only` island.
-6. **The POC is frozen.** `index.html`, `script.js`, `style.css` stay live until
-   the cutover and receive no new fixes.
+6. **The POC is gone (cutover, spec 008).** The root `index.html` is only the
+   redirect from the old GitHub Pages address to the new app; `main` is
+   production and receives releases from `develop`.
 7. **English in the repo, Portuguese for the user.** Code, comments, docs,
    specs, commits, branches, and PRs in English; only user-facing copy in pt-BR.
 8. **Git.** Branches `feature/|bugfix/|hotfix/<slug>` or `release/vX.Y.Z`

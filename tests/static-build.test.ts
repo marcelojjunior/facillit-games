@@ -34,7 +34,6 @@ function inlineScripts(html: string): string[] {
   );
 }
 const indexHtmlPath = `${repoRoot}dist/index.html`;
-const pocFiles = ['index.html', 'script.js', 'style.css'] as const;
 
 describe('static artifact', () => {
   beforeAll(() => {
@@ -266,21 +265,31 @@ describe('no test game in the artifact (SC-006, FR-025)', () => {
   });
 });
 
-describe('frozen POC', () => {
-  // The POC stays published and live until the Phase 6 cutover. The main
-  // defense is the exclusions in .prettierignore, eslint.config.js, and
-  // tsconfig.json -- but those fail silently if someone removes them. This one
-  // fails loudly.
-  it.each(pocFiles)('%s still exists at the repo root', (file) => {
-    expect(existsSync(`${repoRoot}${file}`)).toBe(true);
+describe('redirect page at the old address (spec 008)', () => {
+  // GitHub Pages serves the repository root of `main`; after the cutover the
+  // root index.html only sends people to the new app.
+  const NEW_APP = 'https://facillit-games.vercel.app/';
+  const page = () => readFileSync(`${repoRoot}index.html`, 'utf8');
+
+  it('redirects at once, replacing the history entry (FR-001)', () => {
+    expect(page()).toContain(`location.replace('${NEW_APP}')`);
   });
 
-  it('is not overwritten by the build artifact', () => {
-    // dist/index.html is the new application; index.html at the root is the
-    // POC. If the output directory were the root, the build would wipe the
-    // published POC (FR-017).
-    const pocHtml = readFileSync(`${repoRoot}index.html`, 'utf8');
+  it('shows the move, the lost match, and a link without scripts (FR-002)', () => {
+    const html = page();
+    expect(html).toMatch(/<html lang="pt-BR">/);
+    expect(html).toMatch(new RegExp(`<a\\b[^>]*href="${NEW_APP}"`));
+    expect(html).toContain('mudou');
+    expect(html).toContain('partida');
+  });
 
-    expect(pocHtml).not.toMatch(/<astro-island\b/);
+  it('loads nothing else (FR-003)', () => {
+    expect(page()).not.toMatch(/\b(src|href)="(?!https:\/\/facillit-games\.vercel\.app\/")/);
+  });
+
+  it('is the only file left of the POC, and Pages skips Jekyll (FR-004, FR-005)', () => {
+    expect(existsSync(`${repoRoot}script.js`)).toBe(false);
+    expect(existsSync(`${repoRoot}style.css`)).toBe(false);
+    expect(existsSync(`${repoRoot}.nojekyll`)).toBe(true);
   });
 });

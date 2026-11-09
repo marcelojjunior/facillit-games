@@ -1,86 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Facillit Games - Jogo de Pontuação</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body>
-  <div class="app-container">
-    <header>
-      <h1 class="app-title"><i class="fa-solid fa-diamond"></i> Facillit Games</h1>
-    </header>
-
-    <!-- Cadastro de Jogadores -->
-    <section id="player-setup" class="card">
-      <h2><i class="fas fa-users"></i> Cadastro de Jogadores</h2>
-      <form id="player-form" autocomplete="off">
-        <div class="input-group">
-          <input type="text" id="player-name" placeholder="Nome do jogador" maxlength="20" required />
-          <button type="submit" id="add-player-btn"><i class="fas fa-plus"></i></button>
-        </div>
-      </form>
-      <ul id="player-list" class="players-list"></ul>
-      <button id="start-game" disabled>Iniciar Partida</button>
-    </section>
-
-    <!-- Gerenciamento de Partida e Rodadas -->
-    <section id="game-section" class="card hidden">
-      <div class="game-actions">
-        <button id="finish-game"><i class="fas fa-flag-checkered"></i> Finalizar</button>
-        <button id="reset-all"><i class="fas fa-redo"></i> Reiniciar</button>
-      </div>
-
-      <div id="round-info">
-        <h2>Rodada <span id="current-round">1</span></h2>
-        <div id="points-available">
-          <h3>Pontuações Disponíveis</h3>
-          <ul id="points-list"></ul>
-        </div>
-        <form id="score-form">
-          <h3>Registrar Pontuação</h3>
-          <div id="players-score-inputs"></div>
-          <button type="submit">Finalizar Rodada</button>
-        </form>
-      </div>
-
-      <div id="score-table-section">
-        <h3>Tabela de Pontuação</h3>
-        <div class="table-controls"></div>
-        <table id="score-table"></table>
-      </div>
-    </section>
-
-    <!-- Modal de Confirmação de Finalização de Partida -->
-    <div id="finish-modal" class="modal hidden">
-      <div class="modal-content">
-        <h2>Tabela de Pontuação</h2>
-        <div id="finish-score-table-section">
-          <table id="finish-score-table"></table>
-        </div>
-        <p>Deseja realmente finalizar a partida ou continuar?</p>
-        <div class="modal-content-buttons">
-          <button id="continue-game">Continuar</button>
-          <button id="confirm-finish">Finalizar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de Vencedor -->
-    <div id="winner-modal" class="modal hidden">
-      <div class="modal-content" style="position:relative;overflow:hidden;">
-        <div id="confetti-canvas-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></div>
-        <div style="position:relative;z-index:2;">
-          <h2 style="text-align: center;">🏆 Vencedor!</h2>
-          <p id="winner-name" style="font-size:1.5em;font-weight:bold;"></p>
-          <button id="new-game-btn">Novo jogo</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="script.js"></script>
-</body>
-</html> 
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Facillit Games mudou de endereço</title>
+    <!-- Spec 008: the old address (GitHub Pages) sends people to the new app.
+         The body below is the fallback when this script does not run. -->
+    <script>
+      location.replace('https://facillit-games.vercel.app/');
+    </script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background: linear-gradient(180deg, #6fd3f2, #c8f5e4);
+        color: #23264f;
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        text-align: center;
+      }
+      main {
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 28px 20px;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 8px 0 #d9e1ec;
+      }
+      h1 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+      }
+      p {
+        font-size: 1.05rem;
+        line-height: 1.45;
+      }
+      a {
+        display: block;
+        min-height: 48px;
+        padding: 12px 20px;
+        border-radius: 16px;
+        background: #1f7fe0;
+        box-shadow: 0 6px 0 #155ab0;
+        color: #ffffff;
+        font-size: 1.15rem;
+        font-weight: 800;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>O Facillit Games mudou de endereço</h1>
+      <p>O placar agora está em um site novo, com MECHE-MECHE e LEVA.</p>
+      <p>Uma partida que estava em andamento nesta versão antiga não vai para o site novo.</p>
+      <a href="https://facillit-games.vercel.app/">Ir para o site novo</a>
+    </main>
+  </body>
+</html>
