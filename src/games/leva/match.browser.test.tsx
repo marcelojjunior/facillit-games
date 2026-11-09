@@ -114,25 +114,26 @@ describe('a full LEVA match (SC-001, SC-004)', () => {
     await expectLives(screen, { Ana: 4, Bia: 0, Caio: 4, Duda: 0 });
     expect(playing(screen)).toEqual(['Ana', 'Caio']);
 
-    // Round 4 back to 1 card. The guesses survive a reload (SC-004).
-    await guess(screen, 1, { Ana: 1, Caio: 1 });
+    // Round 4: the count goes on, 4 cards (FR-010 as revised). The guesses
+    // survive a reload (SC-004).
+    await guess(screen, 4, { Ana: 1, Caio: 1 });
     await screen.unmount();
     screen = await open();
     await expect
-      .element(screen.getByRole('button', { name: 'Caio: palpite Leva', exact: true }))
+      .element(screen.getByRole('button', { name: 'Caio: palpite 1', exact: true }))
       .toHaveAttribute('aria-pressed', 'true');
     // Caio 1/0 −1 → 4 3.
-    await result(screen, 5, 1, { Ana: 1, Caio: 0 });
+    await result(screen, 5, 4, { Ana: 1, Caio: 0 });
     await expectLives(screen, { Ana: 4, Caio: 3 });
 
-    // Round 5, 2 cards: Ana 1/0 −1, Caio 0/2 −2 → 3 1.
-    await guess(screen, 2, { Ana: 1, Caio: 0 });
-    await result(screen, 6, 2, { Ana: 0, Caio: 2 });
+    // Round 5, 5 cards: Ana 1/0 −1, Caio 0/2 −2 → 3 1.
+    await guess(screen, 5, { Ana: 1, Caio: 0 });
+    await result(screen, 6, 5, { Ana: 0, Caio: 2 });
     await expectLives(screen, { Ana: 3, Caio: 1 });
 
-    // Round 6, 3 cards: Caio 2/0 −2, floored at 0 → 3 0. Ana is left.
-    await guess(screen, 3, { Ana: 1, Caio: 2 });
-    await result(screen, 7, 3, { Ana: 1, Caio: 0 });
+    // Round 6, 6 cards: Caio 2/0 −2, floored at 0 → 3 0. Ana is left.
+    await guess(screen, 6, { Ana: 1, Caio: 2 });
+    await result(screen, 7, 6, { Ana: 1, Caio: 0 });
     await expectLives(screen, { Ana: 3, Bia: 0, Caio: 0, Duda: 0 });
     await expect.element(screen.getByTestId('leva-over')).toMatchTextContent('Vitória de Ana!');
     await expect.element(screen.getByTestId('confirm-round')).toBeDisabled();

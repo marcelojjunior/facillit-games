@@ -65,12 +65,12 @@ describe('LEVA RoundEntry', () => {
     await expect.element(screen.getByText('4 vidas')).toBeVisible();
   });
 
-  it('shows only the players with lives left, after 1 card again', async () => {
+  it('shows only the players with lives left, and keeps counting cards', async () => {
     const out = { cards: 5, guesses: { ...zeros(everyone), [bia]: 5 }, taken: zeros(everyone) };
     const screen = await render(
       <RoundEntryHarness Entry={RoundEntry} players={three} rounds={[out]} emitted={[]} />,
     );
-    await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('1 carta');
+    await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('6 cartas');
     expect(playerNames(screen.container)).toEqual(['Ana', 'Caio']);
   });
 
