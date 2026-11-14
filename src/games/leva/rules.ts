@@ -144,15 +144,6 @@ export function firstFrom(
     .find((player): player is PlayerRef => player !== undefined && among.includes(player.id));
 }
 
-/** `playing` rotated to begin at the starter; unchanged if the starter is not in it. */
-export function fromStarter(
-  playing: readonly PlayerRef[],
-  starterId: string | undefined,
-): readonly PlayerRef[] {
-  const at = playing.findIndex((player) => player.id === starterId);
-  return at <= 0 ? playing : [...playing.slice(at), ...playing.slice(0, at)];
-}
-
 export interface NextRound {
   readonly cards: number;
   /** Players with lives left, in roster order. */

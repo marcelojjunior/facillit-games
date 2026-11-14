@@ -54,6 +54,12 @@ Players in examples: A, B, C, D = the `ana`, `bia`, `caio`, `duda` fixtures of
 - [X] T011 Run [quickstart.md](./quickstart.md) by hand at 360×640, light and dark; confirm `git diff --stat develop` touches only `src/games/leva/` and `specs/` (SC-004)
 - [X] T012 Mark `specs/009-leva-round-starter/spec.md` **Status** as Implemented, and record in it any place where the implementation had to differ (constitution VIII)
 
+## Phase 6: Revision — keep the setup order (owner, after implementation)
+
+- [X] T013 Update spec, plan, research D3, data model, and quickstart: the list keeps setup order in every round, only the "Começa" mark moves (FR-006, SC-003)
+- [X] T014 Remove `fromStarter` from `src/games/leva/rules.ts` and its tests in `src/games/leva/rules.test.ts`; render `playing` as is in `src/games/leva/RoundEntry.tsx`
+- [X] T015 Update `src/games/leva/RoundEntry.browser.test.tsx` and `src/games/leva/match.browser.test.tsx` to expect setup order with the mark on the starter only; run the gate and check the app at 360×640
+
 ## Dependencies
 
 - T001 → everything.
