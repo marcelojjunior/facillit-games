@@ -27,6 +27,7 @@ Overlays on any screen: discard notice (once, FR-015), not-saved warning
 | Setup | Adicionar | `addPlayer(name)` | — |
 | Setup | rename (tap name) | `renamePlayer(id, name)` | — |
 | Setup | Remover | `removePlayer(id)` | — |
+| Setup | Subir / Descer (spec 010) | `movePlayer(id, 'up' \| 'down')` | — |
 | Setup | Iniciar partida | `start()` | — |
 | Setup | Abandonar | `discardMatch()` | yes |
 | In progress | edit entry | `updateDraft(value)` on every change | — |

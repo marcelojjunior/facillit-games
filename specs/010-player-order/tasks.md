@@ -45,9 +45,9 @@ format:check`); no AI attribution.
 
 ## Phase 5: Polish
 
-- [ ] T010 [P] Add `movePlayer` to `specs/002-game-contract/contracts/match-store.md` and the arrows to setup in `specs/003-shell-screens/contracts/screens.md`
-- [ ] T011 Run [quickstart.md](./quickstart.md) by hand at 360×640, light and dark; confirm `git diff --stat` touches nothing under `src/games/` (SC-005)
-- [ ] T012 Mark `specs/010-player-order/spec.md` **Status** as Implemented, recording any difference (constitution VIII)
+- [X] T010 [P] Add `movePlayer` to `specs/002-game-contract/contracts/match-store.md` and the arrows to setup in `specs/003-shell-screens/contracts/screens.md`
+- [X] T011 Run [quickstart.md](./quickstart.md) by hand at 360×640, light and dark; confirm `git diff --stat` touches nothing under `src/games/` (SC-005)
+- [X] T012 Mark `specs/010-player-order/spec.md` **Status** as Implemented, recording any difference (constitution VIII)
 
 ## Dependencies
 

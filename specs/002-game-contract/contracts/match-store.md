@@ -85,6 +85,7 @@ type MatchError =
 | `addPlayer` | `name: string` |
 | `renamePlayer` | `playerId: string, name: string` |
 | `removePlayer` | `playerId: string` |
+| `movePlayer` | `playerId: string, direction: 'up' \| 'down'` (setup only; added by spec 010) |
 | `start` | — |
 | `updateDraft` | `draft: unknown` (must be JSON-serializable) |
 | `confirmRound` | `input: unknown` |
