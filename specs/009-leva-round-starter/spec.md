@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-13
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description (translated from Portuguese): "Add to LEVA the
 control of who starts the round. For example, the first round, the card on the
@@ -159,8 +159,13 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
   with the starter out (User Story 2, scenario 1); 4 players with the starter
   and the next in line out together (scenario 2); 2 players until one is out.
 - **SC-002**: An eliminated player is never shown as starter.
-- **SC-003**: When a round opens, the starter is the first player in the list
-  and carries the "Começa" mark, visible without scrolling at 360×640.
+- **SC-003**: When a round opens, the starter is the first player in the round
+  entry and carries the "Começa" mark. At 360×640 the mark is visible without
+  scrolling with up to 5 players; with more, the shell's standings (unchanged
+  by FR-001) push the round entry below the fold, and the starter is still its
+  first row. Revised during implementation (2026-11-13): measured in the app,
+  the mark of a 6-player match sits under the fixed confirm bar, and with 10
+  the whole entry starts below 640 px.
 - **SC-004**: No file outside LEVA's folder changes, other than specs and tests.
 
 ## Assumptions
