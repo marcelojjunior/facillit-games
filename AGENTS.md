@@ -49,14 +49,19 @@ For anything that **creates or changes a game rule, persisted schema, or
 user-visible flow** (new game, scoring change, new screen):
 
 ```
-/speckit-specify  →  /speckit-clarify (optional, recommended)
+/speckit-specify  →  /speckit-clarify
                   →  /speckit-plan
+                  →  /speckit-checklist
                   →  /speckit-tasks
+                  →  /speckit-analyze
                   →  /speckit-implement
+                  →  /speckit-converge
 ```
 
-Optional ones worth running: `/speckit-checklist` after plan,
-`/speckit-analyze` before implement.
+Every step runs, in this order; none is optional. `/speckit-converge` appends
+any unbuilt work to `tasks.md`; run `/speckit-implement` again until converge
+finds nothing left. When a later decision changes the spec, go back to
+`/speckit-clarify` and redo the steps after it.
 
 ### Track 2 — bug fix
 
