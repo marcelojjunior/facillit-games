@@ -74,8 +74,8 @@ commit with normal review. Do **not** run the full cycle for these.
 ### Do not use
 
 `/speckit-taskstoissues` (and its replacement `/speckit-github-taskstoissues`).
-They create GitHub Issues, which would be a third source of truth next to
-Paperclip and the specs. See the boundary below.
+They create GitHub Issues, which would be a second source of truth next to the
+specs. See "Specs are the single source of truth" below.
 
 ## Git
 
@@ -115,25 +115,19 @@ A bug fix uses `bugfix/<slug>` the same way.
   takes `develop` into `main`. Hotfixes branch from `main`.
 - No direct commits on `main`.
 
-## Paperclip ↔ Spec Kit boundary
+## Specs are the single source of truth
 
-Both are "places where specification lives". Without a rule, they silently
-diverge. The rule is:
-
-| | Paperclip | Spec Kit (git) |
-|---|---|---|
-| Answers | **why** and **who/when** | **what** and **how** |
-| Contains | issue, approval, cost, priority, phase sequencing | `spec.md`, `plan.md`, `tasks.md` |
-| Granularity | phase / feature | requirement / task |
+`spec.md`, `plan.md`, and `tasks.md` in git hold the **what** and the **how**
+of every feature. There is no other place where specification lives.
 
 - No implementation task starts without a **committed** `spec.md`.
-- The Paperclip task **cites the path of the spec** that governs it
-  (e.g. `specs/003-meche-meche/spec.md`).
+- Every implementation task **cites the path of the spec** that governs it
+  (e.g. `specs/005-meche-meche/spec.md`).
 - Review checks the code **against the spec**, not only against the diff.
 - If reality contradicts the spec during implementation, **update the spec in
   the same PR**. Implementing differently and moving on is a violation.
-- Spec Kit does **not** create cards in Paperclip. `tasks.md` is the feature's
-  internal checklist.
+- `tasks.md` is the feature's internal checklist; it is not mirrored anywhere
+  else.
 
 ## Spec Kit CLI
 
@@ -218,12 +212,12 @@ Changing any layer requires a constitution amendment.
     `could not read Username`. This is **not** the sandbox — it fails the same
     with and without it. The decisive diagnostic is `security default-keychain`:
     if it answers "A default keychain could not be found", it is this pitfall
-    and the token is fine. Prefix the command with the host `HOME`, which the
-    runtime already exposes:
+    and the token is fine. Prefix the command with the user's real home
+    directory (the one that holds `Library/Keychains/login.keychain-db`):
 
     ```sh
-    HOME="$PAPERCLIP_GITHUB_HOST_HOME" gh auth status
-    HOME="$PAPERCLIP_GITHUB_HOST_HOME" \
+    HOME="/Users/<user>" gh auth status
+    HOME="/Users/<user>" \
       git -c credential.helper='!gh auth git-credential' push origin <branch>
     ```
 
