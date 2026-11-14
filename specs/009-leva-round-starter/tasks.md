@@ -51,8 +51,8 @@ Players in examples: A, B, C, D = the `ana`, `bia`, `caio`, `duda` fixtures of
 
 ## Phase 5: Polish
 
-- [ ] T011 Run [quickstart.md](./quickstart.md) by hand at 360×640, light and dark; confirm `git diff --stat develop` touches only `src/games/leva/` and `specs/` (SC-004)
-- [ ] T012 Mark `specs/009-leva-round-starter/spec.md` **Status** as Implemented, and record in it any place where the implementation had to differ (constitution VIII)
+- [X] T011 Run [quickstart.md](./quickstart.md) by hand at 360×640, light and dark; confirm `git diff --stat develop` touches only `src/games/leva/` and `specs/` (SC-004)
+- [X] T012 Mark `specs/009-leva-round-starter/spec.md` **Status** as Implemented, and record in it any place where the implementation had to differ (constitution VIII)
 
 ## Dependencies
 
