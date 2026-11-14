@@ -126,28 +126,71 @@ export const resolveWinners: GameDefinition<LevaRound>['resolveWinners'] = (tota
   return players.filter((player) => totals[player.id] === best).map((player) => player.id);
 };
 
+/**
+ * The first player of `among` (ids) found going forward in cyclic roster order
+ * from `fromId`, inclusive (spec 009 FR-003); `undefined` when `among` is empty.
+ */
+export function firstFrom(
+  players: readonly PlayerRef[],
+  fromId: string,
+  among: readonly string[],
+): PlayerRef | undefined {
+  const start = Math.max(
+    0,
+    players.findIndex((player) => player.id === fromId),
+  );
+  return players
+    .map((_, offset) => players[(start + offset) % players.length])
+    .find((player): player is PlayerRef => player !== undefined && among.includes(player.id));
+}
+
+/** `playing` rotated to begin at the starter; unchanged if the starter is not in it. */
+export function fromStarter(
+  playing: readonly PlayerRef[],
+  starterId: string | undefined,
+): readonly PlayerRef[] {
+  const at = playing.findIndex((player) => player.id === starterId);
+  return at <= 0 ? playing : [...playing.slice(at), ...playing.slice(0, at)];
+}
+
 export interface NextRound {
   readonly cards: number;
   /** Players with lives left, in roster order. */
   readonly alive: readonly PlayerRef[];
   readonly lives: Scores;
+  /** The id the next rotation starts from: the player after the last starter (spec 009). */
+  readonly from: string;
+  /** Who guesses first in the next round: `firstFrom(players, from, alive)`. */
+  readonly starter: PlayerRef | undefined;
 }
 
 /**
- * The round to deal after the stored `rounds` (research D4): 1 card at the
- * start, else one more than the round before, also after an elimination
- * (FR-010 as revised). Rounds the rules do not accept are skipped.
+ * The round to deal after the stored `rounds` (spec 007 research D4): 1 card
+ * at the start, else one more than the round before, also after an
+ * elimination (FR-010 as revised). Rounds the rules do not accept are skipped,
+ * and do not advance the starter either (spec 009 FR-005). Each round's
+ * starter is picked among that round's own players (spec 009 FR-003).
  */
 export function nextRound(rounds: readonly unknown[], players: readonly PlayerRef[]): NextRound {
   const scores: Scores[] = [];
   let cards = 1;
+  let from = players[0]?.id ?? '';
   for (const input of rounds) {
     const result = validateRound(input, players);
     if (result.ok) {
       scores.push(scoreRound(result.round, players));
       cards = result.round.cards + 1;
+      const starter = firstFrom(players, from, Object.keys(result.round.guesses));
+      const at = players.findIndex((player) => player.id === starter?.id);
+      from = players[(at + 1) % players.length]?.id ?? from;
     }
   }
   const lives = computeTotals(scores, players);
-  return { cards, alive: players.filter((player) => (lives[player.id] ?? 0) > 0), lives };
+  const alive = players.filter((player) => (lives[player.id] ?? 0) > 0);
+  const starter = firstFrom(
+    players,
+    from,
+    alive.map((player) => player.id),
+  );
+  return { cards, alive, lives, from, starter };
 }

@@ -1,6 +1,6 @@
 /**
  * LEVA round entry (spec 007 FR-014–FR-019, research D5–D7; the round-entry
- * contract of spec 003, rule 7).
+ * contract of spec 003, rule 7; the round starter of spec 009 FR-006, FR-007).
  */
 import { describe, expect, it } from 'vitest';
 import { render, type RenderResult } from 'vitest-browser-react';
@@ -29,6 +29,13 @@ function playerNames(root: HTMLElement): string[] {
   return [...root.querySelectorAll('[data-testid="leva-player"] [title]')].map(
     (element) => element.textContent ?? '',
   );
+}
+
+/** The names of the rows that carry the "Começa" mark. */
+function starterNames(root: HTMLElement): string[] {
+  return [...root.querySelectorAll('[data-testid="leva-player"]')]
+    .filter((row) => row.textContent?.includes('Começa'))
+    .map((row) => row.querySelector('[title]')?.textContent ?? '');
 }
 
 describe('LEVA RoundEntry', () => {
@@ -71,7 +78,8 @@ describe('LEVA RoundEntry', () => {
       <RoundEntryHarness Entry={RoundEntry} players={three} rounds={[out]} emitted={[]} />,
     );
     await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('6 cartas');
-    expect(playerNames(screen.container)).toEqual(['Ana', 'Caio']);
+    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana']);
+    expect(starterNames(screen.container)).toEqual(['Caio']);
   });
 
   it('takes the guesses, then the results with each guess shown, and goes back keeping them', async () => {
@@ -196,7 +204,8 @@ describe('LEVA RoundEntry', () => {
     );
     await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('4 cartas');
     await expect.element(screen.getByText('Quantas levou')).toBeVisible();
-    expect(playerNames(screen.container)).toEqual(['Ana', 'Caio']);
+    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana']);
+    expect(starterNames(screen.container)).toEqual(['Caio']);
     await tap(screen, 'Caio: levou 1');
     expect(emitted).toEqual([
       {
@@ -225,6 +234,67 @@ describe('LEVA RoundEntry', () => {
       .map((button) => button.getBoundingClientRect())
       .filter((box) => box.width < 43.5 || box.height < 43.5);
     expect(small).toEqual([]);
+  });
+
+  it('lists round 3 from its starter, marked "Começa", in both steps (spec 009)', async () => {
+    const rounds = [1, 2].map((cards) => ({
+      cards,
+      guesses: zeros(everyone),
+      taken: zeros(everyone),
+    }));
+    const screen = await render(
+      <RoundEntryHarness Entry={RoundEntry} players={three} rounds={rounds} emitted={[]} />,
+    );
+    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana', 'Bia']);
+    expect(starterNames(screen.container)).toEqual(['Caio']);
+    await screen.getByTestId('leva-step').click();
+    await expect.element(screen.getByText('Quantas levou')).toBeVisible();
+    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana', 'Bia']);
+    expect(starterNames(screen.container)).toEqual(['Caio']);
+  });
+
+  it('keeps the order on a reopened draft, and the draft in roster order (research D3)', async () => {
+    const emitted: unknown[] = [];
+    const rounds = [{ cards: 1, guesses: zeros(everyone), taken: zeros(everyone) }];
+    const screen = await render(
+      <RoundEntryHarness
+        Entry={RoundEntry}
+        players={three}
+        rounds={rounds}
+        initial={{ cards: 2, step: 'guess', guesses: { [caio]: 1 }, taken: {} }}
+        emitted={emitted}
+      />,
+    );
+    expect(playerNames(screen.container)).toEqual(['Bia', 'Caio', 'Ana']);
+    expect(starterNames(screen.container)).toEqual(['Bia']);
+    await tap(screen, 'Ana: palpite 2');
+    expect(Object.keys((emitted.at(-1) as { guesses: object }).guesses)).toEqual([ana, caio]);
+  });
+
+  it('never marks a player who is out', async () => {
+    // Ana starts round 1; Caio is out in it; Bia starts round 2.
+    const out = { cards: 5, guesses: { ...zeros(everyone), [caio]: 5 }, taken: zeros(everyone) };
+    const screen = await render(
+      <RoundEntryHarness Entry={RoundEntry} players={three} rounds={[out]} emitted={[]} />,
+    );
+    expect(playerNames(screen.container)).toEqual(['Bia', 'Ana']);
+    expect(starterNames(screen.container)).toEqual(['Bia']);
+  });
+
+  it('keeps the mark in view with 10 long names at 360×640 (FR-006, SC-003)', async () => {
+    const long = ten.map((player) => ({ ...player, name: `${player.name} da Silva Albuquerque` }));
+    const all = long.map((player) => player.id);
+    const rounds = [1, 2, 3, 4].map((cards) => ({ cards, guesses: zeros(all), taken: zeros(all) }));
+    const screen = await render(
+      <RoundEntryHarness Entry={RoundEntry} players={long} rounds={rounds} emitted={[]} />,
+    );
+    const mark = screen.getByText('Começa', { exact: true });
+    await expect.element(mark).toBeVisible();
+    expect(starterNames(screen.container)).toEqual(['Edu da Silva Albuquerque']);
+    const box = mark.element().getBoundingClientRect();
+    expect(box.right).toBeLessThanOrEqual(window.innerWidth);
+    expect(box.bottom).toBeLessThanOrEqual(window.innerHeight);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
   });
 
   it('reaches every value from 0 to 12 with taps', async () => {

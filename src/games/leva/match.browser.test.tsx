@@ -1,6 +1,6 @@
 /**
  * LEVA end to end through the real screens (spec 007 SC-001, SC-004, US1,
- * US2). Lives in the game folder so no shell file names the game. Lives are
+ * US2; spec 009 SC-001, the starter of every round). Lives in the game folder so no shell file names the game. Lives are
  * hand-computed constants, never recomputed by the rules.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -80,6 +80,17 @@ function playing(screen: RenderResult): string[] {
   ].map((element) => element.textContent ?? '');
 }
 
+/** The list on screen, from the starter, and the only row marked "Começa". */
+function expectStarter(screen: RenderResult, order: readonly string[]) {
+  expect(playing(screen)).toEqual(order);
+  const marked = [
+    ...screen.getByTestId('round-entry').element().querySelectorAll('[data-testid="leva-player"]'),
+  ].filter((element) => element.textContent?.includes('Começa'));
+  expect(marked.map((element) => element.querySelector('[title]')?.textContent)).toEqual([
+    order[0],
+  ]);
+}
+
 beforeEach(() => {
   localStorage.clear();
 });
@@ -97,25 +108,29 @@ describe('a full LEVA match (SC-001, SC-004)', () => {
     await expectScreen(screen, 'in-progress');
     await expectLives(screen, { Ana: 5, Bia: 5, Caio: 5, Duda: 5 });
 
-    // Round 1, 1 card: everybody right → 5 5 5 5.
+    // Round 1, 1 card, Ana starts: everybody right → 5 5 5 5.
+    expectStarter(screen, ['Ana', 'Bia', 'Caio', 'Duda']);
     await guess(screen, 1, { Ana: 1, Bia: 0, Caio: 0, Duda: 0 });
     await result(screen, 2, 1, { Ana: 1, Bia: 0, Caio: 0, Duda: 0 });
     await expectLives(screen, { Ana: 5, Bia: 5, Caio: 5, Duda: 5 });
 
-    // Round 2, 2 cards: Bia 2/0 −2, Caio 0/1 −1, Duda 2/0 −2 → 5 3 4 3.
+    // Round 2, 2 cards, Bia starts: Bia 2/0 −2, Caio 0/1 −1, Duda 2/0 −2 → 5 3 4 3.
+    expectStarter(screen, ['Bia', 'Caio', 'Duda', 'Ana']);
     await guess(screen, 2, { Ana: 1, Bia: 2, Caio: 0, Duda: 2 });
     await result(screen, 3, 2, { Ana: 1, Bia: 0, Caio: 1, Duda: 0 });
     await expectLives(screen, { Ana: 5, Bia: 3, Caio: 4, Duda: 3 });
 
-    // Round 3, 3 cards, one trick cancelled (2 of 3 taken): Ana 0/1 −1,
+    // Round 3, 3 cards, Caio starts, one trick cancelled (2 of 3 taken): Ana 0/1 −1,
     // Bia 3/0 −3, Duda 3/0 −3 → 4 0 4 0. Bia and Duda are out.
+    expectStarter(screen, ['Caio', 'Duda', 'Ana', 'Bia']);
     await guess(screen, 3, { Ana: 0, Bia: 3, Caio: 1, Duda: 3 });
     await result(screen, 4, 3, { Ana: 1, Bia: 0, Caio: 1, Duda: 0 });
     await expectLives(screen, { Ana: 4, Bia: 0, Caio: 4, Duda: 0 });
-    expect(playing(screen)).toEqual(['Ana', 'Caio']);
 
-    // Round 4: the count goes on, 4 cards (FR-010 as revised). The guesses
+    // Round 4: the count goes on, 4 cards (FR-010 as revised). Duda, next
+    // after Caio, is out, so Ana starts. The guesses
     // survive a reload (SC-004).
+    expectStarter(screen, ['Ana', 'Caio']);
     await guess(screen, 4, { Ana: 1, Caio: 1 });
     await screen.unmount();
     screen = await open();
@@ -126,12 +141,14 @@ describe('a full LEVA match (SC-001, SC-004)', () => {
     await result(screen, 5, 4, { Ana: 1, Caio: 0 });
     await expectLives(screen, { Ana: 4, Caio: 3 });
 
-    // Round 5, 5 cards: Ana 1/0 −1, Caio 0/2 −2 → 3 1.
+    // Round 5, 5 cards, Caio starts (Bia, next after Ana, is out): Ana 1/0 −1, Caio 0/2 −2 → 3 1.
+    expectStarter(screen, ['Caio', 'Ana']);
     await guess(screen, 5, { Ana: 1, Caio: 0 });
     await result(screen, 6, 5, { Ana: 0, Caio: 2 });
     await expectLives(screen, { Ana: 3, Caio: 1 });
 
-    // Round 6, 6 cards: Caio 2/0 −2, floored at 0 → 3 0. Ana is left.
+    // Round 6, 6 cards, Ana starts (Duda is out): Caio 2/0 −2, floored at 0 → 3 0. Ana is left.
+    expectStarter(screen, ['Ana', 'Caio']);
     await guess(screen, 6, { Ana: 1, Caio: 2 });
     await result(screen, 7, 6, { Ana: 1, Caio: 0 });
     await expectLives(screen, { Ana: 3, Bia: 0, Caio: 0, Duda: 0 });
