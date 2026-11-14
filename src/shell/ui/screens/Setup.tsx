@@ -1,5 +1,6 @@
 /**
- * Setup: add, rename, and remove players within the game's limits (FR-003).
+ * Setup: add, rename, and remove players within the game's limits (FR-003),
+ * and move them up or down to set the match order (spec 010).
  */
 import { useState } from 'react';
 
@@ -7,8 +8,14 @@ import type { MatchStore, MatchView } from '../../match/store';
 import { errorCopy, headings, labels, missingPlayersCopy, rosterLimitCopy } from '../copy';
 import type { Act } from '../MatchApp';
 import { AbandonDialog } from '../parts/AbandonDialog';
-import { PlusIcon, TrashIcon } from '../parts/icons';
-import { iconButton, primaryButton, secondaryButton, textInput } from '../parts/styles';
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from '../parts/icons';
+import {
+  iconButton,
+  primaryButton,
+  secondaryButton,
+  smallIconButton,
+  textInput,
+} from '../parts/styles';
 
 interface SetupProps {
   readonly view: MatchView;
@@ -87,7 +94,7 @@ export function Setup({ view, store, act, error }: SetupProps) {
             {count} / {game.maxPlayers}
           </p>
           <ul className="flex flex-col gap-2">
-            {match.players.map((player) => (
+            {match.players.map((player, index) => (
               <li
                 key={player.id}
                 className="flex min-h-14 items-center gap-2 rounded-control bg-surface-sunken p-1 pl-3"
@@ -127,6 +134,24 @@ export function Setup({ view, store, act, error }: SetupProps) {
                     {player.name}
                   </button>
                 )}
+                <button
+                  type="button"
+                  aria-label={`${labels.moveUp} ${player.name}`}
+                  disabled={index === 0}
+                  onClick={() => act(() => store.movePlayer(player.id, 'up'))}
+                  className={`${smallIconButton} shrink-0`}
+                >
+                  <ArrowUpIcon />
+                </button>
+                <button
+                  type="button"
+                  aria-label={`${labels.moveDown} ${player.name}`}
+                  disabled={index === count - 1}
+                  onClick={() => act(() => store.movePlayer(player.id, 'down'))}
+                  className={`${smallIconButton} shrink-0`}
+                >
+                  <ArrowDownIcon />
+                </button>
                 <button
                   type="button"
                   aria-label={`${labels.remove} ${player.name}`}

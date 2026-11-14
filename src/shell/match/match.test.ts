@@ -7,6 +7,7 @@ import {
   createMatch,
   createRematch,
   finish,
+  movePlayer,
   removeLastRound,
   removePlayer,
   renamePlayer,
@@ -163,6 +164,37 @@ describe('removePlayer', () => {
   it('rejects an unknown player, and any removal once started', () => {
     expect(errorCode(removePlayer(setUp(['Ana']), 'nope', context()))).toBe('player_not_found');
     expect(errorCode(removePlayer(inProgress(), 'p1', context()))).toBe('invalid_status');
+  });
+});
+
+describe('movePlayer (spec 010)', () => {
+  const names = (match: Match) => match.players.map((player) => player.name);
+
+  it('swaps a player with the neighbour above or below', () => {
+    const match = setUp(['Ana', 'Bia', 'Caio']);
+    expect(names(ok(movePlayer(match, 'p2', 'up', context())))).toEqual(['Bia', 'Ana', 'Caio']);
+    expect(names(ok(movePlayer(match, 'p2', 'down', context())))).toEqual(['Ana', 'Caio', 'Bia']);
+  });
+
+  it('swaps two players in one move', () => {
+    expect(names(ok(movePlayer(setUp(['Ana', 'Bia']), 'p1', 'down', context())))).toEqual([
+      'Bia',
+      'Ana',
+    ]);
+  });
+
+  it('leaves the match as it is past either end', () => {
+    const match = setUp(['Ana', 'Bia', 'Caio']);
+    expect(ok(movePlayer(match, 'p1', 'up', context()))).toEqual(match);
+    expect(ok(movePlayer(match, 'p3', 'down', context()))).toEqual(match);
+  });
+
+  it('rejects an unknown player, and any move once started', () => {
+    const ctx = context();
+    expect(errorCode(movePlayer(setUp(['Ana']), 'nope', 'up', context()))).toBe('player_not_found');
+    expect(errorCode(movePlayer(inProgress(), 'p2', 'up', context()))).toBe('invalid_status');
+    const finished = ok(finish(inProgress(['Ana', 'Bia'], ctx), ctx));
+    expect(errorCode(movePlayer(finished, 'p2', 'up', ctx))).toBe('invalid_status');
   });
 });
 

@@ -206,6 +206,36 @@ export function removePlayer(
   return succeed({ ...checked.match, players });
 }
 
+/**
+ * Swaps a player with the neighbour above or below, in setup only (spec 010).
+ * Past either end the match is returned unchanged, so a stale tap is harmless
+ * (research D3).
+ */
+export function movePlayer(
+  match: Match | null,
+  playerId: string,
+  direction: 'up' | 'down',
+  context: MatchContext,
+): MatchResult {
+  const checked = guard(match, ['setting_up'], context);
+  if (!checked.ok) {
+    return checked;
+  }
+  const players = [...checked.match.players];
+  const from = players.findIndex((player) => player.id === playerId);
+  if (from === -1) {
+    return fail('player_not_found');
+  }
+  const to = direction === 'up' ? from - 1 : from + 1;
+  const [moving, other] = [players[from], players[to]];
+  if (moving === undefined || other === undefined) {
+    return succeed(checked.match);
+  }
+  players[to] = moving;
+  players[from] = other;
+  return succeed({ ...checked.match, players });
+}
+
 export function start(match: Match | null, context: MatchContext): MatchResult {
   const checked = guard(match, ['setting_up'], context);
   if (!checked.ok) {

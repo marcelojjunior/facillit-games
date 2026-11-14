@@ -85,6 +85,7 @@ describe('match store — survives a closed tab (US2)', () => {
       ['addPlayer', () => store.addPlayer('Caio')],
       ['removePlayer', () => store.removePlayer('p3')],
       ['renamePlayer', () => store.renamePlayer('p1', 'Aninha')],
+      ['movePlayer', () => store.movePlayer('p2', 'up')],
       ['start', () => store.start()],
       ['updateDraft', () => store.updateDraft({ ranks: { p1: 1 } })],
       ['confirmRound', () => store.confirmRound(ranksInOrder(store))],
