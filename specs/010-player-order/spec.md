@@ -5,7 +5,7 @@ branch)
 
 **Created**: 2026-11-14
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description (translated from Portuguese): "To make it easier in
 case they want to change the order, add arrows to change the players'
@@ -138,5 +138,9 @@ move Ana to the bottom; start; Bia is marked "Começa" in round 1.
 - **Setup only**: the order cannot change during a match; to change it, use
   rematch or start a new match.
 - **Spec 009** said setup has no reordering; it now points here.
+- **Tests**: shell tests use only the test games (spec 003 FR-025), so the
+  LEVA starter after a reorder (User Story 1 scenario 5, User Story 2) was
+  checked by hand in the app, and follows from spec 009's tests (the starter of
+  round 1 is the first player in the stored order).
 - **Same branch as spec 009**: neither is merged yet, and this feature exists
   because of 009's starter rotation.
