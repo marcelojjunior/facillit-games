@@ -1,12 +1,16 @@
 <!--
 Sync Impact Report
-- Version: 1.0.0 -> 1.1.0 (MINOR)
-- Translated: whole document, pt-BR -> English (no semantic change to I-VIII)
-- Added principle: IX. English in the Repository, Portuguese for the User
-- Expanded section: Development Workflow -> Git conventions, No AI attribution
-  (replaces the former "Branches" paragraph)
+- Version: 1.1.0 -> 1.2.0 (MINOR)
+- Removed: Paperclip from the project. Paperclip is no longer used, so it is no
+  longer the gate for work or for amendments.
+- Renamed and reworded constraint: "Paperclip <-> Spec Kit boundary" ->
+  "Specs are the single source of truth" (the spec citation rule and the ban
+  on /speckit-taskstoissues are unchanged)
+- Changed section: Governance -> Amendment (the proposal lives in the pull
+  request; approval comes from the repository owner)
+- Principles I-IX: no change
 - Templates: no change required
-- Follow-up: AGENTS.md, CLAUDE.md, README.md updated in the same change
+- Follow-up: AGENTS.md updated in the same change
 -->
 
 # Facillit Games Constitution
@@ -146,13 +150,12 @@ user-visible flow** MUST start without a committed `spec.md`.
 React in islands, Vitest for tests, pnpm, static deploy on Vercel. Changing any
 layer MUST go through an amendment of this constitution.
 
-**Paperclip ↔ Spec Kit boundary.** Paperclip is the gate and the "why" (issue,
-approval, cost, priority, sequencing). `spec.md` in git is the "what" and the
-"how". Every implementation task MUST cite the path of the spec that governs
-it. Spec Kit MUST NOT create cards in Paperclip: `tasks.md` is the feature's
-internal checklist. `/speckit-taskstoissues` (and its replacement
-`/speckit-github-taskstoissues`) MUST NOT be used in this project — it would
-create a third source of truth in GitHub Issues.
+**Specs are the single source of truth.** `spec.md` in git is the "what" and
+the "how". Every implementation task MUST cite the path of the spec that
+governs it. `tasks.md` is the feature's internal checklist.
+`/speckit-taskstoissues` (and its replacement `/speckit-github-taskstoissues`)
+MUST NOT be used in this project — it would create a second source of truth in
+GitHub Issues.
 
 **Pinned CLI.** Spec Kit MUST be version `1.2.5`. `.specify/` and
 `.claude/skills/speckit-*` are versioned in git, so that every clone and every
@@ -198,8 +201,8 @@ conflict between the constitution and a plan, document, comment, or agent
 preference, the constitution wins.
 
 **Amendment.** Changing this constitution requires: (1) a proposal recorded in
-the Paperclip issue that motivated the change, (2) explicit human approval from
-the board, (3) a version increment according to the policy below, (4) updating
+the pull request that makes the change, (2) explicit approval from the
+repository owner, (3) a version increment according to the policy below, (4) updating
 `AGENTS.md`/`CLAUDE.md` if the workflow changes.
 
 **Versioning.** Semantic.
@@ -212,4 +215,4 @@ review. Complexity MUST be justified. Agents acting in this repository MUST read
 `AGENTS.md` before acting; it is the runtime operational guide and MUST remain
 consistent with this constitution.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
+**Version**: 1.2.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-14
