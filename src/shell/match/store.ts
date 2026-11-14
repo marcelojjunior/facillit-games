@@ -66,6 +66,7 @@ export interface MatchStore {
   addPlayer(name: string): OperationResult;
   renamePlayer(playerId: string, name: string): OperationResult;
   removePlayer(playerId: string): OperationResult;
+  movePlayer(playerId: string, direction: 'up' | 'down'): OperationResult;
   start(): OperationResult;
   updateDraft(draft: unknown): OperationResult;
   confirmRound(input: unknown): OperationResult;
@@ -189,6 +190,7 @@ export function createMatchStore(options: MatchStoreOptions): MatchStore {
     addPlayer: (name) => apply((m) => ops.addPlayer(m, name, context)),
     renamePlayer: (id, name) => apply((m) => ops.renamePlayer(m, id, name, context)),
     removePlayer: (id) => apply((m) => ops.removePlayer(m, id, context)),
+    movePlayer: (id, direction) => apply((m) => ops.movePlayer(m, id, direction, context)),
     start: () => apply((m) => ops.start(m, context)),
     updateDraft: (draft) => apply((m) => ops.updateDraft(m, draft, context)),
     confirmRound: (input) => apply((m) => ops.confirmRound(m, input, context)),

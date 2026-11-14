@@ -17,7 +17,7 @@ export type MatchStatus = 'setting_up' | 'in_progress' | 'finished';
 export interface Match {
   readonly gameId: string;
   readonly status: MatchStatus;
-  /** Order of addition; kept by a rematch (FR-017a). */
+  /** Setup order: addition, then moves (spec 010); kept by a rematch (FR-017a). */
   readonly players: readonly Player[];
   /** Confirmed round inputs, as accepted by the game, in play order (FR-002). */
   readonly rounds: readonly unknown[];

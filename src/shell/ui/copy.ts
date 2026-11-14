@@ -84,6 +84,8 @@ export const labels = {
   playerName: 'Nome do jogador',
   add: 'Adicionar',
   remove: 'Remover',
+  moveUp: 'Subir',
+  moveDown: 'Descer',
   rename: 'Renomear',
   ok: 'OK',
   start: 'Iniciar partida',
