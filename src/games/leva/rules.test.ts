@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   computeTotals,
+  firstFrom,
+  fromStarter,
   nextRound,
   resolveWinners,
   scoreRound,
@@ -193,6 +195,8 @@ describe('nextRound (FR-010, FR-011, research D4)', () => {
       cards: 1,
       alive: players,
       lives: { [ana]: 5, [bia]: 5, [caio]: 5, [duda]: 5 },
+      from: ana,
+      starter: players[0],
     });
   });
 
@@ -229,5 +233,132 @@ describe('nextRound (FR-010, FR-011, research D4)', () => {
 
   it('skips stored rounds the rules do not accept', () => {
     expect(nextRound([round(1, all, all), { nonsense: true }], players).cards).toBe(2);
+  });
+});
+
+describe('round starter (spec 009 FR-002–FR-005)', () => {
+  const ids = (list: readonly { id: string }[]) => list.map((player) => player.id);
+  const exact = (who: readonly string[]) => Object.fromEntries(who.map((id) => [id, 0]));
+  /** The starter of each round 1…rounds.length + 1, as `nextRound` derives it. */
+  const starters = (rounds: readonly unknown[], roster = players) =>
+    rounds
+      .map((_, k) => nextRound(rounds.slice(0, k), roster).starter?.id)
+      .concat(nextRound(rounds, roster).starter?.id);
+
+  describe('firstFrom', () => {
+    it('finds the first of `among` going forward from `fromId`, inclusive', () => {
+      expect(firstFrom(players, bia, [ana, bia, duda])?.id).toBe(bia);
+      expect(firstFrom(players, caio, [ana, bia, duda])?.id).toBe(duda);
+    });
+
+    it('wraps from the last player to the first', () => {
+      expect(firstFrom(players, duda, [ana, bia])?.id).toBe(ana);
+    });
+
+    it('returns undefined when `among` is empty', () => {
+      expect(firstFrom(players, ana, [])).toBeUndefined();
+    });
+  });
+
+  describe('fromStarter', () => {
+    it('rotates the list to begin at the starter', () => {
+      expect(ids(fromStarter(players, caio))).toEqual([caio, duda, ana, bia]);
+    });
+
+    it('keeps the list when the starter is missing or unknown', () => {
+      expect(ids(fromStarter(players, undefined))).toEqual(ids(players));
+      expect(ids(fromStarter(players.slice(0, 2), caio))).toEqual([ana, bia]);
+    });
+  });
+
+  it('rotates A, B, C, A among 3 players with nobody out', () => {
+    const three = players.slice(0, 3);
+    const all = exact(ids(three));
+    const rounds = [round(1, all, all), round(2, all, all), round(3, all, all)];
+    expect(starters(rounds, three)).toEqual([ana, bia, caio, ana]);
+  });
+
+  it('alternates between 2 players', () => {
+    const two = players.slice(0, 2);
+    const all = exact(ids(two));
+    expect(starters([round(1, all, all), round(2, all, all)], two)).toEqual([ana, bia, ana]);
+  });
+
+  it('skips the starter once they are out: D, A, B, D after C', () => {
+    const all = exact(ids(players));
+    const rest = exact([ana, bia, duda]);
+    const rounds = [
+      round(1, { ...all, [caio]: 1 }, all), // A starts; Caio −1 → 4
+      round(2, { ...all, [caio]: 2 }, all), // B starts; Caio −2 → 2
+      round(3, { ...all, [caio]: 3 }, all), // C starts; Caio −3 → 0: out
+      round(4, rest, rest),
+      round(5, rest, rest),
+      round(6, rest, rest),
+    ];
+    expect(starters(rounds)).toEqual([ana, bia, caio, duda, ana, bia, duda]);
+  });
+
+  it('skips the starter and the next in line out together: D, A, D', () => {
+    const all = exact(ids(players));
+    const rest = exact([ana, duda]);
+    const rounds = [
+      round(1, all, all), // A starts
+      round(5, { ...all, [bia]: 5, [caio]: 5 }, all), // B starts; Bia and Caio −5 → 0
+      round(3, rest, rest),
+      round(4, rest, rest),
+    ];
+    expect(starters(rounds)).toEqual([ana, bia, duda, ana, duda]);
+  });
+
+  it('does not advance on a round the rules reject', () => {
+    const all = exact(ids(players));
+    expect(nextRound([round(1, all, all), { nonsense: true }], players).starter?.id).toBe(bia);
+  });
+
+  it("gives back the removed last round's starter", () => {
+    const all = exact(ids(players));
+    const rounds = [round(1, all, all), round(2, all, all)];
+    expect(starters(rounds)[1]).toBe(bia);
+    expect(nextRound(rounds.slice(0, -1), players).starter?.id).toBe(bia);
+  });
+
+  it('does not depend on names (FR-008)', () => {
+    const all = exact(ids(players));
+    const renamed = players.map((player) => ({ ...player, name: `${player.name}!` }));
+    const rounds = [round(1, all, all), round(2, all, all)];
+    expect(starters(rounds, renamed)).toEqual(starters(rounds));
+  });
+
+  it("picks each stored round's starter among its own players (a fixed round revived one)", () => {
+    // Round 2 was stored without Bia; lives now say she is alive.
+    const all = exact(ids(players));
+    const noBia = exact([ana, caio, duda]);
+    const rounds = [round(1, all, all), round(2, noBia, noBia)];
+    // Round 2 starts with Caio (after Ana, Bia did not play), so round 3 with Duda.
+    expect(
+      firstFrom(
+        players,
+        nextRound(rounds.slice(0, 1), players).from,
+        ids(players.filter((p) => p.id !== bia)),
+      )?.id,
+    ).toBe(caio);
+    expect(nextRound(rounds, players).starter?.id).toBe(duda);
+  });
+
+  it('counts a stored player whom lives put out before the round (analyze C1)', () => {
+    const all = exact(ids(players));
+    const rounds = [round(5, { ...all, [bia]: 5 }, all), round(2, all, all)];
+    // Lives say Bia is out after round 1, yet round 2 was stored with her.
+    const before = nextRound(rounds.slice(0, 1), players);
+    expect(before.starter?.id).toBe(caio);
+    expect(firstFrom(players, before.from, ids(players))?.id).toBe(bia);
+    expect(nextRound(rounds, players).starter?.id).toBe(caio);
+  });
+
+  it('names the last player alive, and nobody when all are out', () => {
+    const two = players.slice(0, 2);
+    const all = exact(ids(two));
+    expect(nextRound([round(5, { ...all, [ana]: 5 }, all)], two).starter?.id).toBe(bia);
+    expect(nextRound([round(5, { [ana]: 5, [bia]: 5 }, all)], two).starter).toBeUndefined();
   });
 });

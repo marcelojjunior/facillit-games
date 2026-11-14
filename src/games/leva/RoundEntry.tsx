@@ -6,11 +6,16 @@
  * round being fixed: its own cards and players, opened on the results.
  * Anything unreadable renders as an empty round (spec 003 round-entry
  * contract). The shell's 3D buttons and tokens only.
+ *
+ * Spec 009: the players are listed from the round's starter, marked
+ * "Começa"; the starter is `firstFrom(players, before.from, playing)`, so the
+ * next round and a round being fixed follow the same rule. Only the view is
+ * rotated: the draft keeps roster order (research D3).
  */
 import { useEffect } from 'react';
 
 import type { PlayerRef, RoundEntryProps } from '../../shell/game/contract';
-import { cardsLabel, isRecord, nextRound, validateRound } from './rules';
+import { cardsLabel, firstFrom, fromStarter, isRecord, nextRound, validateRound } from './rules';
 
 type Step = 'guess' | 'taken';
 
@@ -74,11 +79,12 @@ function read(value: unknown, rounds: readonly unknown[], players: readonly Play
     taken: values(source.taken, ids, cards),
     ...(fixing === undefined ? {} : { fixing: ids }),
   };
-  return { draft, playing, lives: before.lives, fixing: fixing !== undefined };
+  const starter = firstFrom(players, before.from, ids);
+  return { draft, playing, starter, lives: before.lives, fixing: fixing !== undefined };
 }
 
 export default function RoundEntry({ players, value, rounds, onChange }: RoundEntryProps) {
-  const { draft, playing, lives, fixing } = read(value, rounds, players);
+  const { draft, playing, starter, lives, fixing } = read(value, rounds, players);
   const over = !fixing && playing.length <= 1;
 
   // Keep the stored draft in step with the match (research D5, D7): a past
@@ -132,7 +138,7 @@ export default function RoundEntry({ players, value, rounds, onChange }: RoundEn
           {step === 'guess' ? 'Palpites' : 'Quantas levou'}
         </p>
       </div>
-      {playing.map((player) => {
+      {fromStarter(playing, starter?.id).map((player) => {
         const mine = draft[field][player.id];
         const guess = draft.guesses[player.id];
         return (
@@ -145,6 +151,11 @@ export default function RoundEntry({ players, value, rounds, onChange }: RoundEn
               <span className="min-w-0 flex-1 truncate text-lg font-bold" title={player.name}>
                 {player.name}
               </span>
+              {player.id === starter?.id && (
+                <span className="shrink-0 rounded-full bg-yellow px-2 text-sm font-extrabold text-on-warm">
+                  Começa
+                </span>
+              )}
               {step === 'taken' && (
                 <span className="text-sm font-bold">
                   Palpite: {guess === undefined ? '—' : guessLabel(guess)}
