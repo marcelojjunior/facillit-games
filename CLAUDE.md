@@ -9,8 +9,10 @@ Summary of what you cannot get wrong:
    supersedes everything.** In a conflict with a plan, comment, or preference,
    the constitution wins.
 2. **Spec before code.** A game rule, persisted schema, or user-visible flow
-   requires the `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` →
-   `/speckit-implement` cycle, with `spec.md` committed before implementation.
+   requires the full cycle, no step skipped: `/speckit-specify` →
+   `/speckit-clarify` → `/speckit-plan` → `/speckit-checklist` →
+   `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement` →
+   `/speckit-converge`, with `spec.md` committed before implementation.
    Bugs use `/speckit-bug-assess` → `/speckit-bug-fix` → `/speckit-bug-test`.
    Typos and dependency bumps do not use the cycle.
 3. **A game is a plugin.** The shell never references a game by name.
