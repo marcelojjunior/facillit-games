@@ -294,5 +294,6 @@ players, the most of any game so far.
   tells the group to finish (FR-017).
 - **Totals are lives**: the shell's standings, history, and winner screen show
   lives, highest first, with the "vidas" unit (FR-003).
-- **Out of scope**: dealing order, who starts, the trick-by-trick play, the
+- **Out of scope**: dealing order, who starts (added later by spec 009,
+  `specs/009-leva-round-starter/spec.md`), the trick-by-trick play, the
   cutover (Phase 6), loading games on demand.
