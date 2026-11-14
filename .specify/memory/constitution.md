@@ -1,16 +1,12 @@
 <!--
 Sync Impact Report
-- Version: 1.1.0 -> 1.2.0 (MINOR)
-- Removed: Paperclip from the project. Paperclip is no longer used, so it is no
-  longer the gate for work or for amendments.
-- Renamed and reworded constraint: "Paperclip <-> Spec Kit boundary" ->
-  "Specs are the single source of truth" (the spec citation rule and the ban
-  on /speckit-taskstoissues are unchanged)
-- Changed section: Governance -> Amendment (the proposal lives in the pull
-  request; approval comes from the repository owner)
-- Principles I-IX: no change
+- Version: 1.2.0 -> 1.3.0 (MINOR: material expansion of Principle VIII)
+- Modified principle: VIII. Spec Before Code. The cycle now runs every step:
+  clarify, checklist and analyze are no longer optional, converge closes the
+  cycle, and a change to an existing spec returns to clarify.
+- Other principles: no change. Added or removed sections: none.
 - Templates: no change required
-- Follow-up: AGENTS.md updated in the same change
+- Follow-up: AGENTS.md and CLAUDE.md updated in the same change
 -->
 
 # Facillit Games Constitution
@@ -120,8 +116,14 @@ passed from hand to hand.
 No implementation that creates or changes a **game rule, persisted schema, or
 user-visible flow** MUST start without a committed `spec.md`.
 
-- The cycle is `/speckit-specify` → (`/speckit-clarify`) → `/speckit-plan` →
-  `/speckit-tasks` → `/speckit-implement`.
+- The cycle MUST run every step, in this order, with none skipped:
+  `/speckit-specify` → `/speckit-clarify` → `/speckit-plan` →
+  `/speckit-checklist` → `/speckit-tasks` → `/speckit-analyze` →
+  `/speckit-implement` → `/speckit-converge`.
+- Any unbuilt work converge appends to `tasks.md` goes back to
+  `/speckit-implement`; the feature is done only when converge finds nothing
+  left. A decision that changes an existing spec goes back to
+  `/speckit-clarify`, and every step after it is run again.
 - Bug fixes MUST use the `/speckit-bug-assess` → `/speckit-bug-fix` →
   `/speckit-bug-test` track.
 - If reality contradicts the spec during implementation, the spec MUST be
@@ -215,4 +217,4 @@ review. Complexity MUST be justified. Agents acting in this repository MUST read
 `AGENTS.md` before acting; it is the runtime operational guide and MUST remain
 consistent with this constitution.
 
-**Version**: 1.2.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-14
+**Version**: 1.3.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-14
