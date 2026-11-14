@@ -9,8 +9,8 @@ research D4) already walks the confirmed rounds to find the next round's cards
 and living players; it now also tracks the starter, passing it each round to
 the first of that round's own players after the previous starter in roster
 order (the living players, for the round being entered). The round
-entry lists the round's players rotated to start from that player and marks
-them "Começa". Everything stays in `src/games/leva/`.
+entry keeps the players in setup order and marks the starter "Começa"
+(revised by the owner after implementation: the list no longer rotates). Everything stays in `src/games/leva/`.
 
 ## Technical Context
 
@@ -33,7 +33,7 @@ tokens only
 |---|---|---|
 | I Pure client-side | PASS | No network, no dependency. |
 | II A game is a plugin | PASS | Only `src/games/leva/` changes; no shell file, no contract change. |
-| III Pure rules | PASS | The starter comes from `nextRound`, `firstFrom`, and `fromStarter`, pure and tested (normal, edge: elimination of the starter and of the next in line, two players; tie: n/a for a starter, covered by "several out in the same round"). |
+| III Pure rules | PASS | The starter comes from `nextRound` and `firstFrom`, pure and tested (normal, edge: elimination of the starter and of the next in line, two players; tie: n/a for a starter, covered by "several out in the same round"). |
 | IV `client:only` | PASS | Inside the existing island. |
 | V strict | PASS | No casts; `starter` is `PlayerRef \| undefined`. |
 | VI Mobile-first | PASS | One short "Começa" label in the existing name row; no new targets. |
@@ -59,13 +59,10 @@ See [research.md](./research.md) for the decisions and
     `firstFrom` among that round's own players (keys of `guesses`), starting
     from the player after the previous starter; the next round's starter is
     chosen among `alive`. With nobody alive, `undefined`.
-  - `fromStarter(playing, starterId)`: the list rotated to begin with the
-    starter; unchanged when the starter is not in it.
 - **Entry** (`RoundEntry.tsx`): `read` returns the starter as
   `firstFrom(players, before.from, playing)`: for the next round `playing` is
   `alive` (so it equals `before.starter`); for a round being fixed it is the
-  round's own players. One rule for both (FR-003, FR-007). The render maps over `fromStarter(playing, starter?.id)` instead
-  of `playing`, and shows the text "Começa" in the starter's name row, after the
+  round's own players. One rule for both (FR-003, FR-007). The render keeps `playing` in setup order and shows the text "Começa" in the starter's name row, after the
   truncating name, in both steps (read by screen readers with the row). The
   draft's ids (and key order) stay in roster order, so stored drafts compare equal as before (spec
   007 research D5).
@@ -99,9 +96,9 @@ No `contracts/`: no interface changes (the game contract is untouched).
 
 ```text
 src/games/leva/
-├── rules.ts                    # NextRound.starter, firstFrom, fromStarter
+├── rules.ts                    # NextRound.from/starter, firstFrom
 ├── rules.test.ts               # starter rotation cases
-├── RoundEntry.tsx              # rotated list, "Começa"
+├── RoundEntry.tsx              # "Começa" on the starter's row
 ├── RoundEntry.browser.test.tsx # order and label, fix sheet
 └── match.browser.test.tsx      # starter per round in the full match
 ```

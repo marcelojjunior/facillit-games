@@ -47,16 +47,9 @@ Second example (A, B, C, D; B starts round 2, B and C are out in it):
 | 4 | A |
 | 5 | D |
 
-## fromStarter (view helper, pure)
-
-```text
-fromStarter(playing, starterId) → playing rotated to begin at starterId
-```
-
-Unchanged when `starterId` is `undefined` or not in `playing`.
-
 ## Starter shown by the entry
 
 `firstFrom(players, nextRound(before).from, playing)`, where `playing` is
 `alive` for the next round and the round's own players when fixing it. Always
-in `playing`, and the same rule as FR-003 for both cases.
+in `playing`, and the same rule as FR-003 for both cases. The list itself
+stays in setup order; only the starter's row is marked.

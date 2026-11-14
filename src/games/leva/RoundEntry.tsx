@@ -7,15 +7,14 @@
  * Anything unreadable renders as an empty round (spec 003 round-entry
  * contract). The shell's 3D buttons and tokens only.
  *
- * Spec 009: the players are listed from the round's starter, marked
+ * Spec 009: the players stay in setup order and the round's starter is marked
  * "Começa"; the starter is `firstFrom(players, before.from, playing)`, so the
- * next round and a round being fixed follow the same rule. Only the view is
- * rotated: the draft keeps roster order (research D3).
+ * next round and a round being fixed follow the same rule (research D3).
  */
 import { useEffect } from 'react';
 
 import type { PlayerRef, RoundEntryProps } from '../../shell/game/contract';
-import { cardsLabel, firstFrom, fromStarter, isRecord, nextRound, validateRound } from './rules';
+import { cardsLabel, firstFrom, isRecord, nextRound, validateRound } from './rules';
 
 type Step = 'guess' | 'taken';
 
@@ -138,7 +137,7 @@ export default function RoundEntry({ players, value, rounds, onChange }: RoundEn
           {step === 'guess' ? 'Palpites' : 'Quantas levou'}
         </p>
       </div>
-      {fromStarter(playing, starter?.id).map((player) => {
+      {playing.map((player) => {
         const mine = draft[field][player.id];
         const guess = draft.guesses[player.id];
         return (

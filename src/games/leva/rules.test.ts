@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import {
   computeTotals,
   firstFrom,
-  fromStarter,
   nextRound,
   resolveWinners,
   scoreRound,
@@ -257,17 +256,6 @@ describe('round starter (spec 009 FR-002–FR-005)', () => {
 
     it('returns undefined when `among` is empty', () => {
       expect(firstFrom(players, ana, [])).toBeUndefined();
-    });
-  });
-
-  describe('fromStarter', () => {
-    it('rotates the list to begin at the starter', () => {
-      expect(ids(fromStarter(players, caio))).toEqual([caio, duda, ana, bia]);
-    });
-
-    it('keeps the list when the starter is missing or unknown', () => {
-      expect(ids(fromStarter(players, undefined))).toEqual(ids(players));
-      expect(ids(fromStarter(players.slice(0, 2), caio))).toEqual([ana, bia]);
     });
   });
 

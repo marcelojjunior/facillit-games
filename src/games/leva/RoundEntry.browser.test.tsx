@@ -78,7 +78,7 @@ describe('LEVA RoundEntry', () => {
       <RoundEntryHarness Entry={RoundEntry} players={three} rounds={[out]} emitted={[]} />,
     );
     await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('6 cartas');
-    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Caio']);
     expect(starterNames(screen.container)).toEqual(['Caio']);
   });
 
@@ -204,7 +204,7 @@ describe('LEVA RoundEntry', () => {
     );
     await expect.element(screen.getByTestId('leva-cards')).toHaveTextContent('4 cartas');
     await expect.element(screen.getByText('Quantas levou')).toBeVisible();
-    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Caio']);
     expect(starterNames(screen.container)).toEqual(['Caio']);
     await tap(screen, 'Caio: levou 1');
     expect(emitted).toEqual([
@@ -236,7 +236,7 @@ describe('LEVA RoundEntry', () => {
     expect(small).toEqual([]);
   });
 
-  it('lists round 3 from its starter, marked "Começa", in both steps (spec 009)', async () => {
+  it('marks round 3\'s starter "Começa" in setup order, in both steps (spec 009)', async () => {
     const rounds = [1, 2].map((cards) => ({
       cards,
       guesses: zeros(everyone),
@@ -245,15 +245,15 @@ describe('LEVA RoundEntry', () => {
     const screen = await render(
       <RoundEntryHarness Entry={RoundEntry} players={three} rounds={rounds} emitted={[]} />,
     );
-    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana', 'Bia']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Bia', 'Caio']);
     expect(starterNames(screen.container)).toEqual(['Caio']);
     await screen.getByTestId('leva-step').click();
     await expect.element(screen.getByText('Quantas levou')).toBeVisible();
-    expect(playerNames(screen.container)).toEqual(['Caio', 'Ana', 'Bia']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Bia', 'Caio']);
     expect(starterNames(screen.container)).toEqual(['Caio']);
   });
 
-  it('keeps the order on a reopened draft, and the draft in roster order (research D3)', async () => {
+  it('keeps the mark on a reopened draft, and the draft in roster order (research D3)', async () => {
     const emitted: unknown[] = [];
     const rounds = [{ cards: 1, guesses: zeros(everyone), taken: zeros(everyone) }];
     const screen = await render(
@@ -265,7 +265,7 @@ describe('LEVA RoundEntry', () => {
         emitted={emitted}
       />,
     );
-    expect(playerNames(screen.container)).toEqual(['Bia', 'Caio', 'Ana']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Bia', 'Caio']);
     expect(starterNames(screen.container)).toEqual(['Bia']);
     await tap(screen, 'Ana: palpite 2');
     expect(Object.keys((emitted.at(-1) as { guesses: object }).guesses)).toEqual([ana, caio]);
@@ -277,11 +277,11 @@ describe('LEVA RoundEntry', () => {
     const screen = await render(
       <RoundEntryHarness Entry={RoundEntry} players={three} rounds={[out]} emitted={[]} />,
     );
-    expect(playerNames(screen.container)).toEqual(['Bia', 'Ana']);
+    expect(playerNames(screen.container)).toEqual(['Ana', 'Bia']);
     expect(starterNames(screen.container)).toEqual(['Bia']);
   });
 
-  it('keeps the mark in view with 10 long names at 360×640 (FR-006, SC-003)', async () => {
+  it('keeps the mark beside 10 long names at 360 px, no sideways scroll (FR-006, SC-003)', async () => {
     const long = ten.map((player) => ({ ...player, name: `${player.name} da Silva Albuquerque` }));
     const all = long.map((player) => player.id);
     const rounds = [1, 2, 3, 4].map((cards) => ({ cards, guesses: zeros(all), taken: zeros(all) }));
@@ -293,7 +293,6 @@ describe('LEVA RoundEntry', () => {
     expect(starterNames(screen.container)).toEqual(['Edu da Silva Albuquerque']);
     const box = mark.element().getBoundingClientRect();
     expect(box.right).toBeLessThanOrEqual(window.innerWidth);
-    expect(box.bottom).toBeLessThanOrEqual(window.innerHeight);
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
   });
 

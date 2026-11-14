@@ -28,16 +28,19 @@
   skipping out players) — rejected by the owner: it can give the same player two
   rounds in a row.
 
-## D3. Rotate the rendering, not the draft
+## D3. Mark the starter, do not reorder (revised)
 
-- **Decision**: the entry renders `fromStarter(playing, starter)`; the draft's
-  ids stay in roster order.
+- **Decision** (owner, after implementation): the list keeps setup order in
+  every round; only the "Começa" mark moves. A moving list confused the
+  group. The first version rotated only the view (`fromStarter`) and kept the
+  draft in roster order; that helper is removed.
+- **Still true**: the draft's ids stay in roster order.
 - **Rationale**: the entry compares the stored draft with the one it rebuilds
   (spec 007 research D5) by JSON, so key order matters; rotating only the view
   leaves stored drafts byte-identical and needs no re-sync.
-- **Alternatives considered**: returning `alive` already rotated from
-  `nextRound` — rejected: changes the documented "roster order" of `alive` and
-  the draft's key order.
+- **Alternatives considered**: rotating the list to begin at the starter
+  (shipped first, then dropped by the owner); returning `alive` already
+  rotated from `nextRound` — rejected: changes the draft's key order.
 
 ## D4. Invalid rounds
 

@@ -29,9 +29,10 @@ It is a LEVA-only change: the shell and MECHE-MECHE are untouched.
   order. Example: A, B, C, D; A, B, C start rounds 1–3; C is out in round 3;
   rounds 4, 5, 6, 7 start with D, A, B, D. Nobody is skipped and nobody starts
   twice in a row (unless they are the only one left, which ends the match).
-- Q: How does the starter appear? → A: the players are listed starting from the
-  starter, in guessing order around the table, with the starter marked
-  ("Começa").
+- Q: How does the starter appear? → A: ~~the players are listed starting from
+  the starter~~ revised by the owner after implementation (2026-11-13): the
+  list keeps the setup order in every round, so it does not move and confuse
+  the group; only the "Começa" mark moves from player to player.
 
 ### Checklist review 2026-11-13 (`checklists/rotation.md`)
 
@@ -67,11 +68,10 @@ without eliminations; the starter shown is A, B, C, A.
 2. **Given** round 1 confirmed, **When** round 2 shows, **Then** B starts;
    after round 2, C starts round 3; after round 3, A starts round 4.
 3. **Given** a round in the guesses step or the results step, **When** it
-   shows, **Then** the starter is listed first and marked "Começa", and the
-   other players follow in registration order, wrapping after the last (round 3
-   above: C, A, B).
+   shows, **Then** the players stay in setup order and only the starter's row
+   is marked "Começa" (round 3 above: A, B, C with C marked).
 4. **Given** guesses entered and the page reloaded, **When** the round shows
-   again, **Then** the same starter and order are shown.
+   again, **Then** the same starter is marked and the order is unchanged.
 
 ---
 
@@ -111,7 +111,7 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
 - **Rename during the match**: the start follows the player, not the name.
 - **Matches already in progress when this ships**: the starter is derived from
   their confirmed rounds, as if the feature had always existed; a round being
-  typed keeps its guesses and results, and only the order and the mark appear.
+  typed keeps its guesses and results, and only the mark appears.
 
 ## Requirements *(mandatory)*
 
@@ -133,9 +133,9 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
   rounds the rules accept, by a pure, tested function (Principle III); rounds
   the rules reject MUST NOT advance the rotation. Nothing new is stored, and the
   persisted schema does not change.
-- **FR-006**: The round entry MUST list the round's players starting from the
-  starter, then the next in registration order, wrapping after the last, in both
-  the guesses and the results steps. The starter's row MUST show the text
+- **FR-006**: The round entry MUST list the round's players in setup order in
+  every round, in both the guesses and the results steps; the order MUST NOT
+  change with the starter (Clarifications). The starter's row MUST show the text
   "Começa" next to the name, as visible text that assistive technology reads
   with the row. The entry MUST keep the spec 007 layout constraints (360 px, no
   sideways scroll, 44×44 px targets) with 10 players and long names: the name
@@ -159,13 +159,11 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
   with the starter out (User Story 2, scenario 1); 4 players with the starter
   and the next in line out together (scenario 2); 2 players until one is out.
 - **SC-002**: An eliminated player is never shown as starter.
-- **SC-003**: When a round opens, the starter is the first player in the round
-  entry and carries the "Começa" mark. At 360×640 the mark is visible without
-  scrolling with up to 5 players; with more, the shell's standings (unchanged
-  by FR-001) push the round entry below the fold, and the starter is still its
-  first row. Revised during implementation (2026-11-13): measured in the app,
-  the mark of a 6-player match sits under the fixed confirm bar, and with 10
-  the whole entry starts below 640 px.
+- **SC-003**: When a round opens, the list is in setup order and exactly one
+  row, the starter's, carries the "Começa" mark, reachable by vertical scroll
+  only (no sideways scroll at 360×640). Revised twice (2026-11-13): first
+  measured in the app (the standings push the entry below the fold with many
+  players), then by the owner's choice to keep the setup order.
 - **SC-004**: No file outside LEVA's folder changes, other than specs and tests.
 
 ## Assumptions
@@ -173,8 +171,8 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
 - **"Player 1"** is the first player in the setup list; setup has no
   reordering, and players cannot be added or removed during a match
   (Clarifications).
-- **No enforced order**: the list follows the guessing order, but the person
-  holding the phone may still tap any player's guess in any order.
+- **No enforced order**: the mark says who starts; the person holding the
+  phone may still tap any player's guess in any order.
 - **No "last guesser" restriction** (e.g. the total of guesses may not equal the
   number of cards): not requested, out of scope.
 - **Dealer** is not tracked; only who guesses first.
