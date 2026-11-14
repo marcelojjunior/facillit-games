@@ -44,8 +44,8 @@ It is a LEVA-only change: the shell and MECHE-MECHE are untouched.
 - Stored rounds the rules reject are ignored: they do not advance the rotation
   (CHK009), as they already do not count for cards or lives (spec 007).
 - The players of a match are fixed once it starts (only rename exists), and
-  setup has no reordering, so registration order is the setup list order
-  (CHK001, CHK013).
+  registration order is the setup list order (CHK001, CHK013). Spec 010 adds
+  arrows to reorder players in setup; the rotation follows that order.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -168,8 +168,8 @@ out in round 3; rounds 4–7 start with D, A, B, D, and C never starts again.
 
 ## Assumptions
 
-- **"Player 1"** is the first player in the setup list; setup has no
-  reordering, and players cannot be added or removed during a match
+- **"Player 1"** is the first player in the setup list (reorderable in setup
+  since spec 010); players cannot be added, removed, or moved during a match
   (Clarifications).
 - **No enforced order**: the mark says who starts; the person holding the
   phone may still tap any player's guess in any order.
